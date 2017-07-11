@@ -15,6 +15,12 @@
 		9B2252691F1508FD006DE55D /* Aiolos.h in Headers */ = {isa = PBXBuildFile; fileRef = 9B2252591F1508FD006DE55D /* Aiolos.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		9B22526C1F1508FD006DE55D /* Aiolos.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9B2252571F1508FD006DE55D /* Aiolos.framework */; };
 		9B22526D1F1508FD006DE55D /* Aiolos.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 9B2252571F1508FD006DE55D /* Aiolos.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		9B2252761F150995006DE55D /* PanelTransitionCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B2252751F150995006DE55D /* PanelTransitionCoordinator.swift */; };
+		9B2252781F150A8E006DE55D /* PanelDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B2252771F150A8E006DE55D /* PanelDelegate.swift */; };
+		9B22527A1F150B14006DE55D /* PanelViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B2252791F150B14006DE55D /* PanelViewController.swift */; };
+		9B22527E1F150F39006DE55D /* PanelView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B22527D1F150F39006DE55D /* PanelView.swift */; };
+		9B2252801F151046006DE55D /* PanelConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B22527F1F151046006DE55D /* PanelConfiguration.swift */; };
+		9B2252821F1511FD006DE55D /* Panel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B2252811F1511FD006DE55D /* Panel.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -62,6 +68,12 @@
 		9B22525A1F1508FD006DE55D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		9B2252661F1508FD006DE55D /* AiolosTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AiolosTests.swift; sourceTree = "<group>"; };
 		9B2252681F1508FD006DE55D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		9B2252751F150995006DE55D /* PanelTransitionCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PanelTransitionCoordinator.swift; sourceTree = "<group>"; };
+		9B2252771F150A8E006DE55D /* PanelDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PanelDelegate.swift; sourceTree = "<group>"; };
+		9B2252791F150B14006DE55D /* PanelViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PanelViewController.swift; sourceTree = "<group>"; };
+		9B22527D1F150F39006DE55D /* PanelView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PanelView.swift; sourceTree = "<group>"; };
+		9B22527F1F151046006DE55D /* PanelConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PanelConfiguration.swift; sourceTree = "<group>"; };
+		9B2252811F1511FD006DE55D /* Panel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Panel.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -95,7 +107,6 @@
 			children = (
 				9B2252311F15089C006DE55D /* Demo */,
 				9B2252581F1508FD006DE55D /* Aiolos */,
-				9B2252651F1508FD006DE55D /* AiolosTests */,
 				9B2252301F15089C006DE55D /* Products */,
 			);
 			sourceTree = "<group>";
@@ -128,17 +139,32 @@
 			children = (
 				9B2252591F1508FD006DE55D /* Aiolos.h */,
 				9B22525A1F1508FD006DE55D /* Info.plist */,
+				9B22527B1F150B21006DE55D /* Sources */,
+				9B22527C1F150B2F006DE55D /* Tests */,
 			);
 			path = Aiolos;
 			sourceTree = "<group>";
 		};
-		9B2252651F1508FD006DE55D /* AiolosTests */ = {
+		9B22527B1F150B21006DE55D /* Sources */ = {
 			isa = PBXGroup;
 			children = (
-				9B2252661F1508FD006DE55D /* AiolosTests.swift */,
-				9B2252681F1508FD006DE55D /* Info.plist */,
+				9B2252771F150A8E006DE55D /* PanelDelegate.swift */,
+				9B2252751F150995006DE55D /* PanelTransitionCoordinator.swift */,
+				9B2252791F150B14006DE55D /* PanelViewController.swift */,
+				9B22527D1F150F39006DE55D /* PanelView.swift */,
+				9B22527F1F151046006DE55D /* PanelConfiguration.swift */,
+				9B2252811F1511FD006DE55D /* Panel.swift */,
 			);
-			path = AiolosTests;
+			path = Sources;
+			sourceTree = "<group>";
+		};
+		9B22527C1F150B2F006DE55D /* Tests */ = {
+			isa = PBXGroup;
+			children = (
+				9B2252681F1508FD006DE55D /* Info.plist */,
+				9B2252661F1508FD006DE55D /* AiolosTests.swift */,
+			);
+			path = Tests;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -229,6 +255,7 @@
 					};
 					9B2252561F1508FD006DE55D = {
 						CreatedOnToolsVersion = 9.0;
+						LastSwiftMigration = 0900;
 					};
 				};
 			};
@@ -300,6 +327,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9B2252761F150995006DE55D /* PanelTransitionCoordinator.swift in Sources */,
+				9B22527E1F150F39006DE55D /* PanelView.swift in Sources */,
+				9B2252821F1511FD006DE55D /* Panel.swift in Sources */,
+				9B2252781F150A8E006DE55D /* PanelDelegate.swift in Sources */,
+				9B2252801F151046006DE55D /* PanelConfiguration.swift in Sources */,
+				9B22527A1F150B14006DE55D /* PanelViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -444,6 +477,7 @@
 		9B22524D1F15089C006DE55D /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				DEVELOPMENT_TEAM = W6L39UYL6Z;
 				INFOPLIST_FILE = Aiolos/Info.plist;
@@ -458,6 +492,7 @@
 		9B22524E1F15089C006DE55D /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				DEVELOPMENT_TEAM = W6L39UYL6Z;
 				INFOPLIST_FILE = Aiolos/Info.plist;
@@ -504,6 +539,7 @@
 		9B22526F1F1508FD006DE55D /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "";
 				CURRENT_PROJECT_VERSION = 1;
 				DEFINES_MODULE = YES;
@@ -517,6 +553,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.ideasoncanvas.Aiolos;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 4.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VERSIONING_SYSTEM = "apple-generic";
@@ -527,6 +564,7 @@
 		9B2252701F1508FD006DE55D /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "";
 				CURRENT_PROJECT_VERSION = 1;
 				DEFINES_MODULE = YES;
