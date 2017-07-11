@@ -28,12 +28,21 @@ public extension Panel {
 
         var position: Position
         var mode: Mode
+        var visualEffect: UIVisualEffect?
+        var margins: UIEdgeInsets
+        var cornerRadius: CGFloat
+        var borderColor: UIColor
     }
 }
 
 public extension Panel.Configuration {
 
     static var `default`: Panel.Configuration {
-        return Panel.Configuration(position: .bottom, mode: .collapsed)
+        return Panel.Configuration(position: .bottom,
+                                   mode: .collapsed,
+                                   visualEffect: UIBlurEffect(style: .extraLight),
+                                   margins: UIEdgeInsets(top: 10.0, left: 10.0, bottom: 10.0, right: 10.0),
+                                   cornerRadius: 10.0,
+                                   borderColor: UIColor.gray.withAlphaComponent(0.5))
     }
 }

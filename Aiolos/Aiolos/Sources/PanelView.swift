@@ -10,7 +10,16 @@ import Foundation
 
 
 /// The view of the PanelViewController
-
 public final class PanelView: UIVisualEffectView {
 
+    public init(configuration: Panel.Configuration) {
+        super.init(effect: configuration.visualEffect)
+
+        self.layer.cornerRadius = configuration.cornerRadius
+        self.clipsToBounds = true
+    }
+
+    public required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
 }

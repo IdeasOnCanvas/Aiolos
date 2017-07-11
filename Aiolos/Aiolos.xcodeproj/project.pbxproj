@@ -148,12 +148,12 @@
 		9B22527B1F150B21006DE55D /* Sources */ = {
 			isa = PBXGroup;
 			children = (
+				9B2252811F1511FD006DE55D /* Panel.swift */,
+				9B22527F1F151046006DE55D /* PanelConfiguration.swift */,
 				9B2252771F150A8E006DE55D /* PanelDelegate.swift */,
 				9B2252751F150995006DE55D /* PanelTransitionCoordinator.swift */,
-				9B2252791F150B14006DE55D /* PanelViewController.swift */,
 				9B22527D1F150F39006DE55D /* PanelView.swift */,
-				9B22527F1F151046006DE55D /* PanelConfiguration.swift */,
-				9B2252811F1511FD006DE55D /* Panel.swift */,
+				9B2252791F150B14006DE55D /* PanelViewController.swift */,
 			);
 			path = Sources;
 			sourceTree = "<group>";
@@ -604,6 +604,7 @@
 				9B22524E1F15089C006DE55D /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		9B22524F1F15089C006DE55D /* Build configuration list for PBXNativeTarget "AiolosTests" */ = {
 			isa = XCConfigurationList;
@@ -612,6 +613,7 @@
 				9B2252511F15089C006DE55D /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		9B22526E1F1508FD006DE55D /* Build configuration list for PBXNativeTarget "Aiolos" */ = {
 			isa = XCConfigurationList;
@@ -620,6 +622,7 @@
 				9B2252701F1508FD006DE55D /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
