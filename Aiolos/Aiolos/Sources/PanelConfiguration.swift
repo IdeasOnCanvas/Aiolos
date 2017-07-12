@@ -15,9 +15,9 @@ public extension Panel {
     public struct Configuration {
 
         public enum Position {
-            case leading
-            case trailing
             case bottom
+            case leadingBottom
+            case trailingBottom
         }
 
         public enum Mode {
