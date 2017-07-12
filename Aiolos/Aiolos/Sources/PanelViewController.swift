@@ -20,6 +20,8 @@ public final class PanelViewController: UIViewController {
 
     // MARK: - Properties
 
+    public var isVisible: Bool { return self.parent != nil }
+
     public var configuration: Panel.Configuration {
         didSet {
             self.handleConfigurationChange(from: oldValue, to: self.configuration)
@@ -129,7 +131,8 @@ private extension PanelViewController {
 
     func handleConfigurationChange(from oldConfiguration: Panel.Configuration, to newConfiguration: Panel.Configuration) {
         self.panelView.configure(with: newConfiguration)
-        self.containerView.configure(with: newConfiguration)
+        // TODO: this breaks, why??
+//        self.containerView.configure(with: newConfiguration)
 
         if oldConfiguration.mode != newConfiguration.mode {
             self.updateModeConstraints(for: newConfiguration.mode)
@@ -190,9 +193,7 @@ private extension PanelViewController {
             ]
         }
 
-        DispatchQueue.main.async {
-            NSLayoutConstraint.activate(self.positionConstraints)
-        }
+        NSLayoutConstraint.activate(self.positionConstraints)
     }
 }
 

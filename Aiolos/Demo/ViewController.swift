@@ -17,8 +17,10 @@ final class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        self.title = "Aiolos Demo"
         self.view.backgroundColor = .white
-        self.panelController.add(to: self)
+
+        self.navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .refresh, target: self, action: #selector(handleTogglePanelPress))
     }
 }
 
@@ -27,13 +29,23 @@ final class ViewController: UIViewController {
 private extension ViewController {
 
     func makePanelController() -> PanelViewController {
-        var configuration = Panel.Configuration.default
-        configuration.position = self.traitCollection.userInterfaceIdiom == .pad ? .leadingBottom : .bottom
-        configuration.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
-
+        let configuration = Panel.Configuration.default
         let panelController = PanelViewController(configuration: configuration)
-        panelController.contentViewController = PanelContentViewController(color: .clear)
+
+        panelController.contentViewController = PanelContentViewController(color: .red)
+        panelController.configuration.position = self.traitCollection.userInterfaceIdiom == .pad ? .leadingBottom : .bottom
+        panelController.configuration.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
 
         return panelController
     }
+
+    @objc
+    func handleTogglePanelPress() {
+        if self.panelController.isVisible {
+            self.panelController.removeFromParent()
+        } else {
+            self.panelController.add(to: self)
+        }
+    }
+
 }
