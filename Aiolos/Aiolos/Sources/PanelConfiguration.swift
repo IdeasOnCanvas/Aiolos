@@ -26,12 +26,13 @@ public extension Panel {
             case fullHeight
         }
 
-        var position: Position
-        var mode: Mode
-        var visualEffect: UIVisualEffect?
-        var margins: UIEdgeInsets
-        var cornerRadius: CGFloat
-        var borderColor: UIColor
+        public var position: Position
+        public var mode: Mode
+        public var visualEffect: UIVisualEffect?
+        public var margins: UIEdgeInsets
+        public var cornerRadius: CGFloat
+        public var maskedCorners: CACornerMask
+        public var borderColor: UIColor
     }
 }
 
@@ -43,6 +44,7 @@ public extension Panel.Configuration {
                                    visualEffect: UIBlurEffect(style: .extraLight),
                                    margins: UIEdgeInsets(top: 10.0, left: 10.0, bottom: 10.0, right: 10.0),
                                    cornerRadius: 10.0,
+                                   maskedCorners: [.layerMinXMinYCorner, .layerMinXMaxYCorner, .layerMaxXMinYCorner, .layerMaxXMaxYCorner],
                                    borderColor: UIColor.gray.withAlphaComponent(0.5))
     }
 }

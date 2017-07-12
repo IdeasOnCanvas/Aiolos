@@ -9,9 +9,7 @@
 /* Begin PBXBuildFile section */
 		9B2252331F15089C006DE55D /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B2252321F15089C006DE55D /* AppDelegate.swift */; };
 		9B2252351F15089C006DE55D /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B2252341F15089C006DE55D /* ViewController.swift */; };
-		9B2252381F15089C006DE55D /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 9B2252361F15089C006DE55D /* Main.storyboard */; };
 		9B22523A1F15089C006DE55D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9B2252391F15089C006DE55D /* Assets.xcassets */; };
-		9B22523D1F15089C006DE55D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 9B22523B1F15089C006DE55D /* LaunchScreen.storyboard */; };
 		9B2252691F1508FD006DE55D /* Aiolos.h in Headers */ = {isa = PBXBuildFile; fileRef = 9B2252591F1508FD006DE55D /* Aiolos.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		9B22526C1F1508FD006DE55D /* Aiolos.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9B2252571F1508FD006DE55D /* Aiolos.framework */; };
 		9B22526D1F1508FD006DE55D /* Aiolos.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 9B2252571F1508FD006DE55D /* Aiolos.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
@@ -21,6 +19,7 @@
 		9B22527E1F150F39006DE55D /* PanelView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B22527D1F150F39006DE55D /* PanelView.swift */; };
 		9B2252801F151046006DE55D /* PanelConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B22527F1F151046006DE55D /* PanelConfiguration.swift */; };
 		9B2252821F1511FD006DE55D /* Panel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B2252811F1511FD006DE55D /* Panel.swift */; };
+		9BEB70271F16582F00EDB0C1 /* PanelContentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9BEB70261F16582F00EDB0C1 /* PanelContentViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -58,9 +57,7 @@
 		9B22522F1F15089C006DE55D /* AiolosDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AiolosDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		9B2252321F15089C006DE55D /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		9B2252341F15089C006DE55D /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
-		9B2252371F15089C006DE55D /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		9B2252391F15089C006DE55D /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		9B22523C1F15089C006DE55D /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		9B22523E1F15089C006DE55D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		9B2252431F15089C006DE55D /* AiolosTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AiolosTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		9B2252571F1508FD006DE55D /* Aiolos.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Aiolos.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -74,6 +71,7 @@
 		9B22527D1F150F39006DE55D /* PanelView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PanelView.swift; sourceTree = "<group>"; };
 		9B22527F1F151046006DE55D /* PanelConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PanelConfiguration.swift; sourceTree = "<group>"; };
 		9B2252811F1511FD006DE55D /* Panel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Panel.swift; sourceTree = "<group>"; };
+		9BEB70261F16582F00EDB0C1 /* PanelContentViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PanelContentViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -125,11 +123,10 @@
 			isa = PBXGroup;
 			children = (
 				9B2252321F15089C006DE55D /* AppDelegate.swift */,
-				9B2252341F15089C006DE55D /* ViewController.swift */,
-				9B2252361F15089C006DE55D /* Main.storyboard */,
 				9B2252391F15089C006DE55D /* Assets.xcassets */,
-				9B22523B1F15089C006DE55D /* LaunchScreen.storyboard */,
 				9B22523E1F15089C006DE55D /* Info.plist */,
+				9BEB70261F16582F00EDB0C1 /* PanelContentViewController.swift */,
+				9B2252341F15089C006DE55D /* ViewController.swift */,
 			);
 			path = Demo;
 			sourceTree = "<group>";
@@ -284,9 +281,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				9B22523D1F15089C006DE55D /* LaunchScreen.storyboard in Resources */,
 				9B22523A1F15089C006DE55D /* Assets.xcassets in Resources */,
-				9B2252381F15089C006DE55D /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -312,6 +307,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				9B2252351F15089C006DE55D /* ViewController.swift in Sources */,
+				9BEB70271F16582F00EDB0C1 /* PanelContentViewController.swift in Sources */,
 				9B2252331F15089C006DE55D /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -350,25 +346,6 @@
 			targetProxy = 9B22526A1F1508FD006DE55D /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
-
-/* Begin PBXVariantGroup section */
-		9B2252361F15089C006DE55D /* Main.storyboard */ = {
-			isa = PBXVariantGroup;
-			children = (
-				9B2252371F15089C006DE55D /* Base */,
-			);
-			name = Main.storyboard;
-			sourceTree = "<group>";
-		};
-		9B22523B1F15089C006DE55D /* LaunchScreen.storyboard */ = {
-			isa = PBXVariantGroup;
-			children = (
-				9B22523C1F15089C006DE55D /* Base */,
-			);
-			name = LaunchScreen.storyboard;
-			sourceTree = "<group>";
-		};
-/* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
 		9B22524A1F15089C006DE55D /* Debug */ = {
@@ -482,7 +459,7 @@
 				DEVELOPMENT_TEAM = W6L39UYL6Z;
 				INFOPLIST_FILE = Aiolos/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.ideasoncanvas.Aiolos;
+				PRODUCT_BUNDLE_IDENTIFIER = com.ideasoncanvas.AiolosDemo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 4.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -497,7 +474,7 @@
 				DEVELOPMENT_TEAM = W6L39UYL6Z;
 				INFOPLIST_FILE = Aiolos/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.ideasoncanvas.Aiolos;
+				PRODUCT_BUNDLE_IDENTIFIER = com.ideasoncanvas.AiolosDemo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 4.0;
 				TARGETED_DEVICE_FAMILY = "1,2";

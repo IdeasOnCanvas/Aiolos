@@ -52,10 +52,10 @@ public extension PanelViewController {
     override func loadView() {
         self.view = self.makeContainer(for: self.panelView)
 
-        // setup size constraints
+        // setup layout constraints
         let size = self.size(for: self.configuration.mode)
-        self.widthConstraint = self.view.widthAnchor.constraint(equalToConstant: size.width)
-        self.heightConstraint = self.view.heightAnchor.constraint(equalToConstant: size.height)
+        self.widthConstraint = self.view.widthAnchor.constraint(equalToConstant: size.width).withIdentifier("Panel Width")
+        self.heightConstraint = self.view.heightAnchor.constraint(equalToConstant: size.height).withIdentifier("Panel Height")
         NSLayoutConstraint.activate([self.widthConstraint, self.heightConstraint])
     }
 }
@@ -68,6 +68,8 @@ public extension PanelViewController {
         parent.addChildViewController(self)
         parent.view.addSubview(self.view)
         self.didMove(toParentViewController: parent)
+
+        self.updatePositionConstraints(for: self.configuration.position, margins: self.configuration.margins)
     }
 
     func removeFromParent() {
@@ -76,6 +78,9 @@ public extension PanelViewController {
         self.willMove(toParentViewController: nil)
         self.view.removeFromSuperview()
         self.removeFromParentViewController()
+
+        self.view.removeConstraints(self.positionConstraints)
+        self.positionConstraints = []
     }
 }
 
@@ -94,6 +99,7 @@ private extension PanelViewController {
         view.frame = container.bounds
         view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         container.addSubview(view)
+        container.translatesAutoresizingMaskIntoConstraints = false
 
         return container
     }
@@ -167,24 +173,26 @@ private extension PanelViewController {
         switch position {
         case .bottom:
             self.positionConstraints = [
-                self.view.bottomAnchor.constraint(equalTo: parentView.bottomAnchor, constant: margins.bottom),
-                self.view.centerXAnchor.constraint(equalTo: parentView.centerXAnchor, constant: 0.0)
+                self.view.bottomAnchor.constraint(equalTo: parentView.bottomAnchor, constant: -margins.bottom).withIdentifier("Panel Bottom"),
+                self.view.centerXAnchor.constraint(equalTo: parentView.centerXAnchor, constant: 0.0).withIdentifier("Panel Center X")
             ]
 
         case .leadingBottom:
             self.positionConstraints = [
-                self.view.bottomAnchor.constraint(equalTo: parentView.bottomAnchor, constant: margins.bottom),
-                self.view.leadingAnchor.constraint(equalTo: parentView.leadingAnchor, constant: margins.left)
+                self.view.bottomAnchor.constraint(equalTo: parentView.bottomAnchor, constant: -margins.bottom).withIdentifier("Panel Bottom"),
+                self.view.leadingAnchor.constraint(equalTo: parentView.leadingAnchor, constant: margins.left).withIdentifier("Panel Leading")
             ]
 
         case .trailingBottom:
             self.positionConstraints = [
-                self.view.bottomAnchor.constraint(equalTo: parentView.bottomAnchor, constant: margins.bottom),
-                self.view.trailingAnchor.constraint(equalTo: parentView.trailingAnchor, constant: margins.right)
+                self.view.bottomAnchor.constraint(equalTo: parentView.bottomAnchor, constant: -margins.bottom).withIdentifier("Panel Bottom"),
+                self.view.trailingAnchor.constraint(equalTo: parentView.trailingAnchor, constant: -margins.right).withIdentifier("Panel Trailing")
             ]
         }
 
-        NSLayoutConstraint.activate(self.positionConstraints)
+        DispatchQueue.main.async {
+            NSLayoutConstraint.activate(self.positionConstraints)
+        }
     }
 }
 
@@ -209,7 +217,18 @@ private class ContainerView: UIView {
 
         // configure border
         self.layer.cornerRadius = configuration.cornerRadius
+        self.layer.maskedCorners = configuration.maskedCorners
         self.layer.borderColor = configuration.borderColor.cgColor
         self.layer.borderWidth = 1.0 / UIScreen.main.scale
+    }
+}
+
+// MARK: - NSLayoutConstraint
+
+private extension NSLayoutConstraint {
+
+    func withIdentifier(_ identifier: String) -> NSLayoutConstraint {
+        self.identifier = identifier
+        return self
     }
 }

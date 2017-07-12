@@ -7,19 +7,33 @@
 //
 
 import UIKit
+import Aiolos
 
-class ViewController: UIViewController {
+
+final class ViewController: UIViewController {
+
+    private lazy var panelController: PanelViewController = self.makePanelController()
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view, typically from a nib.
+
+        self.view.backgroundColor = .white
+        self.panelController.add(to: self)
     }
-
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
-    }
-
-
 }
 
+// MARK: - Private
+
+private extension ViewController {
+
+    func makePanelController() -> PanelViewController {
+        var configuration = Panel.Configuration.default
+        configuration.position = self.traitCollection.userInterfaceIdiom == .pad ? .leadingBottom : .bottom
+        configuration.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
+
+        let panelController = PanelViewController(configuration: configuration)
+        panelController.contentViewController = PanelContentViewController(color: .clear)
+
+        return panelController
+    }
+}
