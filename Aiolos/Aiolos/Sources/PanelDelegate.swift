@@ -19,6 +19,6 @@ public protocol PanelSizeDelegate: class {
 
 public protocol PanelAnimationDelegate: class {
 
-    /// Tells the delegate that the `panel` is transitioning to a specific position
-    func panel(_ panel: PanelViewController, willTransitionTo position: Panel.Configuration.Position, with coordinator: PanelTransitionCoordinator)
+    /// Tells the delegate that the `panel` is transitioning to a specific mode
+    func panel(_ panel: PanelViewController, willTransitionTo mode: Panel.Configuration.Mode, with coordinator: PanelTransitionCoordinator)
 }

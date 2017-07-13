@@ -20,7 +20,7 @@ public final class PanelTransitionCoordinator {
 
     // MARK: - PanelTransitionCoordinator
 
-    func animateAlongsideTransition(_ animations: () -> Void, completion: (() -> Void)? = nil) {
+    public func animateAlongsideTransition(_ animations: () -> Void, completion: (() -> Void)? = nil) {
 
     }
 }

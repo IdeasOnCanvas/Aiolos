@@ -46,6 +46,15 @@ extension ViewController: PanelSizeDelegate {
     }
 }
 
+// MARK: - PanelAnimationDelegate
+
+extension ViewController: PanelAnimationDelegate {
+
+    func panel(_ panel: PanelViewController, willTransitionTo mode: Panel.Configuration.Mode, with coordinator: PanelTransitionCoordinator) {
+        
+    }
+}
+
 // MARK: - Private
 
 private extension ViewController {
@@ -55,6 +64,7 @@ private extension ViewController {
         let panelController = PanelViewController(configuration: configuration)
 
         panelController.sizeDelegate = self
+        panelController.animationDelegate = self
         panelController.contentViewController = PanelContentViewController(color: .clear)
 
         if self.traitCollection.userInterfaceIdiom == .pad {
