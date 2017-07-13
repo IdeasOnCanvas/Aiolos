@@ -15,11 +15,11 @@ public final class PanelViewController: UIViewController {
     private lazy var panelView: PanelView = self.makePanelView()
     private var containerView: ContainerView? { return self.viewIfLoaded as? ContainerView }
     private lazy var constraints: PanelConstraints = self.makeConstraints()
+    lazy var animator: PanelAnimator = self.makeAnimator()
 
     // MARK: - Properties
 
     public var isVisible: Bool { return self.parent != nil }
-    public var animateChanges: Bool = true
     public weak var sizeDelegate: PanelSizeDelegate?
     public weak var animationDelegate: PanelAnimationDelegate?
 
@@ -66,9 +66,8 @@ public extension PanelViewController {
         parent.view.addSubview(self.view)
         self.didMove(toParentViewController: parent)
 
-        let size = self.size(for: self.configuration.mode)
-        self.performWithoutAnimation {
-            self.constraints.activateSizeConstraints(for: size)
+        self.animator.performWithoutAnimation {
+            self.constraints.updateSizeConstraints(for: self.configuration.mode)
             self.constraints.updatePositionConstraints(for: self.configuration.position, margins: self.configuration.margins)
         }
     }
@@ -79,7 +78,6 @@ public extension PanelViewController {
         self.willMove(toParentViewController: nil)
         self.view.removeFromSuperview()
         self.removeFromParentViewController()
-        self.constraints.deactivatePositionConstraints()
     }
 }
 
@@ -97,34 +95,6 @@ internal extension PanelViewController {
         // we overwrite the height in .fullHeight mode
         let height = mode == .fullHeight ? maxSize.height : delegateSize.height
         return CGSize(width: min(delegateSize.width, maxSize.width), height: min(height, maxSize.height))
-    }
-
-    func animateIfNeeded(_ changes: () -> Void) {
-        guard self.animateChanges && self.isVisible else {
-            changes()
-            return
-        }
-
-        withoutActuallyEscaping(changes) { changes in
-            self.parent?.view.layoutIfNeeded()
-            UIView.animate(withDuration: 0.42,
-                           delay: 0.0,
-                           usingSpringWithDamping: 0.8,
-                           initialSpringVelocity: 1.0,
-                           options: [.beginFromCurrentState],
-                           animations: {
-                            changes()
-                            self.parent?.view.layoutIfNeeded()
-            })
-        }
-    }
-
-    func performWithoutAnimation(_ changes: () -> Void) {
-        let animateBefore = self.animateChanges
-        self.animateChanges = false
-        defer { self.animateChanges = animateBefore }
-
-        changes()
     }
 }
 
@@ -152,6 +122,10 @@ private extension PanelViewController {
 
     func makeConstraints() -> PanelConstraints {
         return PanelConstraints(panel: self)
+    }
+
+    func makeAnimator() -> PanelAnimator {
+        return PanelAnimator(panel: self)
     }
 }
 

@@ -9,6 +9,7 @@
 import Foundation
 
 
+/// Internal class used for managing NSLayoutConstraints of the Panel
 final class PanelConstraints {
 
     private unowned let panel: PanelViewController
@@ -25,33 +26,14 @@ final class PanelConstraints {
 
     // MARK: - PanelConstraints
 
-    func activateSizeConstraints(for size: CGSize) {
-        let widthConstraint = self.panel.view.widthAnchor.constraint(equalToConstant: size.width).configure { c in
-            c.identifier = "Panel Width"
-            c.priority = .defaultHigh
-        }
-
-        let heightConstraint = self.panel.view.heightAnchor.constraint(equalToConstant: size.height).configure { c in
-            c.identifier = "Panel Height"
-            c.priority = .defaultHigh
-        }
-
-        self.widthConstraint = widthConstraint
-        self.heightConstraint = heightConstraint
-        NSLayoutConstraint.activate([widthConstraint, heightConstraint])
-    }
-
-    func deactivatePositionConstraints() {
-        NSLayoutConstraint.deactivate(self.positionConstraints)
-        self.positionConstraints = []
-    }
-
     func updateSizeConstraints(for mode: Panel.Configuration.Mode) {
-        guard let widthConstraint = self.widthConstraint else { return }
-        guard let heightConstraint = self.heightConstraint else { return }
-
         let size = self.panel.size(for: mode)
-        self.panel.animateIfNeeded {
+        guard let widthConstraint = self.widthConstraint, let heightConstraint = self.heightConstraint else {
+            self.activateSizeConstraints(for: size)
+            return
+        }
+
+        self.panel.animator.animateIfNeeded {
             widthConstraint.constant = size.width
             heightConstraint.constant = size.height
         }
@@ -85,7 +67,7 @@ final class PanelConstraints {
             ]
         }
 
-        self.panel.animateIfNeeded {
+        self.panel.animator.animateIfNeeded {
             NSLayoutConstraint.deactivate(self.positionConstraints)
             self.positionConstraints = positionConstraints
             NSLayoutConstraint.activate(self.positionConstraints)
@@ -94,6 +76,25 @@ final class PanelConstraints {
 }
 
 // MARK: - Private
+
+private extension PanelConstraints {
+
+    func activateSizeConstraints(for size: CGSize) {
+        let widthConstraint = self.panel.view.widthAnchor.constraint(equalToConstant: size.width).configure { c in
+            c.identifier = "Panel Width"
+            c.priority = .defaultHigh
+        }
+
+        let heightConstraint = self.panel.view.heightAnchor.constraint(equalToConstant: size.height).configure { c in
+            c.identifier = "Panel Height"
+            c.priority = .defaultHigh
+        }
+
+        self.widthConstraint = widthConstraint
+        self.heightConstraint = heightConstraint
+        NSLayoutConstraint.activate([widthConstraint, heightConstraint])
+    }
+}
 
 // MARK: - NSLayoutConstraint
 
