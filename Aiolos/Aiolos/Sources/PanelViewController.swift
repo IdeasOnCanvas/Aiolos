@@ -90,12 +90,11 @@ internal extension PanelViewController {
         guard let parent = self.parent else { return .zero }
 
         let delegateSize = sizeDelegate.panel(self, sizeForMode: mode)
-        let maxSize = parent.view.bounds.insetBy(parent.view.safeAreaInsets).size
         let screen = parent.view.window?.screen ?? UIScreen.main
 
         // we overwrite the height in .fullHeight mode
-        let height = mode == .fullHeight ? screen.fixedCoordinateSpace.bounds.height : min(delegateSize.height, maxSize.height)
-        return CGSize(width: min(delegateSize.width, maxSize.width), height: height)
+        let height = mode == .fullHeight ? screen.fixedCoordinateSpace.bounds.height : delegateSize.height
+        return CGSize(width: delegateSize.width, height: height)
     }
 }
 
@@ -169,14 +168,5 @@ private extension PanelViewController {
         if oldConfiguration.position != newConfiguration.position {
             self.constraints.updatePositionConstraints(for: newConfiguration.position, margins: newConfiguration.margins)
         }
-    }
-}
-
-// MARK: - CGRect
-
-private extension CGRect {
-
-    func insetBy(_ edgeInsets: UIEdgeInsets) -> CGRect {
-        return UIEdgeInsetsInsetRect(self, edgeInsets)
     }
 }

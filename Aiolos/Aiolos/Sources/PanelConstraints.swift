@@ -58,12 +58,14 @@ final class PanelConstraints {
 
         case .leadingBottom:
             positionConstraints += [
-                view.leadingAnchor.constraint(equalTo: guide.leadingAnchor, constant: margins.left).withIdentifier("Panel Leading")
+                view.leadingAnchor.constraint(equalTo: guide.leadingAnchor, constant: margins.left).withIdentifier("Panel Leading"),
+                view.trailingAnchor.constraint(lessThanOrEqualTo: guide.trailingAnchor, constant: -margins.right).withIdentifier("Panel Trailing")
             ]
 
         case .trailingBottom:
             positionConstraints += [
-                view.trailingAnchor.constraint(equalTo: guide.trailingAnchor, constant: -margins.right).withIdentifier("Panel Trailing")
+                view.leadingAnchor.constraint(greaterThanOrEqualTo: guide.leadingAnchor, constant: margins.left).withIdentifier("Panel Leading"),
+                view.trailingAnchor.constraint(equalTo: guide.trailingAnchor, constant: -margins.right).withIdentifier("Panel Trailing"),
             ]
         }
 
