@@ -32,7 +32,7 @@ private extension ViewController {
         let configuration = Panel.Configuration.default
         let panelController = PanelViewController(configuration: configuration)
 
-        panelController.contentViewController = PanelContentViewController(color: .red)
+        panelController.contentViewController = PanelContentViewController(color: .clear)
         panelController.configuration.position = self.traitCollection.userInterfaceIdiom == .pad ? .leadingBottom : .bottom
         panelController.configuration.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
 
@@ -47,5 +47,4 @@ private extension ViewController {
             self.panelController.add(to: self)
         }
     }
-
 }

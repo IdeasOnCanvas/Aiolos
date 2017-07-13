@@ -13,7 +13,7 @@ import Foundation
 public final class PanelViewController: UIViewController {
 
     private lazy var panelView: PanelView = self.makePanelView()
-    private var containerView: ContainerView { return self.view as! ContainerView }
+    private var containerView: ContainerView? { return self.viewIfLoaded as? ContainerView }
     private var widthConstraint: NSLayoutConstraint!
     private var heightConstraint: NSLayoutConstraint!
     private var positionConstraints: [NSLayoutConstraint] = []
@@ -131,8 +131,7 @@ private extension PanelViewController {
 
     func handleConfigurationChange(from oldConfiguration: Panel.Configuration, to newConfiguration: Panel.Configuration) {
         self.panelView.configure(with: newConfiguration)
-        // TODO: this breaks, why??
-//        self.containerView.configure(with: newConfiguration)
+        self.containerView?.configure(with: newConfiguration)
 
         if oldConfiguration.mode != newConfiguration.mode {
             self.updateModeConstraints(for: newConfiguration.mode)
