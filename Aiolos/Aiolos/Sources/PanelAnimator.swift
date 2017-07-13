@@ -14,7 +14,8 @@ final class PanelAnimator {
 
     private unowned let panel: PanelViewController
 
-    var animateChanges: Bool = true
+    var animateChanges: Bool = false
+    var transitionCoordinatorQueuedAnimation: PanelTransitionCoordinator.Animation?
 
     // MARK: - Lifecycle
 
@@ -25,19 +26,32 @@ final class PanelAnimator {
     // MARK: - PanelAnimator
 
     func animateIfNeeded(_ changes: @escaping () -> Void) {
-        guard self.animateChanges && self.panel.isVisible else {
-            self.performWithoutAnimation(changes)
-            return
-        }
-
+        let shouldAnimate = self.animateChanges && self.panel.isVisible
+        let duration = shouldAnimate ? 0.42 : 0.0
         let parentView = self.panel.parent?.view
         parentView?.layoutIfNeeded()
 
-        let animator = UIViewPropertyAnimator(duration: 0.42, dampingRatio: 0.8, animations: {
+        // we might have enqueued animations from a transition coordinator, perform them along the main changes
+        let queuedAnimation = self.transitionCoordinatorQueuedAnimation?.animations
+        let wrappedChanges = {
             changes()
+            queuedAnimation?()
             parentView?.layoutIfNeeded()
+        }
+
+        let animator = UIViewPropertyAnimator(duration: duration, dampingRatio: 0.8, animations: {
+            if shouldAnimate {
+                wrappedChanges()
+            } else {
+                UIView.performWithoutAnimation(wrappedChanges)
+            }
         })
 
+        if let completion = self.transitionCoordinatorQueuedAnimation?.completion {
+            animator.addCompletion(completion)
+        }
+
+        self.transitionCoordinatorQueuedAnimation = nil
         animator.startAnimation()
     }
 
@@ -47,5 +61,12 @@ final class PanelAnimator {
         defer { self.animateChanges = animateBefore }
 
         UIView.performWithoutAnimation(changes)
+    }
+
+    func notifyDelegateOfTransition(to mode: Panel.Configuration.Mode) {
+        guard let animationDelegate = self.panel.animationDelegate else { return }
+
+        let transitionCoordinator = PanelTransitionCoordinator(animator: self)
+        animationDelegate.panel(self.panel, willTransitionTo: mode, with: transitionCoordinator)
     }
 }

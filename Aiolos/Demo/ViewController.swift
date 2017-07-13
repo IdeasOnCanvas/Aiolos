@@ -51,7 +51,12 @@ extension ViewController: PanelSizeDelegate {
 extension ViewController: PanelAnimationDelegate {
 
     func panel(_ panel: PanelViewController, willTransitionTo mode: Panel.Configuration.Mode, with coordinator: PanelTransitionCoordinator) {
-        
+        print("Will transition to \(mode)")
+        coordinator.animateAlongsideTransition({
+            print("Animating along")
+        }) { position in
+            print("Completed animation at \(position)")
+        }
     }
 }
 

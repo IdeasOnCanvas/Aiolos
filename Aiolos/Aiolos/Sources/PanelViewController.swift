@@ -161,6 +161,7 @@ private extension PanelViewController {
         self.containerView?.configure(with: newConfiguration)
 
         if oldConfiguration.mode != newConfiguration.mode {
+            self.animator.notifyDelegateOfTransition(to: newConfiguration.mode)
             self.constraints.updateSizeConstraints(for: newConfiguration.mode)
         }
 
