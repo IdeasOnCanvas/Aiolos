@@ -34,7 +34,15 @@ final class ViewController: UIViewController {
 extension ViewController: PanelSizeDelegate {
 
     func panel(_ panel: PanelViewController, sizeForMode mode: Panel.Configuration.Mode) -> CGSize {
-        return .zero
+        let width = self.traitCollection.userInterfaceIdiom == .pad ? 320.0 : 0.0
+        switch mode {
+        case .collapsed:
+            return CGSize(width: width, height: 64.0)
+        case .expanded:
+            return CGSize(width: width, height: 250.0)
+        case .fullHeight:
+            return CGSize(width: width, height: 0.0)
+        }
     }
 }
 

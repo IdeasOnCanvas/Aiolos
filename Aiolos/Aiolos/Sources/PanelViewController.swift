@@ -158,16 +158,9 @@ private extension PanelViewController {
         let delegateSize = sizeDelegate.panel(self, sizeForMode: mode)
         let maxSize = parent.view.bounds.insetBy(parent.view.safeAreaInsets).size
 
-        let width = parent.traitCollection.userInterfaceIdiom == .pad ? 320.0 : parent.view.frame.width
-
-        switch mode {
-        case .collapsed:
-            return CGSize(width: width, height: 64.0)
-        case .expanded:
-            return CGSize(width: width, height: 250.0)
-        case .fullHeight:
-            return CGSize(width: width, height: maxSize.height)
-        }
+        // we overwrite the height in .fullHeight mode
+        let height = mode == .fullHeight ? maxSize.height : delegateSize.height
+        return CGSize(width: min(delegateSize.width, maxSize.width), height: min(height, maxSize.height))
     }
 
     func updateModeConstraints(for mode: Panel.Configuration.Mode) {
