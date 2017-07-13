@@ -21,6 +21,7 @@ public final class PanelViewController: UIViewController {
     // MARK: - Properties
 
     public var isVisible: Bool { return self.parent != nil }
+    public var animateChanges: Bool = true
     public weak var sizeDelegate: PanelSizeDelegate?
     public weak var animationDelegate: PanelAnimationDelegate?
 
@@ -80,7 +81,9 @@ public extension PanelViewController {
         parent.view.addSubview(self.view)
         self.didMove(toParentViewController: parent)
 
-        self.updatePositionConstraints(for: self.configuration.position, margins: self.configuration.margins)
+        self.performWithoutAnimation {
+            self.updatePositionConstraints(for: self.configuration.position, margins: self.configuration.margins)
+        }
     }
 
     func removeFromParent() {
@@ -96,6 +99,8 @@ public extension PanelViewController {
 }
 
 // MARK: - Private
+
+// MARK: - Factory
 
 private extension PanelViewController {
 
@@ -114,6 +119,11 @@ private extension PanelViewController {
 
         return container
     }
+}
+
+// MARK: - View Controller Containment
+
+private extension PanelViewController {
 
     func updateContentViewControllerFrame(of contentViewController: UIViewController?) {
         guard let contentViewController = contentViewController else { return }
@@ -137,6 +147,11 @@ private extension PanelViewController {
             newContentViewController.didMove(toParentViewController: self)
         }
     }
+}
+
+// MARK: - Layout
+
+private extension PanelViewController {
 
     func handleConfigurationChange(from oldConfiguration: Panel.Configuration, to newConfiguration: Panel.Configuration) {
         self.panelView.configure(with: newConfiguration)
@@ -168,14 +183,14 @@ private extension PanelViewController {
         assert(self.heightConstraint != nil)
 
         let size = self.size(for: mode)
-        self.widthConstraint.constant = size.width
-        self.heightConstraint.constant = size.height
+        self.animateIfNeeded {
+            self.widthConstraint.constant = size.width
+            self.heightConstraint.constant = size.height
+        }
     }
 
     func updatePositionConstraints(for position: Panel.Configuration.Position, margins: UIEdgeInsets) {
         guard let parentView = self.parent?.view else { return }
-
-        self.view.removeConstraints(self.positionConstraints)
 
         let guide = parentView.safeAreaLayoutGuide
         var positionConstraints = [
@@ -201,8 +216,39 @@ private extension PanelViewController {
             ]
         }
 
-        self.positionConstraints = positionConstraints
-        NSLayoutConstraint.activate(self.positionConstraints)
+        self.animateIfNeeded {
+            NSLayoutConstraint.deactivate(self.positionConstraints)
+            self.positionConstraints = positionConstraints
+            NSLayoutConstraint.activate(self.positionConstraints)
+        }
+    }
+
+    func animateIfNeeded(_ changes: () -> Void) {
+        guard self.animateChanges && self.isVisible else {
+            changes()
+            return
+        }
+
+        withoutActuallyEscaping(changes) { changes in
+            self.parent?.view.layoutIfNeeded()
+            UIView.animate(withDuration: 0.42,
+                           delay: 0.0,
+                           usingSpringWithDamping: 0.8,
+                           initialSpringVelocity: 1.0,
+                           options: [.beginFromCurrentState],
+                           animations: {
+                            changes()
+                            self.parent?.view.layoutIfNeeded()
+            })
+        }
+    }
+
+    func performWithoutAnimation(_ changes: () -> Void) {
+        let animateBefore = self.animateChanges
+        self.animateChanges = false
+        defer { self.animateChanges = animateBefore }
+
+        changes()
     }
 }
 
