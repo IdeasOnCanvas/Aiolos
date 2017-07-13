@@ -14,7 +14,7 @@ final class PanelAnimator {
 
     private unowned let panel: PanelViewController
 
-    var animateChanges: Bool = false
+    var animateChanges: Bool = true
     var transitionCoordinatorQueuedAnimation: PanelTransitionCoordinator.Animation?
 
     // MARK: - Lifecycle
