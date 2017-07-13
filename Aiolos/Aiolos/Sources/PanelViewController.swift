@@ -91,10 +91,11 @@ internal extension PanelViewController {
 
         let delegateSize = sizeDelegate.panel(self, sizeForMode: mode)
         let maxSize = parent.view.bounds.insetBy(parent.view.safeAreaInsets).size
+        let screen = parent.view.window?.screen ?? UIScreen.main
 
         // we overwrite the height in .fullHeight mode
-        let height = mode == .fullHeight ? maxSize.height : delegateSize.height
-        return CGSize(width: min(delegateSize.width, maxSize.width), height: min(height, maxSize.height))
+        let height = mode == .fullHeight ? screen.fixedCoordinateSpace.bounds.height : min(delegateSize.height, maxSize.height)
+        return CGSize(width: min(delegateSize.width, maxSize.width), height: height)
     }
 }
 
