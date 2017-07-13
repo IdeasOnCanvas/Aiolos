@@ -24,25 +24,21 @@ final class PanelAnimator {
 
     // MARK: - PanelAnimator
 
-    func animateIfNeeded(_ changes: () -> Void) {
+    func animateIfNeeded(_ changes: @escaping () -> Void) {
         guard self.animateChanges && self.panel.isVisible else {
-            changes()
+            self.performWithoutAnimation(changes)
             return
         }
 
         let parentView = self.panel.parent?.view
-        withoutActuallyEscaping(changes) { changes in
+        parentView?.layoutIfNeeded()
+
+        let animator = UIViewPropertyAnimator(duration: 0.42, dampingRatio: 0.8, animations: {
+            changes()
             parentView?.layoutIfNeeded()
-            UIView.animate(withDuration: 0.42,
-                           delay: 0.0,
-                           usingSpringWithDamping: 0.8,
-                           initialSpringVelocity: 1.0,
-                           options: [.beginFromCurrentState],
-                           animations: {
-                            changes()
-                            parentView?.layoutIfNeeded()
-            })
-        }
+        })
+
+        animator.startAnimation()
     }
 
     func performWithoutAnimation(_ changes: () -> Void) {
@@ -50,6 +46,6 @@ final class PanelAnimator {
         self.animateChanges = false
         defer { self.animateChanges = animateBefore }
 
-        changes()
+        UIView.performWithoutAnimation(changes)
     }
 }

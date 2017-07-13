@@ -22,6 +22,7 @@
 		9BEB70271F16582F00EDB0C1 /* PanelContentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9BEB70261F16582F00EDB0C1 /* PanelContentViewController.swift */; };
 		9BEB70291F17715700EDB0C1 /* ContainerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9BEB70281F17715700EDB0C1 /* ContainerView.swift */; };
 		9BEB702B1F179D2A00EDB0C1 /* PanelConstraints.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9BEB702A1F179D2A00EDB0C1 /* PanelConstraints.swift */; };
+		9BEB702D1F17A2CF00EDB0C1 /* PanelAnimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9BEB702C1F17A2CF00EDB0C1 /* PanelAnimator.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -76,6 +77,7 @@
 		9BEB70261F16582F00EDB0C1 /* PanelContentViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PanelContentViewController.swift; sourceTree = "<group>"; };
 		9BEB70281F17715700EDB0C1 /* ContainerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContainerView.swift; sourceTree = "<group>"; };
 		9BEB702A1F179D2A00EDB0C1 /* PanelConstraints.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PanelConstraints.swift; sourceTree = "<group>"; };
+		9BEB702C1F17A2CF00EDB0C1 /* PanelAnimator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PanelAnimator.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -157,6 +159,7 @@
 				9B2252791F150B14006DE55D /* PanelViewController.swift */,
 				9BEB70281F17715700EDB0C1 /* ContainerView.swift */,
 				9BEB702A1F179D2A00EDB0C1 /* PanelConstraints.swift */,
+				9BEB702C1F17A2CF00EDB0C1 /* PanelAnimator.swift */,
 			);
 			path = Sources;
 			sourceTree = "<group>";
@@ -334,6 +337,7 @@
 				9B22527E1F150F39006DE55D /* PanelView.swift in Sources */,
 				9B2252821F1511FD006DE55D /* Panel.swift in Sources */,
 				9B2252781F150A8E006DE55D /* PanelDelegate.swift in Sources */,
+				9BEB702D1F17A2CF00EDB0C1 /* PanelAnimator.swift in Sources */,
 				9B2252801F151046006DE55D /* PanelConfiguration.swift in Sources */,
 				9BEB70291F17715700EDB0C1 /* ContainerView.swift in Sources */,
 				9B22527A1F150B14006DE55D /* PanelViewController.swift in Sources */,
