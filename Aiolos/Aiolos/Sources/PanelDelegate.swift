@@ -11,7 +11,13 @@ import Foundation
 
 /// The various delegates of a Panel are informed about relevant events
 
-protocol PanelAnimationDelegate: class {
+public protocol PanelSizeDelegate: class {
+
+    /// Asks the delegate for the size of the panel in a specific mode. either width or height might be ignored, based on the mode
+    func panel(_ panel: PanelViewController, sizeForMode mode: Panel.Configuration.Mode) -> CGSize
+}
+
+public protocol PanelAnimationDelegate: class {
 
     /// Tells the delegate that the `panel` is transitioning to a specific position
     func panel(_ panel: PanelViewController, willTransitionTo position: Panel.Configuration.Position, with coordinator: PanelTransitionCoordinator)

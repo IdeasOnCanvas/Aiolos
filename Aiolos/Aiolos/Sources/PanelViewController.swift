@@ -21,6 +21,8 @@ public final class PanelViewController: UIViewController {
     // MARK: - Properties
 
     public var isVisible: Bool { return self.parent != nil }
+    public weak var sizeDelegate: PanelSizeDelegate?
+    public weak var animationDelegate: PanelAnimationDelegate?
 
     public var configuration: Panel.Configuration {
         didSet {
@@ -56,8 +58,15 @@ public extension PanelViewController {
 
         // setup layout constraints
         let size = self.size(for: self.configuration.mode)
-        self.widthConstraint = self.view.widthAnchor.constraint(equalToConstant: size.width).withIdentifier("Panel Width")
-        self.heightConstraint = self.view.heightAnchor.constraint(equalToConstant: size.height).withIdentifier("Panel Height")
+
+        self.widthConstraint = self.view.widthAnchor.constraint(equalToConstant: size.width).configure { c in
+            c.identifier = "Panel Width"
+            c.priority = .defaultHigh
+        }
+        self.heightConstraint = self.view.heightAnchor.constraint(equalToConstant: size.height).configure { c in
+            c.identifier = "Panel Height"
+            c.priority = .defaultHigh
+        }
         NSLayoutConstraint.activate([self.widthConstraint, self.heightConstraint])
     }
 }
@@ -143,7 +152,11 @@ private extension PanelViewController {
     }
 
     func size(for mode: Panel.Configuration.Mode) -> CGSize {
+        guard let sizeDelegate = self.sizeDelegate else { return .zero }
         guard let parent = self.parent else { return .zero }
+
+        let delegateSize = sizeDelegate.panel(self, sizeForMode: mode)
+        let maxSize = parent.view.bounds.insetBy(parent.view.safeAreaInsets).size
 
         let width = parent.traitCollection.userInterfaceIdiom == .pad ? 320.0 : parent.view.frame.width
 
@@ -153,8 +166,7 @@ private extension PanelViewController {
         case .expanded:
             return CGSize(width: width, height: 250.0)
         case .fullHeight:
-            let height = parent.view.frame.height - 60.0
-            return CGSize(width: width, height: height)
+            return CGSize(width: width, height: maxSize.height)
         }
     }
 
@@ -172,54 +184,32 @@ private extension PanelViewController {
 
         self.view.removeConstraints(self.positionConstraints)
 
+        let guide = parentView.safeAreaLayoutGuide
+        var positionConstraints = [
+            self.view.bottomAnchor.constraint(equalTo: guide.bottomAnchor, constant: -margins.bottom).withIdentifier("Panel Bottom"),
+            self.view.topAnchor.constraint(greaterThanOrEqualTo: guide.topAnchor, constant: margins.top).withIdentifier("Panel Top")
+        ]
+
         switch position {
         case .bottom:
-            self.positionConstraints = [
-                self.view.bottomAnchor.constraint(equalTo: parentView.bottomAnchor, constant: -margins.bottom).withIdentifier("Panel Bottom"),
-                self.view.centerXAnchor.constraint(equalTo: parentView.centerXAnchor, constant: 0.0).withIdentifier("Panel Center X")
+            positionConstraints += [
+                self.view.leadingAnchor.constraint(equalTo: guide.leadingAnchor, constant: margins.left).withIdentifier("Panel Leading"),
+                self.view.trailingAnchor.constraint(equalTo: guide.trailingAnchor, constant: -margins.right).withIdentifier("Panel Trailing")
             ]
 
         case .leadingBottom:
-            self.positionConstraints = [
-                self.view.bottomAnchor.constraint(equalTo: parentView.bottomAnchor, constant: -margins.bottom).withIdentifier("Panel Bottom"),
-                self.view.leadingAnchor.constraint(equalTo: parentView.leadingAnchor, constant: margins.left).withIdentifier("Panel Leading")
+            positionConstraints += [
+                self.view.leadingAnchor.constraint(equalTo: guide.leadingAnchor, constant: margins.left).withIdentifier("Panel Leading")
             ]
 
         case .trailingBottom:
-            self.positionConstraints = [
-                self.view.bottomAnchor.constraint(equalTo: parentView.bottomAnchor, constant: -margins.bottom).withIdentifier("Panel Bottom"),
-                self.view.trailingAnchor.constraint(equalTo: parentView.trailingAnchor, constant: -margins.right).withIdentifier("Panel Trailing")
+            positionConstraints += [
+                self.view.trailingAnchor.constraint(equalTo: guide.trailingAnchor, constant: -margins.right).withIdentifier("Panel Trailing")
             ]
         }
 
+        self.positionConstraints = positionConstraints
         NSLayoutConstraint.activate(self.positionConstraints)
-    }
-}
-
-// MARK: - ContainerView
-
-private class ContainerView: UIView {
-
-    init(configuration: Panel.Configuration) {
-        super.init(frame: .zero)
-
-        self.configure(with: configuration)
-    }
-
-    required init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-
-    func configure(with configuration: Panel.Configuration) {
-        // configure shadow
-        self.layer.shadowOpacity = 0.2
-        self.layer.shadowOffset = .zero
-
-        // configure border
-        self.layer.cornerRadius = configuration.cornerRadius
-        self.layer.maskedCorners = configuration.maskedCorners
-        self.layer.borderColor = configuration.borderColor.cgColor
-        self.layer.borderWidth = 1.0 / UIScreen.main.scale
     }
 }
 
@@ -227,8 +217,23 @@ private class ContainerView: UIView {
 
 private extension NSLayoutConstraint {
 
-    func withIdentifier(_ identifier: String) -> NSLayoutConstraint {
-        self.identifier = identifier
+    func configure(_ configuration: (NSLayoutConstraint) -> Void) -> NSLayoutConstraint {
+        configuration(self)
         return self
+    }
+
+    func withIdentifier(_ identifier: String) -> NSLayoutConstraint {
+        return self.configure { c in
+            c.identifier = identifier
+        }
+    }
+}
+
+// MARK: - CGRect
+
+private extension CGRect {
+
+    func insetBy(_ edgeInsets: UIEdgeInsets) -> CGRect {
+        return UIEdgeInsetsInsetRect(self, edgeInsets)
     }
 }
