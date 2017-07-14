@@ -17,7 +17,7 @@ public final class PanelViewController: UIViewController {
     private lazy var dimmingView: UIView = self.makeDimmingView()
 
     private lazy var gestures: PanelGestures = self.makeGestures()
-    private lazy var constraints: PanelConstraints = self.makeConstraints()
+    lazy var constraints: PanelConstraints = self.makeConstraints()
     lazy var animator: PanelAnimator = self.makeAnimator()
 
     // MARK: - Properties
@@ -57,6 +57,12 @@ public extension PanelViewController {
 
     override func loadView() {
         self.view = self.makeContainer(for: self.panelView)
+    }
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+
+        self.gestures.install()
     }
 }
 

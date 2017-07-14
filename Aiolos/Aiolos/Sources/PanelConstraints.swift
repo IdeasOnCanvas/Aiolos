@@ -36,6 +36,7 @@ final class PanelConstraints {
         self.panel.animator.animateIfNeeded {
             widthConstraint.constant = size.width
             heightConstraint.constant = size.height
+            heightConstraint.isActive = true
         }
     }
 
@@ -75,6 +76,17 @@ final class PanelConstraints {
             NSLayoutConstraint.activate(self.positionConstraints)
         }
     }
+
+    func deactivateHeightConstraint() {
+        self.heightConstraint?.isActive = false
+    }
+
+    func makeHeightConstraint(with height: CGFloat) -> NSLayoutConstraint {
+        return self.panel.view.heightAnchor.constraint(equalToConstant: height).configure { c in
+            c.identifier = "Panel Height"
+            c.priority = .defaultHigh
+        }
+    }
 }
 
 // MARK: - Private
@@ -87,10 +99,7 @@ private extension PanelConstraints {
             c.priority = .defaultHigh
         }
 
-        let heightConstraint = self.panel.view.heightAnchor.constraint(equalToConstant: size.height).configure { c in
-            c.identifier = "Panel Height"
-            c.priority = .defaultHigh
-        }
+        let heightConstraint = self.makeHeightConstraint(with: size.height)
 
         self.widthConstraint = widthConstraint
         self.heightConstraint = heightConstraint
