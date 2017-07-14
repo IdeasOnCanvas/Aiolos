@@ -20,6 +20,10 @@ final class ViewController: UIViewController {
         self.title = "Aiolos Demo"
         self.view.backgroundColor = .white
 
+        let textField = UITextField(frame: CGRect(x: 10.0, y: 74.0, width: 150.0, height: 44.0))
+        textField.layer.borderWidth = 1.0
+        self.view.addSubview(textField)
+
         self.navigationItem.rightBarButtonItems = [
             UIBarButtonItem(barButtonSystemItem: .refresh, target: self, action: #selector(handleToggleVisibilityPress)),
             UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(handleToggleModePress))

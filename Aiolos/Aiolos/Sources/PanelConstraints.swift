@@ -13,6 +13,7 @@ import Foundation
 final class PanelConstraints {
 
     private unowned let panel: PanelViewController
+    private lazy var keyboardLayoutGuide: KeyboardLayoutGuide = self.makeKeyboardLayoutGuide()
 
     private var widthConstraint: NSLayoutConstraint?
     private var heightConstraint: NSLayoutConstraint?
@@ -46,7 +47,8 @@ final class PanelConstraints {
 
         let guide = parentView.safeAreaLayoutGuide
         var positionConstraints = [
-            view.bottomAnchor.constraint(equalTo: guide.bottomAnchor, constant: -margins.bottom).withIdentifier("Panel Bottom"),
+            view.bottomAnchor.constraint(lessThanOrEqualTo: guide.bottomAnchor, constant: -margins.bottom).withIdentifier("Panel Bottom"),
+            view.bottomAnchor.constraint(lessThanOrEqualTo: self.keyboardLayoutGuide.layoutGuide.bottomAnchor, constant: -margins.bottom).withIdentifier("Keyboard Bottom"),
             view.topAnchor.constraint(greaterThanOrEqualTo: guide.topAnchor, constant: margins.top).withIdentifier("Panel Top")
         ]
 
@@ -92,6 +94,12 @@ final class PanelConstraints {
 // MARK: - Private
 
 private extension PanelConstraints {
+
+    func makeKeyboardLayoutGuide() -> KeyboardLayoutGuide {
+        guard let parentView = self.panel.parent?.view else { fatalError("Must have a parent by now") }
+
+        return KeyboardLayoutGuide(parentView: parentView)
+    }
 
     func activateSizeConstraints(for size: CGSize) {
         let widthConstraint = self.panel.view.widthAnchor.constraint(equalToConstant: size.width).configure { c in

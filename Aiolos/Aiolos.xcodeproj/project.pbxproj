@@ -24,6 +24,7 @@
 		9BEB702B1F179D2A00EDB0C1 /* PanelConstraints.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9BEB702A1F179D2A00EDB0C1 /* PanelConstraints.swift */; };
 		9BEB702D1F17A2CF00EDB0C1 /* PanelAnimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9BEB702C1F17A2CF00EDB0C1 /* PanelAnimator.swift */; };
 		9BEB702F1F18F9C600EDB0C1 /* PanelGestures.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9BEB702E1F18F9C600EDB0C1 /* PanelGestures.swift */; };
+		9BEB70311F19154300EDB0C1 /* KeyboardLayoutGuide.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9BEB70301F19154300EDB0C1 /* KeyboardLayoutGuide.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -80,6 +81,7 @@
 		9BEB702A1F179D2A00EDB0C1 /* PanelConstraints.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PanelConstraints.swift; sourceTree = "<group>"; };
 		9BEB702C1F17A2CF00EDB0C1 /* PanelAnimator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PanelAnimator.swift; sourceTree = "<group>"; };
 		9BEB702E1F18F9C600EDB0C1 /* PanelGestures.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PanelGestures.swift; sourceTree = "<group>"; };
+		9BEB70301F19154300EDB0C1 /* KeyboardLayoutGuide.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardLayoutGuide.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -163,6 +165,7 @@
 				9B2252751F150995006DE55D /* PanelTransitionCoordinator.swift */,
 				9B22527D1F150F39006DE55D /* PanelView.swift */,
 				9B2252791F150B14006DE55D /* PanelViewController.swift */,
+				9BEB70301F19154300EDB0C1 /* KeyboardLayoutGuide.swift */,
 			);
 			path = Sources;
 			sourceTree = "<group>";
@@ -335,6 +338,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9BEB70311F19154300EDB0C1 /* KeyboardLayoutGuide.swift in Sources */,
 				9B2252761F150995006DE55D /* PanelTransitionCoordinator.swift in Sources */,
 				9BEB702B1F179D2A00EDB0C1 /* PanelConstraints.swift in Sources */,
 				9B22527E1F150F39006DE55D /* PanelView.swift in Sources */,
