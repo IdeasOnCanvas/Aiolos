@@ -14,6 +14,9 @@ public final class PanelViewController: UIViewController {
 
     private lazy var panelView: PanelView = self.makePanelView()
     private var containerView: ContainerView? { return self.viewIfLoaded as? ContainerView }
+    private lazy var dimmingView: UIView = self.makeDimmingView()
+
+    private lazy var gestures: PanelGestures = self.makeGestures()
     private lazy var constraints: PanelConstraints = self.makeConstraints()
     lazy var animator: PanelAnimator = self.makeAnimator()
 
@@ -118,6 +121,17 @@ private extension PanelViewController {
         container.translatesAutoresizingMaskIntoConstraints = false
 
         return container
+    }
+
+    func makeDimmingView() -> UIView {
+        let view = UIView()
+        view.backgroundColor = UIColor(white: 0.0, alpha: 0.4)
+        view.alpha = 0.0
+        return view
+    }
+
+    func makeGestures() -> PanelGestures {
+        return PanelGestures(panel: self)
     }
 
     func makeConstraints() -> PanelConstraints {

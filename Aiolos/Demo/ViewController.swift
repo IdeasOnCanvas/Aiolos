@@ -67,10 +67,12 @@ private extension ViewController {
     func makePanelController() -> PanelViewController {
         let configuration = Panel.Configuration.default
         let panelController = PanelViewController(configuration: configuration)
+        let contentNavigationController = UINavigationController(rootViewController: PanelContentViewController(color: .clear))
+        contentNavigationController.setToolbarHidden(false, animated: false)
 
         panelController.sizeDelegate = self
         panelController.animationDelegate = self
-        panelController.contentViewController = PanelContentViewController(color: .clear)
+        panelController.contentViewController = contentNavigationController
 
         if self.traitCollection.userInterfaceIdiom == .pad {
             panelController.configuration.position = .trailingBottom

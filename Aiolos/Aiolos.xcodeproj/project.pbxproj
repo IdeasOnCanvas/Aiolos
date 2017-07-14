@@ -23,6 +23,7 @@
 		9BEB70291F17715700EDB0C1 /* ContainerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9BEB70281F17715700EDB0C1 /* ContainerView.swift */; };
 		9BEB702B1F179D2A00EDB0C1 /* PanelConstraints.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9BEB702A1F179D2A00EDB0C1 /* PanelConstraints.swift */; };
 		9BEB702D1F17A2CF00EDB0C1 /* PanelAnimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9BEB702C1F17A2CF00EDB0C1 /* PanelAnimator.swift */; };
+		9BEB702F1F18F9C600EDB0C1 /* PanelGestures.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9BEB702E1F18F9C600EDB0C1 /* PanelGestures.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -78,6 +79,7 @@
 		9BEB70281F17715700EDB0C1 /* ContainerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContainerView.swift; sourceTree = "<group>"; };
 		9BEB702A1F179D2A00EDB0C1 /* PanelConstraints.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PanelConstraints.swift; sourceTree = "<group>"; };
 		9BEB702C1F17A2CF00EDB0C1 /* PanelAnimator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PanelAnimator.swift; sourceTree = "<group>"; };
+		9BEB702E1F18F9C600EDB0C1 /* PanelGestures.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PanelGestures.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -151,15 +153,16 @@
 		9B22527B1F150B21006DE55D /* Sources */ = {
 			isa = PBXGroup;
 			children = (
+				9BEB70281F17715700EDB0C1 /* ContainerView.swift */,
 				9B2252811F1511FD006DE55D /* Panel.swift */,
+				9BEB702C1F17A2CF00EDB0C1 /* PanelAnimator.swift */,
 				9B22527F1F151046006DE55D /* PanelConfiguration.swift */,
+				9BEB702A1F179D2A00EDB0C1 /* PanelConstraints.swift */,
 				9B2252771F150A8E006DE55D /* PanelDelegate.swift */,
+				9BEB702E1F18F9C600EDB0C1 /* PanelGestures.swift */,
 				9B2252751F150995006DE55D /* PanelTransitionCoordinator.swift */,
 				9B22527D1F150F39006DE55D /* PanelView.swift */,
 				9B2252791F150B14006DE55D /* PanelViewController.swift */,
-				9BEB70281F17715700EDB0C1 /* ContainerView.swift */,
-				9BEB702A1F179D2A00EDB0C1 /* PanelConstraints.swift */,
-				9BEB702C1F17A2CF00EDB0C1 /* PanelAnimator.swift */,
 			);
 			path = Sources;
 			sourceTree = "<group>";
@@ -340,6 +343,7 @@
 				9BEB702D1F17A2CF00EDB0C1 /* PanelAnimator.swift in Sources */,
 				9B2252801F151046006DE55D /* PanelConfiguration.swift in Sources */,
 				9BEB70291F17715700EDB0C1 /* ContainerView.swift in Sources */,
+				9BEB702F1F18F9C600EDB0C1 /* PanelGestures.swift in Sources */,
 				9B22527A1F150B14006DE55D /* PanelViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

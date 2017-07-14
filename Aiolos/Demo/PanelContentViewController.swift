@@ -17,6 +17,7 @@ final class PanelContentViewController: UIViewController {
     init(color: UIColor) {
         self.color = color
         super.init(nibName: nil, bundle: nil)
+        self.title = "Content"
     }
     
     required init?(coder aDecoder: NSCoder) {

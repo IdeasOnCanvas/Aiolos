@@ -26,33 +26,28 @@ final class PanelAnimator {
     // MARK: - PanelAnimator
 
     func animateIfNeeded(_ changes: @escaping () -> Void) {
-        let shouldAnimate = self.animateChanges && self.panel.isVisible
-        let duration = shouldAnimate ? 0.42 : 0.0
         let parentView = self.panel.parent?.view
         parentView?.layoutIfNeeded()
 
-        // we might have enqueued animations from a transition coordinator, perform them along the main changes
-        let queuedAnimation = self.transitionCoordinatorQueuedAnimation?.animations
-        let wrappedChanges = {
+        let animator = UIViewPropertyAnimator(duration: 0.42, dampingRatio: 0.8, animations: {
             changes()
-            queuedAnimation?()
             parentView?.layoutIfNeeded()
-        }
-
-        let animator = UIViewPropertyAnimator(duration: duration, dampingRatio: 0.8, animations: {
-            if shouldAnimate {
-                wrappedChanges()
-            } else {
-                UIView.performWithoutAnimation(wrappedChanges)
-            }
         })
 
-        if let completion = self.transitionCoordinatorQueuedAnimation?.completion {
-            animator.addCompletion(completion)
+        // we might have enqueued animations from a transition coordinator, perform them along the main changes
+        if let transitionCoordinatorQueuedAnimation = self.transitionCoordinatorQueuedAnimation {
+            animator.addAnimations(transitionCoordinatorQueuedAnimation.animations)
+            transitionCoordinatorQueuedAnimation.completion.map(animator.addCompletion)
+            self.transitionCoordinatorQueuedAnimation = nil
         }
 
-        self.transitionCoordinatorQueuedAnimation = nil
         animator.startAnimation()
+
+        // if we don't want to animate, perform changes without directly
+        let shouldAnimate = self.animateChanges && self.panel.isVisible
+        if shouldAnimate == false {
+            animator.fractionComplete = 1.0
+        }
     }
 
     func performWithoutAnimation(_ changes: () -> Void) {
