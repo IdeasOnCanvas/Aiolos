@@ -13,7 +13,7 @@ import Foundation
 final class PanelGestures {
 
     private let panel: PanelViewController
-    private var modeWhenPanStarted: Panel.Configuration.Mode?
+    private var originalConfiguration: PanelGestures.Configuration?
 
     // MARK: - Lifecycle
 
@@ -32,6 +32,11 @@ final class PanelGestures {
 // MARK: - Private
 
 private extension PanelGestures {
+
+    struct Configuration {
+        let mode: Panel.Configuration.Mode
+        let size: CGSize
+    }
 
     @objc
     func handlePan(_ pan: UIPanGestureRecognizer) {
@@ -52,10 +57,11 @@ private extension PanelGestures {
     func handlePanStarted(_ pan: UIPanGestureRecognizer) {
         guard let heightConstraint = self.panel.constraints.heightConstraint else { return }
 
+        let configuration = PanelGestures.Configuration(mode: self.panel.configuration.mode, size: self.panel.view.frame.size)
         // remember initial state
-        self.modeWhenPanStarted = self.panel.configuration.mode
+        self.originalConfiguration = configuration
         // the normal height constraint for .fullHeight can have a higher constant, but the actual height is constrained by the safeAreaInsets
-        heightConstraint.constant = self.panel.view.frame.height
+        heightConstraint.constant = configuration.size.height
     }
 
     func handlePanChanged(_ pan: UIPanGestureRecognizer) {
@@ -85,30 +91,48 @@ private extension PanelGestures {
     }
 
     func handlePanCanceled(_ pan: UIPanGestureRecognizer) {
-        guard let modeWhenPanStarted = self.modeWhenPanStarted else { return }
+        guard let originalMode = self.originalConfiguration?.mode else { return }
 
-        self.panel.constraints.updateSizeConstraints(for: modeWhenPanStarted)
+        self.panel.constraints.updateSizeConstraints(for: originalMode)
         self.cleanup()
     }
 
     func targetMode(for pan: UIPanGestureRecognizer) -> Panel.Configuration.Mode {
-        guard let heightConstraint = self.panel.constraints.heightConstraint else { return .expanded }
+        guard let originalConfiguration = self.originalConfiguration else { return .expanded }
+        guard let heightConstraint = self.panel.constraints.heightConstraint else { return originalConfiguration.mode }
 
-        // TODO: Take velocity + translation into account
-        let currentHeight = heightConstraint.constant
-        let heightCollapsed = self.panel.size(for: .collapsed).height
+        let minVelocity: CGFloat = 20.0
+        let velocity = pan.velocity(in: self.panel.view).y
         let heightExpanded = self.panel.size(for: .expanded).height
+        let currentHeight = heightConstraint.constant
 
-        if abs(currentHeight - heightCollapsed) < 100.0 {
-            return .collapsed
-        } else if abs(currentHeight - heightExpanded) < 100.0 {
-            return .expanded
-        } else {
+        let isMovingUpwards = velocity < -minVelocity
+        let isMovingDownwards = velocity > minVelocity
+
+        // moving upwards + current size > .expanded -> grow to .fullHeight
+        if currentHeight >= heightExpanded && isMovingUpwards { return .fullHeight }
+        // moving downwards + current size < .expanded -> shrink to .collapsed
+        if currentHeight <= heightExpanded && isMovingDownwards { return .collapsed }
+        // moving upwards + current size < .expanded -> grow to .expanded
+        if currentHeight <= heightExpanded && isMovingUpwards { return .expanded }
+        // moving downwards + current size > .expanded -> shrink to .expanded
+        if currentHeight >= heightExpanded && isMovingDownwards { return .expanded }
+
+        // velocity was too small to count as "movement"
+        assert(isMovingUpwards == false && isMovingDownwards == false)
+        // -> check distance from .expanded mode
+        let diffToExpanded = currentHeight - heightExpanded
+
+        if diffToExpanded > 100.0 {
             return .fullHeight
+        } else if diffToExpanded < -100.0 {
+            return .collapsed
+        } else {
+            return .expanded
         }
     }
 
     func cleanup() {
-        self.modeWhenPanStarted = nil
+        self.originalConfiguration = nil
     }
 }
