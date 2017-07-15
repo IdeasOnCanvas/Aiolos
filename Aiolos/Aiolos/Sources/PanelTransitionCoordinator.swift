@@ -15,6 +15,10 @@ public final class PanelTransitionCoordinator {
 
     private unowned let animator: PanelAnimator
 
+    // MARK: - Properties
+
+    public var isAnimated: Bool { return self.animator.animateChanges }
+
     // MARK: - Lifecycle
 
     init(animator: PanelAnimator) {

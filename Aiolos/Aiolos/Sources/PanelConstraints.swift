@@ -27,8 +27,7 @@ final class PanelConstraints {
 
     // MARK: - PanelConstraints
 
-    func updateSizeConstraints(for mode: Panel.Configuration.Mode) {
-        let size = self.panel.size(for: mode)
+    func updateSizeConstraints(for size: CGSize) {
         guard let widthConstraint = self.widthConstraint, let heightConstraint = self.heightConstraint else {
             self.activateSizeConstraints(for: size)
             return

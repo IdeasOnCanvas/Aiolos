@@ -50,25 +50,25 @@ final class PanelAnimator {
 
         animator.startAnimation()
 
-        // if we don't want to animate, perform changes without directly
+        // if we don't want to animate, perform changes directly by setting the completion state to 100 %
         let shouldAnimate = self.animateChanges && self.panel.isVisible
         if shouldAnimate == false {
             animator.fractionComplete = 1.0
         }
     }
 
-    func performWithoutAnimation(_ changes: () -> Void) {
+    func performWithoutAnimation(_ changes: @escaping () -> Void) {
         let animateBefore = self.animateChanges
         self.animateChanges = false
         defer { self.animateChanges = animateBefore }
 
-        UIView.performWithoutAnimation(changes)
+        self.animateIfNeeded(changes)
     }
 
-    func notifyDelegateOfTransition(to mode: Panel.Configuration.Mode) {
+    func notifyDelegateOfTransition(to size: CGSize) {
         guard let animationDelegate = self.panel.animationDelegate else { return }
 
         let transitionCoordinator = PanelTransitionCoordinator(animator: self)
-        animationDelegate.panel(self.panel, willTransitionTo: mode, with: transitionCoordinator)
+        animationDelegate.panel(self.panel, willTransitionTo: size, with: transitionCoordinator)
     }
 }

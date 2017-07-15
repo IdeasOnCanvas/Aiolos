@@ -13,6 +13,7 @@ import Aiolos
 final class ViewController: UIViewController {
 
     private lazy var panelController: PanelViewController = self.makePanelController()
+    private lazy var lineView: UIView = self.makeLineView()
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -24,6 +25,7 @@ final class ViewController: UIViewController {
         textField.layer.borderWidth = 1.0
         textField.delegate = self
         self.view.addSubview(textField)
+        self.view.addSubview(self.lineView)
 
         self.navigationItem.rightBarButtonItems = [
             UIBarButtonItem(barButtonSystemItem: .refresh, target: self, action: #selector(handleToggleVisibilityPress)),
@@ -65,13 +67,11 @@ extension ViewController: PanelSizeDelegate {
 
 extension ViewController: PanelAnimationDelegate {
 
-    func panel(_ panel: PanelViewController, willTransitionTo mode: Panel.Configuration.Mode, with coordinator: PanelTransitionCoordinator) {
-        print("Will transition to \(mode)")
+    func panel(_ panel: PanelViewController, willTransitionTo size: CGSize, with coordinator: PanelTransitionCoordinator) {
+        print("Will transition to \(size), animated: \(coordinator.isAnimated)")
         coordinator.animateAlongsideTransition({
-            print("Animating along")
-        }) { position in
-            print("Completed animation at \(position)")
-        }
+            self.lineView.center = CGPoint(x: panel.view.center.x, y: panel.view.frame.minY - 5.0)
+        })
     }
 }
 
@@ -100,6 +100,12 @@ private extension ViewController {
         }
 
         return panelController
+    }
+
+    func makeLineView() -> UIView {
+        let view = UIView(frame: CGRect(x: 0.0, y: 0.0, width: 100.0, height: 1.0))
+        view.backgroundColor = .red
+        return view
     }
 
     @objc

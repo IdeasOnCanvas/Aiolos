@@ -81,8 +81,10 @@ public extension PanelViewController {
         parent.view.addSubview(self.view)
         self.didMove(toParentViewController: parent)
 
+        let size = self.size(for: self.configuration.mode)
         self.animator.performWithoutAnimation {
-            self.constraints.updateSizeConstraints(for: self.configuration.mode)
+            self.animator.notifyDelegateOfTransition(to: size)
+            self.constraints.updateSizeConstraints(for: size)
             self.constraints.updatePositionConstraints(for: self.configuration.position, margins: self.configuration.margins)
         }
     }
@@ -184,8 +186,9 @@ private extension PanelViewController {
         self.containerView?.configure(with: newConfiguration)
 
         if oldConfiguration.mode != newConfiguration.mode {
-            self.animator.notifyDelegateOfTransition(to: newConfiguration.mode)
-            self.constraints.updateSizeConstraints(for: newConfiguration.mode)
+            let size = self.size(for: newConfiguration.mode)
+            self.animator.notifyDelegateOfTransition(to: size)
+            self.constraints.updateSizeConstraints(for: size)
         }
 
         if oldConfiguration.position != newConfiguration.position {

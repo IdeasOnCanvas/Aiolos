@@ -48,6 +48,7 @@ private extension PanelGestures {
     struct Configuration {
         let mode: Panel.Configuration.Mode
         let size: CGSize
+        let animateChanges: Bool
     }
 
     @objc
@@ -69,9 +70,12 @@ private extension PanelGestures {
     func handlePanStarted(_ pan: UIPanGestureRecognizer) {
         guard let heightConstraint = self.panel.constraints.heightConstraint else { return }
 
-        let configuration = PanelGestures.Configuration(mode: self.panel.configuration.mode, size: self.panel.view.frame.size)
+        let configuration = PanelGestures.Configuration(mode: self.panel.configuration.mode,
+                                                        size: self.panel.view.frame.size,
+                                                        animateChanges: self.panel.animator.animateChanges)
         // remember initial state
         self.originalConfiguration = configuration
+        self.panel.animator.animateChanges = false
         // the normal height constraint for .fullHeight can have a higher constant, but the actual height is constrained by the safeAreaInsets
         heightConstraint.constant = configuration.size.height
     }
@@ -82,34 +86,35 @@ private extension PanelGestures {
         let translation = pan.translation(in: self.panel.view)
         pan.setTranslation(.zero, in: self.panel.view)
 
-        // TODO: notify delegate during resizing
-        heightConstraint.constant -= translation.y
-        self.panel.parent?.view.layoutIfNeeded()
+        self.panel.animator.animateIfNeeded {
+            heightConstraint.constant -= translation.y
+            self.panel.animator.notifyDelegateOfTransition(to: CGSize(width: self.panel.view.frame.width, height: heightConstraint.constant))
+        }
     }
 
     func handlePanEnded(_ pan: UIPanGestureRecognizer) {
         let targetMode = self.targetMode(for: pan)
+        let size = self.panel.size(for: targetMode)
         let initialVelocity = self.initialVelocity(for: pan, targetMode: targetMode)
 
+        self.cleanup()
         UIView.animate(withDuration: PanelAnimator.Constants.Animation.duration,
                        delay: 0.0,
                        usingSpringWithDamping: PanelAnimator.Constants.Animation.damping,
                        initialSpringVelocity: initialVelocity,
                        options: [.curveLinear],
                        animations: {
-                         self.panel.constraints.updateSizeConstraints(for: targetMode)
-                       }, completion: { _ in
-                         self.panel.configuration.mode = targetMode
+                        self.panel.constraints.updateSizeConstraints(for: size)
+        }, completion: { _ in
+            self.panel.configuration.mode = targetMode
         })
-
-        self.cleanup()
     }
 
     func handlePanCanceled(_ pan: UIPanGestureRecognizer) {
-        guard let originalMode = self.originalConfiguration?.mode else { return }
+        guard let originalSize = self.originalConfiguration?.size else { return }
 
-        self.panel.constraints.updateSizeConstraints(for: originalMode)
         self.cleanup()
+        self.panel.constraints.updateSizeConstraints(for: originalSize)
     }
 
     func targetMode(for pan: UIPanGestureRecognizer) -> Panel.Configuration.Mode {
@@ -160,6 +165,9 @@ private extension PanelGestures {
     }
 
     func cleanup() {
+        guard let originalConfiguration = self.originalConfiguration else { return }
+
+        self.panel.animator.animateChanges = originalConfiguration.animateChanges
         self.originalConfiguration = nil
     }
 
