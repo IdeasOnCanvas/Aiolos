@@ -16,8 +16,8 @@ final class PanelConstraints {
     private lazy var keyboardLayoutGuide: KeyboardLayoutGuide = self.makeKeyboardLayoutGuide()
 
     private var widthConstraint: NSLayoutConstraint?
-    private var heightConstraint: NSLayoutConstraint?
     private var positionConstraints: [NSLayoutConstraint] = []
+    var heightConstraint: NSLayoutConstraint?
 
     // MARK: - Lifecycle
 
@@ -37,7 +37,6 @@ final class PanelConstraints {
         self.panel.animator.animateIfNeeded {
             widthConstraint.constant = size.width
             heightConstraint.constant = size.height
-            heightConstraint.isActive = true
         }
     }
 
@@ -48,7 +47,7 @@ final class PanelConstraints {
         let guide = parentView.safeAreaLayoutGuide
         var positionConstraints = [
             view.bottomAnchor.constraint(lessThanOrEqualTo: guide.bottomAnchor, constant: -margins.bottom).withIdentifier("Panel Bottom"),
-            view.bottomAnchor.constraint(lessThanOrEqualTo: self.keyboardLayoutGuide.layoutGuide.bottomAnchor, constant: -margins.bottom).withIdentifier("Keyboard Bottom"),
+            view.bottomAnchor.constraint(lessThanOrEqualTo: self.keyboardLayoutGuide.topGuide.bottomAnchor, constant: -margins.bottom).withIdentifier("Keyboard Bottom"),
             view.topAnchor.constraint(greaterThanOrEqualTo: guide.topAnchor, constant: margins.top).withIdentifier("Panel Top")
         ]
 
@@ -78,17 +77,6 @@ final class PanelConstraints {
             NSLayoutConstraint.activate(self.positionConstraints)
         }
     }
-
-    func deactivateHeightConstraint() {
-        self.heightConstraint?.isActive = false
-    }
-
-    func makeHeightConstraint(with height: CGFloat) -> NSLayoutConstraint {
-        return self.panel.view.heightAnchor.constraint(equalToConstant: height).configure { c in
-            c.identifier = "Panel Height"
-            c.priority = .defaultHigh
-        }
-    }
 }
 
 // MARK: - Private
@@ -107,7 +95,10 @@ private extension PanelConstraints {
             c.priority = .defaultHigh
         }
 
-        let heightConstraint = self.makeHeightConstraint(with: size.height)
+        let heightConstraint = self.panel.view.heightAnchor.constraint(equalToConstant: size.height).configure { c in
+            c.identifier = "Panel Height"
+            c.priority = .defaultHigh
+        }
 
         self.widthConstraint = widthConstraint
         self.heightConstraint = heightConstraint

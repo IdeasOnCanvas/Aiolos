@@ -14,7 +14,6 @@ final class PanelGestures {
 
     private let panel: PanelViewController
     private var modeWhenPanStarted: Panel.Configuration.Mode?
-    private var panHeightConstraint: NSLayoutConstraint?
 
     // MARK: - Lifecycle
 
@@ -51,25 +50,23 @@ private extension PanelGestures {
     }
 
     func handlePanStarted(_ pan: UIPanGestureRecognizer) {
+        guard let heightConstraint = self.panel.constraints.heightConstraint else { return }
+
         // remember initial state
         self.modeWhenPanStarted = self.panel.configuration.mode
-        // install temporary height constraint during panning
-        self.panel.constraints.deactivateHeightConstraint()
-        let heightConstraint = self.panel.constraints.makeHeightConstraint(with: self.panel.view.frame.height)
-        heightConstraint.isActive = true
-        self.panHeightConstraint = heightConstraint
+        // the normal height constraint for .fullHeight can have a higher constant, but the actual height is constrained by the safeAreaInsets
+        heightConstraint.constant = self.panel.view.frame.height
     }
 
     func handlePanChanged(_ pan: UIPanGestureRecognizer) {
-        guard let panHeightConstraint = self.panHeightConstraint else { return }
+        guard let heightConstraint = self.panel.constraints.heightConstraint else { return }
 
         let translation = pan.translation(in: self.panel.view)
         pan.setTranslation(.zero, in: self.panel.view)
 
         // TODO: notify delegate during resizing
-        panHeightConstraint.constant -= translation.y
+        heightConstraint.constant -= translation.y
         self.panel.parent?.view.layoutIfNeeded()
-
     }
 
     func handlePanEnded(_ pan: UIPanGestureRecognizer) {
@@ -80,7 +77,9 @@ private extension PanelGestures {
 //        self.panAnimator?.continueAnimation(withTimingParameters: spring, durationFactor: 1.0)
 
         // TODO: animate with correct springs
-        self.panel.configuration.mode = self.targetMode(for: pan)
+        let targetMode = self.targetMode(for: pan)
+        self.panel.constraints.updateSizeConstraints(for: targetMode)
+        self.panel.configuration.mode = targetMode
 
         self.cleanup()
     }
@@ -93,10 +92,10 @@ private extension PanelGestures {
     }
 
     func targetMode(for pan: UIPanGestureRecognizer) -> Panel.Configuration.Mode {
-        guard let panHeightConstraint = self.panHeightConstraint else { return .expanded }
+        guard let heightConstraint = self.panel.constraints.heightConstraint else { return .expanded }
 
         // TODO: Take velocity + translation into account
-        let currentHeight = panHeightConstraint.constant
+        let currentHeight = heightConstraint.constant
         let heightCollapsed = self.panel.size(for: .collapsed).height
         let heightExpanded = self.panel.size(for: .expanded).height
 
@@ -110,8 +109,6 @@ private extension PanelGestures {
     }
 
     func cleanup() {
-        self.panHeightConstraint?.isActive = false
-        self.panHeightConstraint = nil
         self.modeWhenPanStarted = nil
     }
 }
