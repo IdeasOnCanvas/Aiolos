@@ -64,6 +64,12 @@ public extension PanelViewController {
 
         self.gestures.install()
     }
+
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+
+        self.panelView.frame = self.view.bounds
+    }
 }
 
 // MARK: - PanelViewController
@@ -120,11 +126,8 @@ private extension PanelViewController {
     func makeContainer(for view: UIView) -> UIView {
         let container = ContainerView(configuration: self.configuration)
 
-        // create view hierachy
-        view.frame = container.bounds
-        view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-        container.addSubview(view)
         container.translatesAutoresizingMaskIntoConstraints = false
+        container.addSubview(view)
 
         return container
     }

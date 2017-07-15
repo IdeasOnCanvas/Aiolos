@@ -10,7 +10,7 @@ import Foundation
 
 
 /// Manages Gestures added to the Panel
-final class PanelGestures {
+final class PanelGestures: NSObject {
 
     private let panel: PanelViewController
     private var originalConfiguration: PanelGestures.Configuration?
@@ -25,7 +25,19 @@ final class PanelGestures {
 
     func install() {
         let pan = UIPanGestureRecognizer(target: self, action: #selector(handlePan))
+        pan.delegate = self
         self.panel.view.addGestureRecognizer(pan)
+    }
+}
+
+extension PanelGestures: UIGestureRecognizerDelegate {
+
+    func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
+        guard let contentViewController = self.panel.contentViewController else { return true }
+
+        // TODO: allow content pans, when scrolled to top
+        // TODO: disallow pans on buttons?
+        return self.gestureRecognizer(gestureRecognizer, isWithinNonSafeAreaOf: contentViewController)
     }
 }
 
@@ -149,5 +161,18 @@ private extension PanelGestures {
 
     func cleanup() {
         self.originalConfiguration = nil
+    }
+
+    // allow pan gestures to be triggered within non-safe area on top (UINavigationBar)
+    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, isWithinNonSafeAreaOf contentViewController: UIViewController) -> Bool {
+        let safeAreaTop: CGFloat
+        if let navigationController = contentViewController as? UINavigationController, let topViewController = navigationController.topViewController {
+            safeAreaTop = topViewController.view.safeAreaInsets.top
+        } else {
+            safeAreaTop = 0.0
+        }
+
+        let location = gestureRecognizer.location(in: self.panel.view)
+        return location.y < safeAreaTop
     }
 }
