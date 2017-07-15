@@ -76,16 +76,19 @@ private extension PanelGestures {
     }
 
     func handlePanEnded(_ pan: UIPanGestureRecognizer) {
-//        let velocity = pan.velocity(in: self.panel.view)
-//        let initialVelocity = CGVector(dx: velocity.x / 100.0, dy: velocity.y / 100.0)
-//        let spring = UISpringTimingParameters(dampingRatio: 0.8, initialVelocity: initialVelocity)
-//
-//        self.panAnimator?.continueAnimation(withTimingParameters: spring, durationFactor: 1.0)
-
-        // TODO: animate with correct springs
         let targetMode = self.targetMode(for: pan)
-        self.panel.constraints.updateSizeConstraints(for: targetMode)
-        self.panel.configuration.mode = targetMode
+        let initialVelocity = self.initialVelocity(for: pan, targetMode: targetMode)
+
+        UIView.animate(withDuration: PanelAnimator.Constants.Animation.duration,
+                       delay: 0.0,
+                       usingSpringWithDamping: PanelAnimator.Constants.Animation.damping,
+                       initialSpringVelocity: initialVelocity,
+                       options: [.curveLinear],
+                       animations: {
+                         self.panel.constraints.updateSizeConstraints(for: targetMode)
+                       }, completion: { _ in
+                         self.panel.configuration.mode = targetMode
+        })
 
         self.cleanup()
     }
@@ -130,6 +133,18 @@ private extension PanelGestures {
         } else {
             return .expanded
         }
+    }
+
+    func initialVelocity(for pan: UIPanGestureRecognizer, targetMode: Panel.Configuration.Mode) -> CGFloat {
+        guard let heightConstraint = self.panel.constraints.heightConstraint else { return 0.0 }
+
+        let velocity = pan.velocity(in: self.panel.view).y
+        let currentHeight = heightConstraint.constant
+        let targetHeight = self.panel.size(for: targetMode).height
+
+        let distance = targetHeight - currentHeight
+        let relativeDistance = velocity / distance
+        return relativeDistance / CGFloat(PanelAnimator.Constants.Animation.duration)
     }
 
     func cleanup() {
