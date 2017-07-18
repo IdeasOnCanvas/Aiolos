@@ -33,6 +33,7 @@ public extension Panel {
         public var cornerRadius: CGFloat
         public var maskedCorners: CACornerMask
         public var borderColor: UIColor
+        public var resizeHandleColor: UIColor
     }
 }
 
@@ -45,6 +46,7 @@ public extension Panel.Configuration {
                                    margins: UIEdgeInsets(top: 10.0, left: 10.0, bottom: 0.0, right: 10.0),
                                    cornerRadius: 10.0,
                                    maskedCorners: [.layerMinXMinYCorner, .layerMinXMaxYCorner, .layerMaxXMinYCorner, .layerMaxXMaxYCorner],
-                                   borderColor: UIColor.gray.withAlphaComponent(0.5))
+                                   borderColor: UIColor.gray.withAlphaComponent(0.5),
+                                   resizeHandleColor: UIColor.gray.withAlphaComponent(0.5))
     }
 }

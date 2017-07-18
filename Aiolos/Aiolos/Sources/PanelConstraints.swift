@@ -94,6 +94,7 @@ private extension PanelConstraints {
             c.priority = .defaultHigh
         }
 
+        let minHeightConstraint = self.panel.view.heightAnchor.constraint(greaterThanOrEqualToConstant: 44.0).withIdentifier("Panel Min Height")
         let heightConstraint = self.panel.view.heightAnchor.constraint(equalToConstant: size.height).configure { c in
             c.identifier = "Panel Height"
             c.priority = .defaultHigh
@@ -101,7 +102,7 @@ private extension PanelConstraints {
 
         self.widthConstraint = widthConstraint
         self.heightConstraint = heightConstraint
-        NSLayoutConstraint.activate([widthConstraint, heightConstraint])
+        NSLayoutConstraint.activate([widthConstraint, heightConstraint, minHeightConstraint])
     }
 }
 

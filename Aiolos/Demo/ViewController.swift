@@ -80,9 +80,9 @@ extension ViewController: PanelAnimationDelegate {
 
     func panel(_ panel: PanelViewController, willTransitionTo size: CGSize, with coordinator: PanelTransitionCoordinator) {
         // print("Will transition to \(size), animated: \(coordinator.isAnimated)")
-        coordinator.animateAlongsideTransition({
-            self.lineView.center = CGPoint(x: panel.view.center.x, y: panel.view.frame.minY - 5.0)
-        })
+//        coordinator.animateAlongsideTransition({
+//            self.lineView.center = CGPoint(x: panel.view.center.x, y: panel.view.frame.minY - 5.0)
+//        })
     }
 }
 

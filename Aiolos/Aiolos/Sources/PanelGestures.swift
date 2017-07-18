@@ -75,9 +75,12 @@ private extension PanelGestures {
                                                         animateChanges: self.panel.animator.animateChanges)
         // remember initial state
         self.originalConfiguration = configuration
+        self.panel.resizeHandle.isResizing = true
         self.panel.animator.animateChanges = false
-        // the normal height constraint for .fullHeight can have a higher constant, but the actual height is constrained by the safeAreaInsets
-        heightConstraint.constant = configuration.size.height
+        self.panel.animator.performWithoutAnimation {
+            // the normal height constraint for .fullHeight can have a higher constant, but the actual height is constrained by the safeAreaInsets
+            heightConstraint.constant = configuration.size.height
+        }
     }
 
     func handlePanChanged(_ pan: PanGestureRecognizer) {
@@ -167,6 +170,7 @@ private extension PanelGestures {
     func cleanup() {
         guard let originalConfiguration = self.originalConfiguration else { return }
 
+        self.panel.resizeHandle.isResizing = false
         self.panel.animator.animateChanges = originalConfiguration.animateChanges
         self.originalConfiguration = nil
     }

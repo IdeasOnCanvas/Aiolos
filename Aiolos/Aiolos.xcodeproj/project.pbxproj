@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		9B22095E1F1E1C1400BD4E72 /* PanGestureRecognizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B22095D1F1E1C1400BD4E72 /* PanGestureRecognizer.swift */; };
+		9B2209601F1E4CC700BD4E72 /* ResizeHandle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B22095F1F1E4CC700BD4E72 /* ResizeHandle.swift */; };
 		9B2252331F15089C006DE55D /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B2252321F15089C006DE55D /* AppDelegate.swift */; };
 		9B2252351F15089C006DE55D /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B2252341F15089C006DE55D /* ViewController.swift */; };
 		9B22523A1F15089C006DE55D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9B2252391F15089C006DE55D /* Assets.xcassets */; };
@@ -61,6 +62,7 @@
 
 /* Begin PBXFileReference section */
 		9B22095D1F1E1C1400BD4E72 /* PanGestureRecognizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PanGestureRecognizer.swift; sourceTree = "<group>"; };
+		9B22095F1F1E4CC700BD4E72 /* ResizeHandle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResizeHandle.swift; sourceTree = "<group>"; };
 		9B22522F1F15089C006DE55D /* AiolosDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AiolosDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		9B2252321F15089C006DE55D /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		9B2252341F15089C006DE55D /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -169,6 +171,7 @@
 				9B2252791F150B14006DE55D /* PanelViewController.swift */,
 				9BEB70301F19154300EDB0C1 /* KeyboardLayoutGuide.swift */,
 				9B22095D1F1E1C1400BD4E72 /* PanGestureRecognizer.swift */,
+				9B22095F1F1E4CC700BD4E72 /* ResizeHandle.swift */,
 			);
 			path = Sources;
 			sourceTree = "<group>";
@@ -351,6 +354,7 @@
 				9B22095E1F1E1C1400BD4E72 /* PanGestureRecognizer.swift in Sources */,
 				9B2252801F151046006DE55D /* PanelConfiguration.swift in Sources */,
 				9BEB70291F17715700EDB0C1 /* ContainerView.swift in Sources */,
+				9B2209601F1E4CC700BD4E72 /* ResizeHandle.swift in Sources */,
 				9BEB702F1F18F9C600EDB0C1 /* PanelGestures.swift in Sources */,
 				9B22527A1F150B14006DE55D /* PanelViewController.swift in Sources */,
 			);

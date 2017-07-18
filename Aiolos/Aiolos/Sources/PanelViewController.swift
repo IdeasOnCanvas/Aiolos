@@ -15,6 +15,7 @@ public final class PanelViewController: UIViewController {
     private lazy var panelView: PanelView = self.makePanelView()
     private var containerView: ContainerView? { return self.viewIfLoaded as? ContainerView }
     private lazy var dimmingView: UIView = self.makeDimmingView()
+    lazy var resizeHandle: ResizeHandle = self.makeResizeHandle()
 
     private lazy var gestures: PanelGestures = self.makeGestures()
     lazy var constraints: PanelConstraints = self.makeConstraints()
@@ -63,12 +64,14 @@ public extension PanelViewController {
         super.viewDidLoad()
 
         self.gestures.install()
+        self.view.addSubview(self.resizeHandle)
     }
 
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
 
         self.panelView.frame = self.view.bounds
+        self.resizeHandle.frame = CGRect(x: 0.0, y: 0.0, width: self.view.frame.width, height: 10.0)
     }
 }
 
@@ -141,6 +144,10 @@ private extension PanelViewController {
         return view
     }
 
+    func makeResizeHandle() -> ResizeHandle {
+        return ResizeHandle(configuration: self.configuration)
+    }
+
     func makeGestures() -> PanelGestures {
         return PanelGestures(panel: self)
     }
@@ -183,6 +190,7 @@ private extension PanelViewController {
 
     func handleConfigurationChange(from oldConfiguration: Panel.Configuration, to newConfiguration: Panel.Configuration) {
         self.panelView.configure(with: newConfiguration)
+        self.resizeHandle.configure(with: newConfiguration)
         self.containerView?.configure(with: newConfiguration)
 
         if oldConfiguration.mode != newConfiguration.mode {
