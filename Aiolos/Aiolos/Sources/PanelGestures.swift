@@ -24,7 +24,7 @@ final class PanelGestures: NSObject {
     // MARK: - PanelGestures
 
     func install() {
-        let pan = UIPanGestureRecognizer(target: self, action: #selector(handlePan))
+        let pan = PanGestureRecognizer(target: self, action: #selector(handlePan))
         pan.delegate = self
         self.panel.view.addGestureRecognizer(pan)
     }
@@ -52,7 +52,7 @@ private extension PanelGestures {
     }
 
     @objc
-    func handlePan(_ pan: UIPanGestureRecognizer) {
+    func handlePan(_ pan: PanGestureRecognizer) {
         switch pan.state {
         case .began:
             self.handlePanStarted(pan)
@@ -67,7 +67,7 @@ private extension PanelGestures {
         }
     }
 
-    func handlePanStarted(_ pan: UIPanGestureRecognizer) {
+    func handlePanStarted(_ pan: PanGestureRecognizer) {
         guard let heightConstraint = self.panel.constraints.heightConstraint else { return }
 
         let configuration = PanelGestures.Configuration(mode: self.panel.configuration.mode,
@@ -80,7 +80,7 @@ private extension PanelGestures {
         heightConstraint.constant = configuration.size.height
     }
 
-    func handlePanChanged(_ pan: UIPanGestureRecognizer) {
+    func handlePanChanged(_ pan: PanGestureRecognizer) {
         guard let heightConstraint = self.panel.constraints.heightConstraint else { return }
 
         let translation = pan.translation(in: self.panel.view)
@@ -92,7 +92,7 @@ private extension PanelGestures {
         }
     }
 
-    func handlePanEnded(_ pan: UIPanGestureRecognizer) {
+    func handlePanEnded(_ pan: PanGestureRecognizer) {
         let targetMode = self.targetMode(for: pan)
         let size = self.panel.size(for: targetMode)
         let initialVelocity = self.initialVelocity(for: pan, targetMode: targetMode)
@@ -110,14 +110,14 @@ private extension PanelGestures {
         })
     }
 
-    func handlePanCanceled(_ pan: UIPanGestureRecognizer) {
+    func handlePanCanceled(_ pan: PanGestureRecognizer) {
         guard let originalSize = self.originalConfiguration?.size else { return }
 
         self.cleanup()
         self.panel.constraints.updateSizeConstraints(for: originalSize)
     }
 
-    func targetMode(for pan: UIPanGestureRecognizer) -> Panel.Configuration.Mode {
+    func targetMode(for pan: PanGestureRecognizer) -> Panel.Configuration.Mode {
         guard let originalConfiguration = self.originalConfiguration else { return .expanded }
         guard let heightConstraint = self.panel.constraints.heightConstraint else { return originalConfiguration.mode }
 
@@ -152,7 +152,7 @@ private extension PanelGestures {
         }
     }
 
-    func initialVelocity(for pan: UIPanGestureRecognizer, targetMode: Panel.Configuration.Mode) -> CGFloat {
+    func initialVelocity(for pan: PanGestureRecognizer, targetMode: Panel.Configuration.Mode) -> CGFloat {
         guard let heightConstraint = self.panel.constraints.heightConstraint else { return 0.0 }
 
         let velocity = pan.velocity(in: self.panel.view).y

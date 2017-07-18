@@ -21,6 +21,17 @@ final class ViewController: UIViewController {
         self.title = "Aiolos Demo"
         self.view.backgroundColor = .white
 
+        let safeAreaView = UIView()
+        safeAreaView.translatesAutoresizingMaskIntoConstraints = false
+        safeAreaView.backgroundColor = UIColor.lightGray.withAlphaComponent(0.3)
+        self.view.addSubview(safeAreaView)
+        NSLayoutConstraint.activate([
+            safeAreaView.topAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.topAnchor, constant: 8.0),
+            safeAreaView.leadingAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.leadingAnchor, constant: 8.0),
+            safeAreaView.bottomAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.bottomAnchor, constant: -8.0),
+            safeAreaView.trailingAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.trailingAnchor, constant: -8.0)
+        ])
+
         let textField = UITextField(frame: CGRect(x: 10.0, y: 74.0, width: 150.0, height: 44.0))
         textField.layer.borderWidth = 1.0
         textField.delegate = self
@@ -68,7 +79,7 @@ extension ViewController: PanelSizeDelegate {
 extension ViewController: PanelAnimationDelegate {
 
     func panel(_ panel: PanelViewController, willTransitionTo size: CGSize, with coordinator: PanelTransitionCoordinator) {
-        print("Will transition to \(size), animated: \(coordinator.isAnimated)")
+        // print("Will transition to \(size), animated: \(coordinator.isAnimated)")
         coordinator.animateAlongsideTransition({
             self.lineView.center = CGPoint(x: panel.view.center.x, y: panel.view.frame.minY - 5.0)
         })
@@ -84,6 +95,7 @@ private extension ViewController {
         let panelController = PanelViewController(configuration: configuration)
         let contentNavigationController = UINavigationController(rootViewController: PanelContentViewController(color: .clear))
         contentNavigationController.setToolbarHidden(false, animated: false)
+        contentNavigationController.view.bringSubview(toFront: contentNavigationController.navigationBar)
 
         panelController.sizeDelegate = self
         panelController.animationDelegate = self
