@@ -36,9 +36,8 @@ extension PanelGestures: UIGestureRecognizerDelegate {
     func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
         guard let contentViewController = self.panel.contentViewController else { return true }
 
-        // TODO: allow content pans, when scrolled to top
-        // TODO: disallow pans on buttons?
-        return self.gestureRecognizer(gestureRecognizer, isWithinNonSafeAreaOf: contentViewController)
+        return self.gestureRecognizer(gestureRecognizer, isWithinNonSafeAreaOf: contentViewController) ||
+               self.gestureRecognizer(gestureRecognizer, isAllowedToStartByContentOf: contentViewController)
     }
 
     func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
@@ -115,6 +114,15 @@ private extension PanelGestures {
 
         let translation = pan.translation(in: self.panel.view)
         let dY = dragOffset(for: translation)
+
+        // cancel pan if it was started on the content/safeArea and it's used to grow the panel in height
+        if let contentViewController = self.panel.contentViewController,
+            self.gestureRecognizer(pan, isWithinNonSafeAreaOf: contentViewController) == false,
+            translation.y < 0.0 {
+            pan.isEnabled = false
+            pan.isEnabled = true
+            return
+        }
 
         pan.setTranslation(.zero, in: self.panel.view)
         pan.cancelsTouchesInView = true
@@ -216,5 +224,37 @@ private extension PanelGestures {
 
         let location = gestureRecognizer.location(in: self.panel.view)
         return location.y < safeAreaTop
+    }
+
+    // allow pan gesture to be triggered when a) there's no scrollView or b) the scrollView is scrolled to the top
+    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, isAllowedToStartByContentOf contentViewController: UIViewController) -> Bool {
+        let location = gestureRecognizer.location(in: contentViewController.view)
+        guard let hitView = contentViewController.view.hitTest(location, with: nil) else { return true }
+        guard let enclosingScrollView = hitView.superview(with: UIScrollView.self) as? UIScrollView else { return true }
+
+        return enclosingScrollView.isScrolledToTop || enclosingScrollView.isScrollEnabled == false || enclosingScrollView.scrollsVertically == false
+    }
+}
+
+private extension UIView {
+
+    func superview(with viewClass: AnyClass) -> UIView? {
+        var view: UIView? = self
+        while view != nil && view!.isKind(of: viewClass) == false {
+            view = view?.superview
+        }
+
+        return view
+    }
+}
+
+private extension UIScrollView {
+
+    var isScrolledToTop: Bool {
+        return self.contentOffset.y <= -self.contentInset.top
+    }
+
+    var scrollsVertically: Bool {
+        return self.alwaysBounceVertical || self.contentSize.height > self.bounds.height
     }
 }
