@@ -12,13 +12,6 @@ import Foundation
 /// Internal class used to drive animations of the Panel
 final class PanelAnimator {
 
-    struct Constants {
-        struct Animation {
-            static let duration: TimeInterval = 0.42
-            static let damping: CGFloat = 0.8
-        }
-    }
-
     private unowned let panel: PanelViewController
 
     var animateChanges: Bool = true
@@ -77,6 +70,16 @@ final class PanelAnimator {
 }
 
 // MARK: - Private
+
+private extension PanelAnimator {
+
+    struct Constants {
+        struct Animation {
+            static let duration: TimeInterval = 0.42
+            static let damping: CGFloat = 0.8
+        }
+    }
+}
 
 private extension UIView {
 

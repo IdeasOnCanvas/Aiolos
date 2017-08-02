@@ -51,6 +51,13 @@ private extension PanelGestures {
         let animateChanges: Bool
     }
 
+    struct Constants {
+        struct Animation {
+            static let duration: TimeInterval = 0.25
+            static let damping: CGFloat = 0.75
+        }
+    }
+
     @objc
     func handlePan(_ pan: PanGestureRecognizer) {
         switch pan.state {
@@ -85,11 +92,13 @@ private extension PanelGestures {
 
     func handlePanChanged(_ pan: PanGestureRecognizer) {
         guard let heightConstraint = self.panel.constraints.heightConstraint else { return }
-        guard let originalHeight = self.originalConfiguration?.size.height else { return }
 
         let translation = pan.translation(in: self.panel.view)
+        pan.setTranslation(.zero, in: self.panel.view)
+
+        let dY = heightConstraint.constant > 100.0 ? translation.y : translation.y / 2.0
         self.panel.animator.animateIfNeeded {
-            heightConstraint.constant = originalHeight - translation.y
+            heightConstraint.constant -= dY
             self.panel.animator.notifyDelegateOfTransition(to: CGSize(width: self.panel.view.frame.width, height: heightConstraint.constant))
         }
     }
@@ -100,9 +109,9 @@ private extension PanelGestures {
         let initialVelocity = self.initialVelocity(for: pan, targetMode: targetMode)
 
         self.cleanup()
-        UIView.animate(withDuration: PanelAnimator.Constants.Animation.duration,
+        UIView.animate(withDuration: Constants.Animation.duration,
                        delay: 0.0,
-                       usingSpringWithDamping: PanelAnimator.Constants.Animation.damping,
+                       usingSpringWithDamping: Constants.Animation.damping,
                        initialSpringVelocity: initialVelocity,
                        options: [.curveLinear],
                        animations: {
@@ -163,7 +172,7 @@ private extension PanelGestures {
 
         let distance = targetHeight - currentHeight
         let relativeDistance = velocity / distance
-        return relativeDistance / CGFloat(PanelAnimator.Constants.Animation.duration)
+        return relativeDistance / CGFloat(Constants.Animation.duration)
     }
 
     func cleanup() {

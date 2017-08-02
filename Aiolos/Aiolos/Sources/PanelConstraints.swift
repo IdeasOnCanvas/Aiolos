@@ -17,7 +17,7 @@ final class PanelConstraints {
 
     private var widthConstraint: NSLayoutConstraint?
     private var positionConstraints: [NSLayoutConstraint] = []
-    var heightConstraint: NSLayoutConstraint?
+    private(set) var heightConstraint: NSLayoutConstraint?
 
     // MARK: - Lifecycle
 
@@ -82,6 +82,10 @@ final class PanelConstraints {
 
 private extension PanelConstraints {
 
+    struct Constants {
+        static let minHeight: CGFloat = 44.0
+    }
+
     func makeKeyboardLayoutGuide() -> KeyboardLayoutGuide {
         guard let parentView = self.panel.parent?.view else { fatalError("Must have a parent by now") }
 
@@ -94,7 +98,7 @@ private extension PanelConstraints {
             c.priority = .defaultHigh
         }
 
-        let minHeightConstraint = self.panel.view.heightAnchor.constraint(greaterThanOrEqualToConstant: 44.0).withIdentifier("Panel Min Height")
+        let minHeightConstraint = self.panel.view.heightAnchor.constraint(greaterThanOrEqualToConstant: Constants.minHeight).withIdentifier("Panel Min Height")
         let heightConstraint = self.panel.view.heightAnchor.constraint(equalToConstant: size.height).configure { c in
             c.identifier = "Panel Height"
             c.priority = .defaultHigh
