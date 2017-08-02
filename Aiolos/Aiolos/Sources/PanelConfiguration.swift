@@ -21,7 +21,7 @@ public extension Panel {
         }
 
         public enum Mode {
-            case collapsed
+            case compact
             case expanded
             case fullHeight
         }
@@ -41,7 +41,7 @@ public extension Panel.Configuration {
 
     static var `default`: Panel.Configuration {
         return Panel.Configuration(position: .bottom,
-                                   mode: .collapsed,
+                                   mode: .compact,
                                    visualEffect: UIBlurEffect(style: .extraLight),
                                    margins: UIEdgeInsets(top: 10.0, left: 10.0, bottom: 0.0, right: 10.0),
                                    cornerRadius: 10.0,

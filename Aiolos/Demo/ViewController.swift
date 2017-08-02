@@ -64,7 +64,7 @@ extension ViewController: PanelSizeDelegate {
     func panel(_ panel: PanelViewController, sizeForMode mode: Panel.Configuration.Mode) -> CGSize {
         let width = self.traitCollection.userInterfaceIdiom == .pad ? 320.0 : 0.0
         switch mode {
-        case .collapsed:
+        case .compact:
             return CGSize(width: width, height: 64.0)
         case .expanded:
             return CGSize(width: width, height: 250.0)
@@ -131,9 +131,9 @@ private extension ViewController {
 
     @objc
     func handleToggleModePress() {
-        let nextModeMapping: [Panel.Configuration.Mode: Panel.Configuration.Mode] = [ .collapsed: .expanded,
+        let nextModeMapping: [Panel.Configuration.Mode: Panel.Configuration.Mode] = [ .compact: .expanded,
                                                                                       .expanded: .fullHeight,
-                                                                                      .fullHeight: .collapsed ]
+                                                                                      .fullHeight: .compact ]
         guard let nextMode = nextModeMapping[self.panelController.configuration.mode] else { return }
 
         self.panelController.configuration.mode = nextMode

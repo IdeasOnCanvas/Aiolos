@@ -58,6 +58,10 @@ private extension PanelGestures {
         }
     }
 
+    var currentPanelHeight: CGFloat {
+        return self.panel.constraints.heightConstraint!.constant
+    }
+
     @objc
     func handlePan(_ pan: PanGestureRecognizer) {
         switch pan.state {
@@ -75,35 +79,49 @@ private extension PanelGestures {
     }
 
     func handlePanStarted(_ pan: PanGestureRecognizer) {
-        guard let heightConstraint = self.panel.constraints.heightConstraint else { return }
-
         let configuration = PanelGestures.Configuration(mode: self.panel.configuration.mode,
                                                         size: self.panel.view.frame.size,
                                                         animateChanges: self.panel.animator.animateChanges)
         // remember initial state
         self.originalConfiguration = configuration
+
         self.panel.resizeHandle.isResizing = true
         self.panel.animator.animateChanges = false
         self.panel.animator.performWithoutAnimation {
-            // the normal height constraint for .fullHeight can have a higher constant, but the actual height is constrained by the safeAreaInsets
-            heightConstraint.constant = configuration.size.height
+            self.panel.constraints.updateForDragStart(with: configuration.size)
         }
     }
 
     func handlePanChanged(_ pan: PanGestureRecognizer) {
-        guard let heightConstraint = self.panel.constraints.heightConstraint else { return }
+        guard let parentView = self.panel.parent?.view else { return }
 
         let translation = pan.translation(in: self.panel.view)
         pan.setTranslation(.zero, in: self.panel.view)
 
-        let dY = heightConstraint.constant > 100.0 ? translation.y : translation.y / 2.0
+        func dragOffset(for translation: CGPoint) -> CGFloat {
+            let fudgeFactor: CGFloat = 60.0
+            let minHeight = self.panel.size(for: .compact).height + fudgeFactor
+            let maxHeight = self.panel.constraints.maxHeight - fudgeFactor
+            let currentHeight = self.currentPanelHeight
+
+            // slow down resizing if the current height exceeds certain limits
+            if (currentHeight < minHeight && translation.y > 0.0) || (currentHeight > maxHeight && translation.y < 0.0) {
+                return translation.y / 2.5
+            } else {
+                return translation.y
+            }
+        }
+
+        let dY = dragOffset(for: translation)
         self.panel.animator.animateIfNeeded {
-            heightConstraint.constant -= dY
-            self.panel.animator.notifyDelegateOfTransition(to: CGSize(width: self.panel.view.frame.width, height: heightConstraint.constant))
+            self.panel.constraints.updateForDrag(with: dY)
+            self.panel.animator.notifyDelegateOfTransition(to: CGSize(width: self.panel.view.frame.width, height: self.currentPanelHeight))
         }
     }
 
     func handlePanEnded(_ pan: PanGestureRecognizer) {
+        self.panel.constraints.updateForDragEnd()
+
         let targetMode = self.targetMode(for: pan)
         let size = self.panel.size(for: targetMode)
         let initialVelocity = self.initialVelocity(for: pan, targetMode: targetMode)
@@ -129,13 +147,10 @@ private extension PanelGestures {
     }
 
     func targetMode(for pan: PanGestureRecognizer) -> Panel.Configuration.Mode {
-        guard let originalConfiguration = self.originalConfiguration else { return .expanded }
-        guard let heightConstraint = self.panel.constraints.heightConstraint else { return originalConfiguration.mode }
-
         let minVelocity: CGFloat = 20.0
         let velocity = pan.velocity(in: self.panel.view).y
         let heightExpanded = self.panel.size(for: .expanded).height
-        let currentHeight = heightConstraint.constant
+        let currentHeight = self.currentPanelHeight
 
         let isMovingUpwards = velocity < -minVelocity
         let isMovingDownwards = velocity > minVelocity
@@ -143,7 +158,7 @@ private extension PanelGestures {
         // moving upwards + current size > .expanded -> grow to .fullHeight
         if currentHeight >= heightExpanded && isMovingUpwards { return .fullHeight }
         // moving downwards + current size < .expanded -> shrink to .collapsed
-        if currentHeight <= heightExpanded && isMovingDownwards { return .collapsed }
+        if currentHeight <= heightExpanded && isMovingDownwards { return .compact }
         // moving upwards + current size < .expanded -> grow to .expanded
         if currentHeight <= heightExpanded && isMovingUpwards { return .expanded }
         // moving downwards + current size > .expanded -> shrink to .expanded
@@ -157,17 +172,15 @@ private extension PanelGestures {
         if diffToExpanded > 100.0 {
             return .fullHeight
         } else if diffToExpanded < -100.0 {
-            return .collapsed
+            return .compact
         } else {
             return .expanded
         }
     }
 
     func initialVelocity(for pan: PanGestureRecognizer, targetMode: Panel.Configuration.Mode) -> CGFloat {
-        guard let heightConstraint = self.panel.constraints.heightConstraint else { return 0.0 }
-
         let velocity = pan.velocity(in: self.panel.view).y
-        let currentHeight = heightConstraint.constant
+        let currentHeight = self.currentPanelHeight
         let targetHeight = self.panel.size(for: targetMode).height
 
         let distance = targetHeight - currentHeight
