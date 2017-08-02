@@ -86,7 +86,6 @@ public extension PanGestureRecognizer {
         guard let initialTimestamp = self.initialTimestamp else { return }
 
         let currentPoint = touch.location(in: self.view?.window)
-        self.lastPoint = self.currentPoint
         self.currentPoint = currentPoint
 
         let currentLocation = touch.location(in: self.view)
@@ -125,10 +124,10 @@ public extension PanGestureRecognizer {
         self.lastKnownTouches = touches
 
         guard let firstPoint = self.firstPoint else { return }
-        guard let lastPoint = self.lastPoint else { return }
+        guard let currentPoint = self.currentPoint else { return }
         guard let initialTimestamp = self.initialTimestamp else { return }
 
-        let totalTranslationVector = CGVector(dx: lastPoint.x - firstPoint.x, dy: lastPoint.y - firstPoint.y)
+        let totalTranslationVector = CGVector(dx: currentPoint.x - firstPoint.x, dy: currentPoint.y - firstPoint.y)
         let totalTranslation_2 = totalTranslationVector.dx * totalTranslationVector.dx + totalTranslationVector.dy * totalTranslationVector.dy
         let timeInterval = ProcessInfo.processInfo.systemUptime - initialTimestamp
 

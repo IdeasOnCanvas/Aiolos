@@ -33,12 +33,16 @@ final class PanelAnimator {
     // MARK: - PanelAnimator
 
     func animateIfNeeded(_ changes: @escaping () -> Void) {
-        let parentView = self.panel.parent?.view
-        parentView?.layoutIfNeeded()
+        guard let parentView = self.panel.parent?.view else { return }
 
+        parentView.layoutIfNeeded()
+
+        let shouldAnimate = self.animateChanges && self.panel.isVisible
         let animator = UIViewPropertyAnimator(duration: Constants.Animation.duration, dampingRatio: Constants.Animation.damping, animations: {
-            changes()
-            parentView?.layoutIfNeeded()
+            UIView.performWithoutAnimation(if: shouldAnimate == false) {
+                changes()
+                parentView.layoutIfNeeded()
+            }
         })
 
         // we might have enqueued animations from a transition coordinator, perform them along the main changes
@@ -48,13 +52,12 @@ final class PanelAnimator {
             self.transitionCoordinatorQueuedAnimation = nil
         }
 
-        animator.startAnimation()
-
         // if we don't want to animate, perform changes directly by setting the completion state to 100 %
-        let shouldAnimate = self.animateChanges && self.panel.isVisible
         if shouldAnimate == false {
             animator.fractionComplete = 1.0
         }
+
+        animator.startAnimation()
     }
 
     func performWithoutAnimation(_ changes: @escaping () -> Void) {
@@ -70,5 +73,18 @@ final class PanelAnimator {
 
         let transitionCoordinator = PanelTransitionCoordinator(animator: self)
         animationDelegate.panel(self.panel, willTransitionTo: size, with: transitionCoordinator)
+    }
+}
+
+// MARK: - Private
+
+private extension UIView {
+
+    static func performWithoutAnimation(`if` preventAnimation: Bool, animations: () -> Void) {
+        if preventAnimation {
+            UIView.performWithoutAnimation(animations)
+        } else {
+            animations()
+        }
     }
 }

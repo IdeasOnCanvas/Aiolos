@@ -85,12 +85,11 @@ private extension PanelGestures {
 
     func handlePanChanged(_ pan: PanGestureRecognizer) {
         guard let heightConstraint = self.panel.constraints.heightConstraint else { return }
+        guard let originalHeight = self.originalConfiguration?.size.height else { return }
 
         let translation = pan.translation(in: self.panel.view)
-        pan.setTranslation(.zero, in: self.panel.view)
-
         self.panel.animator.animateIfNeeded {
-            heightConstraint.constant -= translation.y
+            heightConstraint.constant = originalHeight - translation.y
             self.panel.animator.notifyDelegateOfTransition(to: CGSize(width: self.panel.view.frame.width, height: heightConstraint.constant))
         }
     }
