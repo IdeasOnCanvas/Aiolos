@@ -193,13 +193,16 @@ private extension PanelViewController {
         self.resizeHandle.configure(with: newConfiguration)
         self.containerView?.configure(with: newConfiguration)
 
-        if oldConfiguration.mode != newConfiguration.mode {
+        let modeChanged = oldConfiguration.mode != newConfiguration.mode
+        let positionChanged = oldConfiguration.position != newConfiguration.position
+
+        if modeChanged || positionChanged {
             let size = self.size(for: newConfiguration.mode)
             self.animator.notifyDelegateOfTransition(to: size)
             self.constraints.updateSizeConstraints(for: size)
         }
 
-        if oldConfiguration.position != newConfiguration.position {
+        if positionChanged {
             self.constraints.updatePositionConstraints(for: newConfiguration.position, margins: newConfiguration.margins)
         }
     }

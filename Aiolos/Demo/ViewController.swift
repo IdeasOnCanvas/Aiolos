@@ -45,6 +45,18 @@ final class ViewController: UIViewController {
 
         self.panelController.add(to: self)
     }
+
+    override func willTransition(to newCollection: UITraitCollection, with coordinator: UIViewControllerTransitionCoordinator) {
+        super.willTransition(to: newCollection, with: coordinator)
+
+        var configuration = self.panelController.configuration
+        configuration.position = self.panelPosition(for: newCollection)
+        configuration.margins = self.panelMargins(for: newCollection)
+
+        coordinator.animate(alongsideTransition: { _ in
+            self.panelController.configuration = configuration
+        }, completion: nil)
+    }
 }
 
 // MARK: - UITextFieldDelegate
@@ -62,12 +74,12 @@ extension ViewController: UITextFieldDelegate {
 extension ViewController: PanelSizeDelegate {
 
     func panel(_ panel: PanelViewController, sizeForMode mode: Panel.Configuration.Mode) -> CGSize {
-        let width = self.traitCollection.userInterfaceIdiom == .pad ? 320.0 : 0.0
+        let width = self.panelWidth(for: self.traitCollection, position: panel.configuration.position)
         switch mode {
         case .compact:
             return CGSize(width: width, height: 64.0)
         case .expanded:
-            return CGSize(width: width, height: 250.0)
+            return CGSize(width: width, height: 270.0)
         case .fullHeight:
             return CGSize(width: width, height: 0.0)
         }
@@ -100,14 +112,12 @@ private extension ViewController {
         panelController.sizeDelegate = self
         panelController.animationDelegate = self
         panelController.contentViewController = contentNavigationController
+        panelController.configuration.position = self.panelPosition(for: self.traitCollection)
+        panelController.configuration.margins = self.panelMargins(for: self.traitCollection)
 
         if self.traitCollection.userInterfaceIdiom == .pad {
-            panelController.configuration.position = .trailingBottom
-            panelController.configuration.margins = UIEdgeInsets(top: 20.0, left: 20.0, bottom: 20.0, right: 20.0)
             panelController.configuration.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner, .layerMinXMaxYCorner, .layerMaxXMaxYCorner]
         } else {
-            panelController.configuration.position = .bottom
-            panelController.configuration.margins = UIEdgeInsets(top: 20.0, left: 0.0, bottom: 0.0, right: 0.0)
             panelController.configuration.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
         }
 
@@ -118,6 +128,25 @@ private extension ViewController {
         let view = UIView(frame: CGRect(x: 0.0, y: 0.0, width: 100.0, height: 1.0))
         view.backgroundColor = .red
         return view
+    }
+
+    func panelWidth(for traitCollection: UITraitCollection, position: Panel.Configuration.Position) -> CGFloat {
+        if position == .bottom { return 0.0 }
+
+        return traitCollection.userInterfaceIdiom == .pad ? 320.0 : 270.0
+    }
+
+    func panelPosition(for traitCollection: UITraitCollection) -> Panel.Configuration.Position {
+        if traitCollection.userInterfaceIdiom == .pad { return .trailingBottom }
+
+        return traitCollection.verticalSizeClass == .compact ? .leadingBottom : .bottom
+    }
+
+    func panelMargins(for traitCollection: UITraitCollection) -> UIEdgeInsets {
+        if traitCollection.userInterfaceIdiom == .pad { return UIEdgeInsets(top: 20.0, left: 20.0, bottom: 20.0, right: 20.0) }
+
+        let horizontalMargin: CGFloat = traitCollection.verticalSizeClass == .compact ? 20.0 : 0.0
+        return UIEdgeInsets(top: 20.0, left: horizontalMargin, bottom: 0.0, right: horizontalMargin)
     }
 
     @objc

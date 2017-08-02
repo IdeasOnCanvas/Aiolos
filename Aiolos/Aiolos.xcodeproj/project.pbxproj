@@ -21,6 +21,7 @@
 		9B22527E1F150F39006DE55D /* PanelView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B22527D1F150F39006DE55D /* PanelView.swift */; };
 		9B2252801F151046006DE55D /* PanelConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B22527F1F151046006DE55D /* PanelConfiguration.swift */; };
 		9B2252821F1511FD006DE55D /* Panel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B2252811F1511FD006DE55D /* Panel.swift */; };
+		9BC45F8A1F320A860099EE5B /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 9BC45F891F320A860099EE5B /* Launch Screen.storyboard */; };
 		9BEB70271F16582F00EDB0C1 /* PanelContentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9BEB70261F16582F00EDB0C1 /* PanelContentViewController.swift */; };
 		9BEB70291F17715700EDB0C1 /* ContainerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9BEB70281F17715700EDB0C1 /* ContainerView.swift */; };
 		9BEB702B1F179D2A00EDB0C1 /* PanelConstraints.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9BEB702A1F179D2A00EDB0C1 /* PanelConstraints.swift */; };
@@ -80,6 +81,7 @@
 		9B22527D1F150F39006DE55D /* PanelView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PanelView.swift; sourceTree = "<group>"; };
 		9B22527F1F151046006DE55D /* PanelConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PanelConfiguration.swift; sourceTree = "<group>"; };
 		9B2252811F1511FD006DE55D /* Panel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Panel.swift; sourceTree = "<group>"; };
+		9BC45F891F320A860099EE5B /* Launch Screen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = "Launch Screen.storyboard"; sourceTree = "<group>"; };
 		9BEB70261F16582F00EDB0C1 /* PanelContentViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PanelContentViewController.swift; sourceTree = "<group>"; };
 		9BEB70281F17715700EDB0C1 /* ContainerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContainerView.swift; sourceTree = "<group>"; };
 		9BEB702A1F179D2A00EDB0C1 /* PanelConstraints.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PanelConstraints.swift; sourceTree = "<group>"; };
@@ -141,6 +143,7 @@
 				9B22523E1F15089C006DE55D /* Info.plist */,
 				9BEB70261F16582F00EDB0C1 /* PanelContentViewController.swift */,
 				9B2252341F15089C006DE55D /* ViewController.swift */,
+				9BC45F891F320A860099EE5B /* Launch Screen.storyboard */,
 			);
 			path = Demo;
 			sourceTree = "<group>";
@@ -302,6 +305,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9BC45F8A1F320A860099EE5B /* Launch Screen.storyboard in Resources */,
 				9B22523A1F15089C006DE55D /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
