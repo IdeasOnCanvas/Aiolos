@@ -26,6 +26,7 @@ final class PanelGestures: NSObject {
     func install() {
         let pan = PanGestureRecognizer(target: self, action: #selector(handlePan))
         pan.delegate = self
+        pan.cancelsTouchesInView = false
         self.panel.view.addGestureRecognizer(pan)
     }
 }
@@ -38,6 +39,10 @@ extension PanelGestures: UIGestureRecognizerDelegate {
         // TODO: allow content pans, when scrolled to top
         // TODO: disallow pans on buttons?
         return self.gestureRecognizer(gestureRecognizer, isWithinNonSafeAreaOf: contentViewController)
+    }
+
+    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
+        return true
     }
 }
 
@@ -85,7 +90,6 @@ private extension PanelGestures {
         // remember initial state
         self.originalConfiguration = configuration
 
-        self.panel.resizeHandle.isResizing = true
         self.panel.animator.animateChanges = false
         self.panel.animator.performWithoutAnimation {
             self.panel.constraints.updateForDragStart(with: configuration.size)
@@ -94,9 +98,6 @@ private extension PanelGestures {
 
     func handlePanChanged(_ pan: PanGestureRecognizer) {
         guard let parentView = self.panel.parent?.view else { return }
-
-        let translation = pan.translation(in: self.panel.view)
-        pan.setTranslation(.zero, in: self.panel.view)
 
         func dragOffset(for translation: CGPoint) -> CGFloat {
             let fudgeFactor: CGFloat = 60.0
@@ -112,7 +113,13 @@ private extension PanelGestures {
             }
         }
 
+        let translation = pan.translation(in: self.panel.view)
         let dY = dragOffset(for: translation)
+
+        pan.setTranslation(.zero, in: self.panel.view)
+        pan.cancelsTouchesInView = true
+
+        self.panel.resizeHandle.isResizing = true
         self.panel.animator.animateIfNeeded {
             self.panel.constraints.updateForDrag(with: dY)
             self.panel.animator.notifyDelegateOfTransition(to: CGSize(width: self.panel.view.frame.width, height: self.currentPanelHeight))
@@ -126,7 +133,7 @@ private extension PanelGestures {
         let size = self.panel.size(for: targetMode)
         let initialVelocity = self.initialVelocity(for: pan, targetMode: targetMode)
 
-        self.cleanup()
+        self.cleanUp(pan: pan)
         UIView.animate(withDuration: Constants.Animation.duration,
                        delay: 0.0,
                        usingSpringWithDamping: Constants.Animation.damping,
@@ -142,7 +149,7 @@ private extension PanelGestures {
     func handlePanCanceled(_ pan: PanGestureRecognizer) {
         guard let originalSize = self.originalConfiguration?.size else { return }
 
-        self.cleanup()
+        self.cleanUp(pan: pan)
         self.panel.constraints.updateSizeConstraints(for: originalSize)
     }
 
@@ -188,7 +195,9 @@ private extension PanelGestures {
         return relativeDistance / CGFloat(Constants.Animation.duration)
     }
 
-    func cleanup() {
+    func cleanUp(pan: PanGestureRecognizer) {
+        pan.cancelsTouchesInView = false
+
         guard let originalConfiguration = self.originalConfiguration else { return }
 
         self.panel.resizeHandle.isResizing = false

@@ -28,5 +28,16 @@ final class PanelContentViewController: UIViewController {
         super.viewDidLoad()
 
         self.view.backgroundColor = self.color
+        self.navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(handleAddPress))
+    }
+}
+
+// MARK: - Private
+
+private extension PanelContentViewController {
+
+    @objc
+    func handleAddPress(_ sender: UIBarButtonItem) {
+        print("Add…")
     }
 }
