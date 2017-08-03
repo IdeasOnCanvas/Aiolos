@@ -57,8 +57,8 @@ private extension PanelGestures {
 
     struct Constants {
         struct Animation {
-            static let duration: TimeInterval = 0.25
-            static let damping: CGFloat = 0.75
+            static let duration: TimeInterval = 0.35
+            static let damping: CGFloat = 0.65
         }
     }
 
@@ -198,9 +198,8 @@ private extension PanelGestures {
         let currentHeight = self.currentPanelHeight
         let targetHeight = self.panel.size(for: targetMode).height
 
-        let distance = targetHeight - currentHeight
-        let relativeDistance = velocity / distance
-        return relativeDistance / CGFloat(Constants.Animation.duration)
+        let distance = abs(targetHeight - currentHeight)
+        return abs(velocity / distance)
     }
 
     func cleanUp(pan: PanGestureRecognizer) {
@@ -226,7 +225,7 @@ private extension PanelGestures {
         return location.y < safeAreaTop
     }
 
-    // allow pan gesture to be triggered when a) there's no scrollView or b) the scrollView is scrolled to the top
+    // allow pan gesture to be triggered when a) there's no scrollView or b) the scrollView can't be scrolled downwards
     func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, isAllowedToStartByContentOf contentViewController: UIViewController) -> Bool {
         let location = gestureRecognizer.location(in: contentViewController.view)
         guard let hitView = contentViewController.view.hitTest(location, with: nil) else { return true }
