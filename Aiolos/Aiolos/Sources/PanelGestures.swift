@@ -57,7 +57,8 @@ private extension PanelGestures {
 
     struct Constants {
         struct Animation {
-            static let duration: TimeInterval = 0.35
+            static let mass: CGFloat = 10.0
+            static let stiffness: CGFloat = 10.0
             static let damping: CGFloat = 0.65
         }
     }
@@ -138,20 +139,10 @@ private extension PanelGestures {
         self.panel.constraints.updateForDragEnd()
 
         let targetMode = self.targetMode(for: pan)
-        let size = self.panel.size(for: targetMode)
         let initialVelocity = self.initialVelocity(for: pan, targetMode: targetMode)
 
         self.cleanUp(pan: pan)
-        UIView.animate(withDuration: Constants.Animation.duration,
-                       delay: 0.0,
-                       usingSpringWithDamping: Constants.Animation.damping,
-                       initialSpringVelocity: initialVelocity,
-                       options: [.curveLinear],
-                       animations: {
-                        self.panel.constraints.updateSizeConstraints(for: size)
-        }, completion: { _ in
-            self.panel.configuration.mode = targetMode
-        })
+        self.animate(to: targetMode, initialVelocity: initialVelocity)
     }
 
     func handlePanCanceled(_ pan: PanGestureRecognizer) {
@@ -210,6 +201,34 @@ private extension PanelGestures {
         self.panel.resizeHandle.isResizing = false
         self.panel.animator.animateChanges = originalConfiguration.animateChanges
         self.originalConfiguration = nil
+    }
+
+    func animate(to targetMode: Panel.Configuration.Mode, initialVelocity: CGFloat) {
+        let size = self.panel.size(for: targetMode)
+        let animations = { self.panel.constraints.updateSizeConstraints(for: size) }
+        let completion = { self.panel.configuration.mode = targetMode }
+        let maxHeight = self.panel.constraints.maxHeight
+        let currentHeight = self.currentPanelHeight
+        guard currentHeight < maxHeight - 50.0 else {
+            UIView.animate(withDuration: 0.4,
+                           delay: 0.0,
+                           usingSpringWithDamping: 1.0,
+                           initialSpringVelocity: 0.0,
+                           options: [.curveLinear],
+                           animations: animations,
+                           completion: { _ in completion() })
+            return
+        }
+
+        let timingParameters = UISpringTimingParameters(mass: Constants.Animation.mass,
+                                                        stiffness: Constants.Animation.stiffness,
+                                                        damping: Constants.Animation.damping,
+                                                        initialVelocity: CGVector(dx: 0.0, dy: initialVelocity))
+        let animator = UIViewPropertyAnimator(duration: 0.0, timingParameters: timingParameters)
+
+        animator.addAnimations(animations)
+        animator.addCompletion { _ in completion() }
+        animator.startAnimation()
     }
 
     // allow pan gestures to be triggered within non-safe area on top (UINavigationBar)
