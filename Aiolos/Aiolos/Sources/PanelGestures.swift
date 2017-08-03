@@ -57,8 +57,8 @@ private extension PanelGestures {
 
     struct Constants {
         struct Animation {
-            static let mass: CGFloat = 10.0
-            static let stiffness: CGFloat = 10.0
+            static let mass: CGFloat = 25.0
+            static let stiffness: CGFloat = 200.0
             static let damping: CGFloat = 0.65
         }
     }
@@ -153,6 +153,7 @@ private extension PanelGestures {
     }
 
     func targetMode(for pan: PanGestureRecognizer) -> Panel.Configuration.Mode {
+        let offset: CGFloat = 100.0
         let minVelocity: CGFloat = 20.0
         let velocity = pan.velocity(in: self.panel.view).y
         let heightExpanded = self.panel.size(for: .expanded).height
@@ -174,23 +175,14 @@ private extension PanelGestures {
         assert(isMovingUpwards == false && isMovingDownwards == false)
         // -> check distance from .expanded mode
         let diffToExpanded = currentHeight - heightExpanded
-
-        if diffToExpanded > 100.0 {
+        
+        if diffToExpanded > offset {
             return .fullHeight
-        } else if diffToExpanded < -100.0 {
+        } else if diffToExpanded < -offset {
             return .compact
         } else {
             return .expanded
         }
-    }
-
-    func initialVelocity(for pan: PanGestureRecognizer, targetMode: Panel.Configuration.Mode) -> CGFloat {
-        let velocity = pan.velocity(in: self.panel.view).y
-        let currentHeight = self.currentPanelHeight
-        let targetHeight = self.panel.size(for: targetMode).height
-
-        let distance = targetHeight - currentHeight
-        return abs(velocity / distance)
     }
 
     func cleanUp(pan: PanGestureRecognizer) {
@@ -203,31 +195,33 @@ private extension PanelGestures {
         self.originalConfiguration = nil
     }
 
+    func initialVelocity(for pan: PanGestureRecognizer, targetMode: Panel.Configuration.Mode) -> CGFloat {
+        let velocity = pan.velocity(in: self.panel.view).y
+        let currentHeight = self.currentPanelHeight
+        let targetHeight = self.panel.size(for: targetMode).height
+
+        let distance = targetHeight - currentHeight
+        return abs(velocity / distance)
+    }
+
     func animate(to targetMode: Panel.Configuration.Mode, initialVelocity: CGFloat) {
         let size = self.panel.size(for: targetMode)
-        let animations = { self.panel.constraints.updateSizeConstraints(for: size) }
-        let completion = { self.panel.configuration.mode = targetMode }
         let maxHeight = self.panel.constraints.maxHeight
         let currentHeight = self.currentPanelHeight
-        guard currentHeight < maxHeight - 50.0 else {
-            UIView.animate(withDuration: 0.4,
-                           delay: 0.0,
-                           usingSpringWithDamping: 1.0,
-                           initialSpringVelocity: 0.0,
-                           options: [.curveLinear],
-                           animations: animations,
-                           completion: { _ in completion() })
-            return
+
+        let timing: UITimingCurveProvider
+        if currentHeight < maxHeight - 30.0 {
+            timing = UISpringTimingParameters(mass: Constants.Animation.mass,
+                                              stiffness: Constants.Animation.stiffness,
+                                              damping: Constants.Animation.damping,
+                                              initialVelocity: CGVector(dx: initialVelocity, dy: initialVelocity))
+        } else {
+            timing = UISpringTimingParameters()
         }
 
-        let timingParameters = UISpringTimingParameters(mass: Constants.Animation.mass,
-                                                        stiffness: Constants.Animation.stiffness,
-                                                        damping: Constants.Animation.damping,
-                                                        initialVelocity: CGVector(dx: 0.0, dy: initialVelocity))
-        let animator = UIViewPropertyAnimator(duration: 0.0, timingParameters: timingParameters)
-
-        animator.addAnimations(animations)
-        animator.addCompletion { _ in completion() }
+        let animator = UIViewPropertyAnimator(duration: 0.0, timingParameters: timing)
+        animator.addAnimations { self.panel.constraints.updateSizeConstraints(for: size) }
+        animator.addCompletion { _ in self.panel.configuration.mode = targetMode }
         animator.startAnimation()
     }
 

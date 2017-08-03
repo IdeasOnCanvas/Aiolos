@@ -79,7 +79,8 @@ extension ViewController: PanelSizeDelegate {
         case .compact:
             return CGSize(width: width, height: 64.0)
         case .expanded:
-            return CGSize(width: width, height: 270.0)
+            let height: CGFloat = self.traitCollection.userInterfaceIdiom == .phone ? 270.0 : 320.0
+            return CGSize(width: width, height: height)
         case .fullHeight:
             return CGSize(width: width, height: 0.0)
         }
