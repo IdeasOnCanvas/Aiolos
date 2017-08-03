@@ -10,6 +10,7 @@ import Foundation
 
 
 /// A floating Panel inspired by the iOS 11 Maps.app UI
+@objc
 public final class Panel: UIViewController {
 
     private lazy var panelView: PanelView = self.makePanelView()
@@ -23,7 +24,7 @@ public final class Panel: UIViewController {
 
     // MARK: - Properties
 
-    public var isVisible: Bool { return self.parent != nil }
+    @objc public var isVisible: Bool { return self.parent != nil }
     public weak var sizeDelegate: PanelSizeDelegate?
     public weak var animationDelegate: PanelAnimationDelegate?
 
@@ -33,7 +34,7 @@ public final class Panel: UIViewController {
         }
     }
 
-    public var contentViewController: UIViewController? {
+    @objc public var contentViewController: UIViewController? {
         didSet {
             self.updateContentViewControllerFrame(of: self.contentViewController)
             self.exchangeContentViewController(oldValue, with: self.contentViewController)
@@ -42,9 +43,14 @@ public final class Panel: UIViewController {
 
     // MARK: - Lifecycle
 
-    public init(configuration: Panel.Configuration = .default) {
+    public init(configuration: Panel.Configuration) {
         self.configuration = configuration
         super.init(nibName: nil, bundle: nil)
+    }
+
+    @objc
+    public convenience init() {
+        self.init(configuration: .default)
     }
 
     public required init?(coder aDecoder: NSCoder) {
@@ -79,6 +85,7 @@ public extension Panel {
 
 public extension Panel {
 
+    @objc(addToParent:)
     func add(to parent: UIViewController) {
         parent.addChildViewController(self)
         parent.view.addSubview(self.view)
@@ -92,6 +99,7 @@ public extension Panel {
         }
     }
 
+    @objc
     func removeFromParent() {
         guard self.parent != nil else { return }
 
