@@ -198,7 +198,7 @@ private extension PanelGestures {
         let currentHeight = self.currentPanelHeight
         let targetHeight = self.panel.size(for: targetMode).height
 
-        let distance = abs(targetHeight - currentHeight)
+        let distance = targetHeight - currentHeight
         return abs(velocity / distance)
     }
 

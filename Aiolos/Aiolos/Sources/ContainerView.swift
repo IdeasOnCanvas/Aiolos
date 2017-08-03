@@ -8,8 +8,9 @@
 
 import Foundation
 
+
 /// Internal class that is used as a Container for the Panel
-class ContainerView: UIView {
+final class ContainerView: UIView {
 
     // MARK: - Lifecycle
 
