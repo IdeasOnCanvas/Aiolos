@@ -12,14 +12,14 @@ import Foundation
 /// Internal class used to drive animations of the Panel
 final class PanelAnimator {
 
-    private unowned let panel: PanelViewController
+    private unowned let panel: Panel
 
     var animateChanges: Bool = true
     var transitionCoordinatorQueuedAnimation: PanelTransitionCoordinator.Animation?
 
     // MARK: - Lifecycle
 
-    init(panel: PanelViewController) {
+    init(panel: Panel) {
         self.panel = panel
     }
 

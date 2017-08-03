@@ -17,10 +17,9 @@
 		9B22526D1F1508FD006DE55D /* Aiolos.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 9B2252571F1508FD006DE55D /* Aiolos.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		9B2252761F150995006DE55D /* PanelTransitionCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B2252751F150995006DE55D /* PanelTransitionCoordinator.swift */; };
 		9B2252781F150A8E006DE55D /* PanelDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B2252771F150A8E006DE55D /* PanelDelegate.swift */; };
-		9B22527A1F150B14006DE55D /* PanelViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B2252791F150B14006DE55D /* PanelViewController.swift */; };
+		9B22527A1F150B14006DE55D /* Panel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B2252791F150B14006DE55D /* Panel.swift */; };
 		9B22527E1F150F39006DE55D /* PanelView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B22527D1F150F39006DE55D /* PanelView.swift */; };
 		9B2252801F151046006DE55D /* PanelConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B22527F1F151046006DE55D /* PanelConfiguration.swift */; };
-		9B2252821F1511FD006DE55D /* Panel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B2252811F1511FD006DE55D /* Panel.swift */; };
 		9BC45F8A1F320A860099EE5B /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 9BC45F891F320A860099EE5B /* Launch Screen.storyboard */; };
 		9BEB70271F16582F00EDB0C1 /* PanelContentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9BEB70261F16582F00EDB0C1 /* PanelContentViewController.swift */; };
 		9BEB70291F17715700EDB0C1 /* ContainerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9BEB70281F17715700EDB0C1 /* ContainerView.swift */; };
@@ -77,10 +76,9 @@
 		9B2252681F1508FD006DE55D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		9B2252751F150995006DE55D /* PanelTransitionCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PanelTransitionCoordinator.swift; sourceTree = "<group>"; };
 		9B2252771F150A8E006DE55D /* PanelDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PanelDelegate.swift; sourceTree = "<group>"; };
-		9B2252791F150B14006DE55D /* PanelViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PanelViewController.swift; sourceTree = "<group>"; };
+		9B2252791F150B14006DE55D /* Panel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Panel.swift; sourceTree = "<group>"; };
 		9B22527D1F150F39006DE55D /* PanelView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PanelView.swift; sourceTree = "<group>"; };
 		9B22527F1F151046006DE55D /* PanelConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PanelConfiguration.swift; sourceTree = "<group>"; };
-		9B2252811F1511FD006DE55D /* Panel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Panel.swift; sourceTree = "<group>"; };
 		9BC45F891F320A860099EE5B /* Launch Screen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = "Launch Screen.storyboard"; sourceTree = "<group>"; };
 		9BEB70261F16582F00EDB0C1 /* PanelContentViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PanelContentViewController.swift; sourceTree = "<group>"; };
 		9BEB70281F17715700EDB0C1 /* ContainerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContainerView.swift; sourceTree = "<group>"; };
@@ -163,7 +161,6 @@
 			isa = PBXGroup;
 			children = (
 				9BEB70281F17715700EDB0C1 /* ContainerView.swift */,
-				9B2252811F1511FD006DE55D /* Panel.swift */,
 				9BEB702C1F17A2CF00EDB0C1 /* PanelAnimator.swift */,
 				9B22527F1F151046006DE55D /* PanelConfiguration.swift */,
 				9BEB702A1F179D2A00EDB0C1 /* PanelConstraints.swift */,
@@ -171,7 +168,7 @@
 				9BEB702E1F18F9C600EDB0C1 /* PanelGestures.swift */,
 				9B2252751F150995006DE55D /* PanelTransitionCoordinator.swift */,
 				9B22527D1F150F39006DE55D /* PanelView.swift */,
-				9B2252791F150B14006DE55D /* PanelViewController.swift */,
+				9B2252791F150B14006DE55D /* Panel.swift */,
 				9BEB70301F19154300EDB0C1 /* KeyboardLayoutGuide.swift */,
 				9B22095D1F1E1C1400BD4E72 /* PanGestureRecognizer.swift */,
 				9B22095F1F1E4CC700BD4E72 /* ResizeHandle.swift */,
@@ -352,7 +349,6 @@
 				9B2252761F150995006DE55D /* PanelTransitionCoordinator.swift in Sources */,
 				9BEB702B1F179D2A00EDB0C1 /* PanelConstraints.swift in Sources */,
 				9B22527E1F150F39006DE55D /* PanelView.swift in Sources */,
-				9B2252821F1511FD006DE55D /* Panel.swift in Sources */,
 				9B2252781F150A8E006DE55D /* PanelDelegate.swift in Sources */,
 				9BEB702D1F17A2CF00EDB0C1 /* PanelAnimator.swift in Sources */,
 				9B22095E1F1E1C1400BD4E72 /* PanGestureRecognizer.swift in Sources */,
@@ -360,7 +356,7 @@
 				9BEB70291F17715700EDB0C1 /* ContainerView.swift in Sources */,
 				9B2209601F1E4CC700BD4E72 /* ResizeHandle.swift in Sources */,
 				9BEB702F1F18F9C600EDB0C1 /* PanelGestures.swift in Sources */,
-				9B22527A1F150B14006DE55D /* PanelViewController.swift in Sources */,
+				9B22527A1F150B14006DE55D /* Panel.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

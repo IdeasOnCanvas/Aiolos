@@ -12,7 +12,7 @@ import Aiolos
 
 final class ViewController: UIViewController {
 
-    private lazy var panelController: PanelViewController = self.makePanelController()
+    private lazy var panelController: Panel = self.makePanelController()
     private lazy var lineView: UIView = self.makeLineView()
 
     override func viewDidLoad() {
@@ -73,7 +73,7 @@ extension ViewController: UITextFieldDelegate {
 
 extension ViewController: PanelSizeDelegate {
 
-    func panel(_ panel: PanelViewController, sizeForMode mode: Panel.Configuration.Mode) -> CGSize {
+    func panel(_ panel: Panel, sizeForMode mode: Panel.Configuration.Mode) -> CGSize {
         let width = self.panelWidth(for: self.traitCollection, position: panel.configuration.position)
         switch mode {
         case .compact:
@@ -90,7 +90,7 @@ extension ViewController: PanelSizeDelegate {
 
 extension ViewController: PanelAnimationDelegate {
 
-    func panel(_ panel: PanelViewController, willTransitionTo size: CGSize, with coordinator: PanelTransitionCoordinator) {
+    func panel(_ panel: Panel, willTransitionTo size: CGSize, with coordinator: PanelTransitionCoordinator) {
         // print("Will transition to \(size), animated: \(coordinator.isAnimated)")
 //        coordinator.animateAlongsideTransition({
 //            self.lineView.center = CGPoint(x: panel.view.center.x, y: panel.view.frame.minY - 5.0)
@@ -102,9 +102,9 @@ extension ViewController: PanelAnimationDelegate {
 
 private extension ViewController {
 
-    func makePanelController() -> PanelViewController {
+    func makePanelController() -> Panel {
         let configuration = Panel.Configuration.default
-        let panelController = PanelViewController(configuration: configuration)
+        let panelController = Panel(configuration: configuration)
         let contentNavigationController = UINavigationController(rootViewController: PanelContentViewController(color: .clear))
         contentNavigationController.setToolbarHidden(false, animated: false)
         contentNavigationController.view.bringSubview(toFront: contentNavigationController.navigationBar)

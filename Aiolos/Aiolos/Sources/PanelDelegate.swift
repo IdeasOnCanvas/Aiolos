@@ -14,11 +14,11 @@ import Foundation
 public protocol PanelSizeDelegate: class {
 
     /// Asks the delegate for the size of the panel in a specific mode. either width or height might be ignored, based on the mode
-    func panel(_ panel: PanelViewController, sizeForMode mode: Panel.Configuration.Mode) -> CGSize
+    func panel(_ panel: Panel, sizeForMode mode: Panel.Configuration.Mode) -> CGSize
 }
 
 public protocol PanelAnimationDelegate: class {
 
     /// Tells the delegate that the `panel` is transitioning to a specific size
-    func panel(_ panel: PanelViewController, willTransitionTo size: CGSize, with coordinator: PanelTransitionCoordinator)
+    func panel(_ panel: Panel, willTransitionTo size: CGSize, with coordinator: PanelTransitionCoordinator)
 }

@@ -9,7 +9,7 @@
 import Foundation
 
 
-/// The view of the PanelViewController
+/// The view of the Panel
 public final class PanelView: UIVisualEffectView {
 
     // MARK: - Lifecycle

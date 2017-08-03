@@ -12,12 +12,12 @@ import Foundation
 /// Manages Gestures added to the Panel
 final class PanelGestures: NSObject {
 
-    private let panel: PanelViewController
+    private let panel: Panel
     private var originalConfiguration: PanelGestures.Configuration?
 
     // MARK: - Lifecycle
 
-    init(panel: PanelViewController) {
+    init(panel: Panel) {
         self.panel = panel
     }
 

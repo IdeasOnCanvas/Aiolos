@@ -12,7 +12,7 @@ import Foundation
 /// Internal class used for managing NSLayoutConstraints of the Panel
 final class PanelConstraints {
 
-    private unowned let panel: PanelViewController
+    private unowned let panel: Panel
     private lazy var keyboardLayoutGuide: KeyboardLayoutGuide = self.makeKeyboardLayoutGuide()
     private var topConstraint: NSLayoutConstraint?
 
@@ -22,7 +22,7 @@ final class PanelConstraints {
 
     // MARK: - Lifecycle
 
-    init(panel: PanelViewController) {
+    init(panel: Panel) {
         self.panel = panel
     }
 
