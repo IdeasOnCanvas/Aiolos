@@ -36,7 +36,7 @@ extension PanelGestures: UIGestureRecognizerDelegate {
     func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
         guard let contentViewController = self.panel.contentViewController else { return true }
 
-        return self.gestureRecognizer(gestureRecognizer, isWithinNonSafeAreaOf: contentViewController) ||
+        return self.gestureRecognizer(gestureRecognizer, isWithinContentAreaOf: contentViewController) == false ||
                self.gestureRecognizer(gestureRecognizer, isAllowedToStartByContentOf: contentViewController)
     }
 
@@ -117,9 +117,10 @@ private extension PanelGestures {
         let dY = dragOffset(for: translation)
 
         // cancel pan if it was started on the content/safeArea and it's used to grow the panel in height
-        if let contentViewController = self.panel.contentViewController,
-            self.gestureRecognizer(pan, isWithinNonSafeAreaOf: contentViewController) == false,
-            translation.y < 0.0 {
+        if translation.y < 0.0,
+            let contentViewController = self.panel.contentViewController,
+            self.gestureRecognizer(pan, isWithinContentAreaOf: contentViewController),
+            self.contentIsScrollableVertically(of: contentViewController, at: pan.location(in: self.panel.view)) {
             pan.isEnabled = false
             pan.isEnabled = true
             return
@@ -226,7 +227,7 @@ private extension PanelGestures {
     }
 
     // allow pan gestures to be triggered within non-safe area on top (UINavigationBar)
-    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, isWithinNonSafeAreaOf contentViewController: UIViewController) -> Bool {
+    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, isWithinContentAreaOf contentViewController: UIViewController) -> Bool {
         let safeAreaTop: CGFloat
         if let navigationController = contentViewController as? UINavigationController, let topViewController = navigationController.topViewController {
             safeAreaTop = topViewController.view.safeAreaInsets.top
@@ -235,7 +236,7 @@ private extension PanelGestures {
         }
 
         let location = gestureRecognizer.location(in: self.panel.view)
-        return location.y < safeAreaTop
+        return location.y >= safeAreaTop
     }
 
     // allow pan gesture to be triggered when a) there's no scrollView or b) the scrollView can't be scrolled downwards
@@ -244,7 +245,14 @@ private extension PanelGestures {
         guard let hitView = contentViewController.view.hitTest(location, with: nil) else { return true }
         guard let enclosingScrollView = hitView.superview(with: UIScrollView.self) as? UIScrollView else { return true }
 
-        return enclosingScrollView.isScrolledToTop || enclosingScrollView.isScrollEnabled == false || enclosingScrollView.scrollsVertically == false
+        return enclosingScrollView.isScrolledToTop || self.contentIsScrollableVertically(of: contentViewController, at: location) == false
+    }
+
+    func contentIsScrollableVertically(of contentViewController: UIViewController, at location: CGPoint) -> Bool {
+        guard let hitView = contentViewController.view.hitTest(location, with: nil) else { return false }
+        guard let enclosingScrollView = hitView.superview(with: UIScrollView.self) as? UIScrollView else { return false }
+
+        return (enclosingScrollView.isScrollEnabled && enclosingScrollView.scrollsVertically) || enclosingScrollView.alwaysBounceVertical
     }
 }
 
