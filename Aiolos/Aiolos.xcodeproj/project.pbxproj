@@ -30,13 +30,6 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		9B2252441F15089C006DE55D /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 9B2252271F15089C006DE55D /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 9B22522E1F15089C006DE55D;
-			remoteInfo = Aiolos;
-		};
 		9B22526A1F1508FD006DE55D /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 9B2252271F15089C006DE55D /* Project object */;
@@ -68,12 +61,9 @@
 		9B2252341F15089C006DE55D /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
 		9B2252391F15089C006DE55D /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		9B22523E1F15089C006DE55D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		9B2252431F15089C006DE55D /* AiolosTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AiolosTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		9B2252571F1508FD006DE55D /* Aiolos.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Aiolos.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		9B2252591F1508FD006DE55D /* Aiolos.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Aiolos.h; sourceTree = "<group>"; };
 		9B22525A1F1508FD006DE55D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		9B2252661F1508FD006DE55D /* AiolosTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AiolosTests.swift; sourceTree = "<group>"; };
-		9B2252681F1508FD006DE55D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		9B2252751F150995006DE55D /* PanelTransitionCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PanelTransitionCoordinator.swift; sourceTree = "<group>"; };
 		9B2252771F150A8E006DE55D /* PanelDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PanelDelegate.swift; sourceTree = "<group>"; };
 		9B2252791F150B14006DE55D /* Panel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Panel.swift; sourceTree = "<group>"; };
@@ -94,13 +84,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				9B22526C1F1508FD006DE55D /* Aiolos.framework in Frameworks */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		9B2252401F15089C006DE55D /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -127,7 +110,6 @@
 			isa = PBXGroup;
 			children = (
 				9B22522F1F15089C006DE55D /* AiolosDemo.app */,
-				9B2252431F15089C006DE55D /* AiolosTests.xctest */,
 				9B2252571F1508FD006DE55D /* Aiolos.framework */,
 			);
 			name = Products;
@@ -152,7 +134,6 @@
 				9B2252591F1508FD006DE55D /* Aiolos.h */,
 				9B22525A1F1508FD006DE55D /* Info.plist */,
 				9B22527B1F150B21006DE55D /* Sources */,
-				9B22527C1F150B2F006DE55D /* Tests */,
 			);
 			path = Aiolos;
 			sourceTree = "<group>";
@@ -174,15 +155,6 @@
 				9B22095F1F1E4CC700BD4E72 /* ResizeHandle.swift */,
 			);
 			path = Sources;
-			sourceTree = "<group>";
-		};
-		9B22527C1F150B2F006DE55D /* Tests */ = {
-			isa = PBXGroup;
-			children = (
-				9B2252681F1508FD006DE55D /* Info.plist */,
-				9B2252661F1508FD006DE55D /* AiolosTests.swift */,
-			);
-			path = Tests;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -218,24 +190,6 @@
 			productReference = 9B22522F1F15089C006DE55D /* AiolosDemo.app */;
 			productType = "com.apple.product-type.application";
 		};
-		9B2252421F15089C006DE55D /* AiolosTests */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 9B22524F1F15089C006DE55D /* Build configuration list for PBXNativeTarget "AiolosTests" */;
-			buildPhases = (
-				9B22523F1F15089C006DE55D /* Sources */,
-				9B2252401F15089C006DE55D /* Frameworks */,
-				9B2252411F15089C006DE55D /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				9B2252451F15089C006DE55D /* PBXTargetDependency */,
-			);
-			name = AiolosTests;
-			productName = AiolosTests;
-			productReference = 9B2252431F15089C006DE55D /* AiolosTests.xctest */;
-			productType = "com.apple.product-type.bundle.unit-test";
-		};
 		9B2252561F1508FD006DE55D /* Aiolos */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 9B22526E1F1508FD006DE55D /* Build configuration list for PBXNativeTarget "Aiolos" */;
@@ -267,10 +221,6 @@
 					9B22522E1F15089C006DE55D = {
 						CreatedOnToolsVersion = 9.0;
 					};
-					9B2252421F15089C006DE55D = {
-						CreatedOnToolsVersion = 9.0;
-						TestTargetID = 9B22522E1F15089C006DE55D;
-					};
 					9B2252561F1508FD006DE55D = {
 						CreatedOnToolsVersion = 9.0;
 						LastSwiftMigration = 0900;
@@ -292,7 +242,6 @@
 			targets = (
 				9B22522E1F15089C006DE55D /* AiolosDemo */,
 				9B2252561F1508FD006DE55D /* Aiolos */,
-				9B2252421F15089C006DE55D /* AiolosTests */,
 			);
 		};
 /* End PBXProject section */
@@ -304,13 +253,6 @@
 			files = (
 				9BC45F8A1F320A860099EE5B /* Launch Screen.storyboard in Resources */,
 				9B22523A1F15089C006DE55D /* Assets.xcassets in Resources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		9B2252411F15089C006DE55D /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -331,13 +273,6 @@
 				9B2252351F15089C006DE55D /* ViewController.swift in Sources */,
 				9BEB70271F16582F00EDB0C1 /* PanelContentViewController.swift in Sources */,
 				9B2252331F15089C006DE55D /* AppDelegate.swift in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		9B22523F1F15089C006DE55D /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -363,11 +298,6 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		9B2252451F15089C006DE55D /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 9B22522E1F15089C006DE55D /* AiolosDemo */;
-			targetProxy = 9B2252441F15089C006DE55D /* PBXContainerItemProxy */;
-		};
 		9B22526B1F1508FD006DE55D /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 9B2252561F1508FD006DE55D /* Aiolos */;
@@ -511,38 +441,6 @@
 			};
 			name = Release;
 		};
-		9B2252501F15089C006DE55D /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
-				BUNDLE_LOADER = "$(TEST_HOST)";
-				DEVELOPMENT_TEAM = W6L39UYL6Z;
-				INFOPLIST_FILE = AiolosTests/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.ideasoncanvas.AiolosTests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 4.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Aiolos.app/Aiolos";
-			};
-			name = Debug;
-		};
-		9B2252511F15089C006DE55D /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
-				BUNDLE_LOADER = "$(TEST_HOST)";
-				DEVELOPMENT_TEAM = W6L39UYL6Z;
-				INFOPLIST_FILE = AiolosTests/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.ideasoncanvas.AiolosTests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 4.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Aiolos.app/Aiolos";
-			};
-			name = Release;
-		};
 		9B22526F1F1508FD006DE55D /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -609,15 +507,6 @@
 			buildConfigurations = (
 				9B22524D1F15089C006DE55D /* Debug */,
 				9B22524E1F15089C006DE55D /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		9B22524F1F15089C006DE55D /* Build configuration list for PBXNativeTarget "AiolosTests" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				9B2252501F15089C006DE55D /* Debug */,
-				9B2252511F15089C006DE55D /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

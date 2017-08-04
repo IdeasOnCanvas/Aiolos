@@ -175,7 +175,7 @@ private extension PanelGestures {
         assert(isMovingUpwards == false && isMovingDownwards == false)
         // -> check distance from .expanded mode
         let diffToExpanded = currentHeight - heightExpanded
-        
+
         if diffToExpanded > offset {
             return .fullHeight
         } else if diffToExpanded < -offset {

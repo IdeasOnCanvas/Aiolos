@@ -6,8 +6,8 @@
 //  Copyright © 2017 Matthias Tretter. All rights reserved.
 //
 
-import UIKit
 import Aiolos
+import UIKit
 
 
 final class ViewController: UIViewController {

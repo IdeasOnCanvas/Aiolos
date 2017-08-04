@@ -19,11 +19,11 @@ final class PanelContentViewController: UITableViewController {
         super.init(style: .plain)
         self.title = "Content"
     }
-    
+
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
 

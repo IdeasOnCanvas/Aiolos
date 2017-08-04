@@ -68,7 +68,7 @@ final class PanelConstraints {
         case .trailingBottom:
             positionConstraints += [
                 view.leadingAnchor.constraint(greaterThanOrEqualTo: guide.leadingAnchor, constant: margins.left).withIdentifier("Panel Leading"),
-                view.trailingAnchor.constraint(equalTo: guide.trailingAnchor, constant: -margins.right).withIdentifier("Panel Trailing"),
+                view.trailingAnchor.constraint(equalTo: guide.trailingAnchor, constant: -margins.right).withIdentifier("Panel Trailing")
             ]
         }
 
@@ -100,8 +100,8 @@ internal extension PanelConstraints {
         self.topConstraint?.isActive = false
     }
 
-    func updateForDrag(with dY: CGFloat) {
-        self.heightConstraint?.constant -= dY
+    func updateForDrag(with yOffset: CGFloat) {
+        self.heightConstraint?.constant -= yOffset
     }
 
     func updateForDragEnd() {
@@ -124,15 +124,15 @@ private extension PanelConstraints {
     }
 
     func activateSizeConstraints(for size: CGSize) {
-        let widthConstraint = self.panel.view.widthAnchor.constraint(equalToConstant: size.width).configure { c in
-            c.identifier = "Panel Width"
-            c.priority = .defaultHigh
+        let widthConstraint = self.panel.view.widthAnchor.constraint(equalToConstant: size.width).configure { constraint in
+            constraint.identifier = "Panel Width"
+            constraint.priority = .defaultHigh
         }
 
         let minHeightConstraint = self.panel.view.heightAnchor.constraint(greaterThanOrEqualToConstant: Constants.minHeight).withIdentifier("Panel Min Height")
-        let heightConstraint = self.panel.view.heightAnchor.constraint(equalToConstant: size.height).configure { c in
-            c.identifier = "Panel Height"
-            c.priority = .defaultHigh
+        let heightConstraint = self.panel.view.heightAnchor.constraint(equalToConstant: size.height).configure { constraint in
+            constraint.identifier = "Panel Height"
+            constraint.priority = .defaultHigh
         }
 
         self.widthConstraint = widthConstraint
@@ -151,8 +151,8 @@ private extension NSLayoutConstraint {
     }
 
     func withIdentifier(_ identifier: String) -> NSLayoutConstraint {
-        return self.configure { c in
-            c.identifier = identifier
+        return self.configure { constraint in
+            constraint.identifier = identifier
         }
     }
 }
