@@ -19,6 +19,10 @@ public final class PanGestureRecognizer: UIGestureRecognizer {
     private var currentPoint: CGPoint?
     private var initialTimestamp: TimeInterval?
     private var currentVelocity: CGPoint = .zero
+
+    // MARK: Properties
+
+    private(set) var didPan: Bool = false
 }
 
 // MARK: - UIGestureRecognizer+Subclass
@@ -48,6 +52,7 @@ public extension PanGestureRecognizer {
         self.firstPoint = location
         self.initialTimestamp = touch.timestamp
         self.state = .began
+        self.didPan = false
     }
 
     override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent) {
@@ -66,6 +71,7 @@ public extension PanGestureRecognizer {
         self.currentVelocity = CGPoint(x: Double(translation.dx) / timeInterval, y: Double(translation.dy) / timeInterval)
 
         self.state = .changed
+        self.didPan = true
     }
 
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent) {
@@ -78,6 +84,12 @@ public extension PanGestureRecognizer {
         super.touchesCancelled(touches, with: event)
 
         self.state = .cancelled
+    }
+
+    override func reset() {
+        super.reset()
+
+        self.didPan = false
     }
 }
 

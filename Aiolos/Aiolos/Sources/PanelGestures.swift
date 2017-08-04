@@ -138,6 +138,10 @@ private extension PanelGestures {
 
     func handlePanEnded(_ pan: PanGestureRecognizer) {
         self.panel.constraints.updateForDragEnd()
+        guard pan.didPan else {
+            self.cleanUp(pan: pan)
+            return
+        }
 
         let targetMode = self.targetMode(for: pan)
         let initialVelocity = self.initialVelocity(for: pan, targetMode: targetMode)
