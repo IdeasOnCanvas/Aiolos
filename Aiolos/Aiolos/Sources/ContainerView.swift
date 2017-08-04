@@ -14,9 +14,10 @@ final class ContainerView: UIView {
 
     // MARK: - Lifecycle
 
-    init(configuration: Panel.Configuration) {
-        super.init(frame: .zero)
+    init(frame: CGRect, configuration: Panel.Configuration) {
+        super.init(frame: frame)
 
+        self.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         self.configure(with: configuration)
     }
 
@@ -27,14 +28,8 @@ final class ContainerView: UIView {
     // MARK: - ContainerView
 
     func configure(with configuration: Panel.Configuration) {
-        // configure shadow
-        self.layer.shadowOpacity = 0.2
-        self.layer.shadowOffset = .zero
-
-        // configure border
+        self.layer.masksToBounds = true
         self.layer.cornerRadius = configuration.cornerRadius
         self.layer.maskedCorners = configuration.maskedCorners
-        self.layer.borderColor = configuration.borderColor.cgColor
-        self.layer.borderWidth = 1.0 / UIScreen.main.scale
     }
 }

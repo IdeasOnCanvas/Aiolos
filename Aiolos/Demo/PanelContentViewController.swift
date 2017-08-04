@@ -44,6 +44,9 @@ extension PanelContentViewController {
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath)
         cell.textLabel?.text = "Cell \(indexPath.row)"
+        cell.contentView.backgroundColor = .clear
+        cell.backgroundView?.backgroundColor = .clear
+        cell.backgroundColor = .clear
         return cell
     }
 }

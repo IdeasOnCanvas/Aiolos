@@ -22,14 +22,6 @@ final class ResizeHandle: UIView {
         }
     }
 
-    var bending: CGFloat = 0.0 { // [0..1]
-        didSet {
-            guard abs(oldValue - self.bending) > 0.0001 else { return }
-
-            self.updateResizeHandlePath()
-        }
-    }
-
     var isResizing = false {
         didSet {
             guard oldValue != self.isResizing else { return }
@@ -59,6 +51,7 @@ final class ResizeHandle: UIView {
 
     func configure(with configuration: Panel.Configuration) {
         self.handleColor = configuration.resizeHandleColor
+        self.backgroundColor = configuration.resizeHandleBackgroundColor
     }
 }
 
@@ -83,7 +76,7 @@ private extension ResizeHandle {
         layer.contentsScale = UIScreen.main.scale
         layer.backgroundColor = UIColor.clear.cgColor
         layer.fillColor = UIColor.clear.cgColor
-        layer.lineWidth = 4.0
+        layer.lineWidth = 3.0
         layer.lineCap = kCALineCapRound
         return layer
     }
@@ -94,23 +87,14 @@ private extension ResizeHandle {
     }
 
     func updateResizeHandlePath(animated: Bool = false) {
-        let bendingScale = max(0.0, min(self.bending, 1.0)) // limit bending between 0 and 1
-        let maxBendingOffset: CGFloat = 5.0
         let path = UIBezierPath()
-
-        let width: CGFloat
-        if self.isResizing {
-            width = 30.0
-        } else {
-            width = 20.0
-        }
+        let width: CGFloat = self.isResizing ? 35.0 : 30.0
 
         let r = self.bounds.divided(atDistance: 6.0, from: .maxYEdge).slice
         let centerX = r.width / 2.0
         let y = r.minY + self.resizeHandle.lineWidth / 2.0
 
         path.move(to: CGPoint(x: centerX - width / 2.0, y: y))
-        path.addLine(to: CGPoint(x: centerX, y: y + bendingScale * maxBendingOffset))
         path.addLine(to: CGPoint(x: centerX + width / 2.0, y: y))
 
         if animated {
@@ -140,6 +124,6 @@ private extension UIColor {
 
         self.getHue(&hue, saturation: &saturation, brightness: &brightness, alpha: &alpha)
 
-        return UIColor(hue: hue, saturation: saturation, brightness: brightness - 0.2, alpha: alpha)
+        return UIColor(hue: hue, saturation: saturation, brightness: brightness - 0.2, alpha: alpha + 0.2)
     }
 }

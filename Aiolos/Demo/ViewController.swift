@@ -106,7 +106,7 @@ private extension ViewController {
     func makePanelController() -> Panel {
         let configuration = Panel.Configuration.default
         let panelController = Panel(configuration: configuration)
-        let contentNavigationController = UIViewController() // UINavigationController(rootViewController: PanelContentViewController(color: .clear))
+        let contentNavigationController = PanelContentViewController(color: .clear) // UINavigationController(rootViewController: PanelContentViewController(color: .clear))
 //        contentNavigationController.setToolbarHidden(false, animated: false)
 //        contentNavigationController.view.bringSubview(toFront: contentNavigationController.navigationBar)
 

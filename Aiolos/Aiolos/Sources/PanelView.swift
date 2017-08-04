@@ -30,6 +30,6 @@ public final class PanelView: UIVisualEffectView {
     func configure(with configuration: Panel.Configuration) {
         self.effect = configuration.visualEffect
         self.layer.cornerRadius = configuration.cornerRadius
-        self.layer.maskedCorners = configuration.maskedCorners
+        self.layer.maskedCorners = configuration.maskedCorners.subtracting([.layerMinXMinYCorner, .layerMaxXMinYCorner])
     }
 }

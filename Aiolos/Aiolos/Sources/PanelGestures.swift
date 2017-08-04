@@ -235,7 +235,7 @@ private extension PanelGestures {
             safeAreaTop = 0.0
         }
 
-        let location = gestureRecognizer.location(in: self.panel.view)
+        let location = gestureRecognizer.location(in: self.panel.panelView)
         return location.y >= safeAreaTop
     }
 

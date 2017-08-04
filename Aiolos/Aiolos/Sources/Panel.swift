@@ -13,8 +13,9 @@ import Foundation
 @objc
 public final class Panel: UIViewController {
 
-    private lazy var panelView: PanelView = self.makePanelView()
-    private var containerView: ContainerView? { return self.viewIfLoaded as? ContainerView }
+    lazy var panelView: PanelView = self.makePanelView()
+    private var shadowView: ShadowView? { return self.viewIfLoaded as? ShadowView }
+    private var containerView: ContainerView? { return self.viewIfLoaded?.subviews.first as? ContainerView }
     private lazy var dimmingView: UIView = self.makeDimmingView()
     lazy var resizeHandle: ResizeHandle = self.makeResizeHandle()
 
@@ -63,21 +64,23 @@ public final class Panel: UIViewController {
 public extension Panel {
 
     override func loadView() {
-        self.view = self.makeContainer(for: self.panelView)
+        self.view = self.makeShadowView(for: self.panelView)
     }
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
         self.gestures.install()
-        self.view.addSubview(self.resizeHandle)
+        self.containerView?.addSubview(self.resizeHandle)
     }
 
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
 
-        self.panelView.frame = self.view.bounds
-        self.resizeHandle.frame = CGRect(x: 0.0, y: 0.0, width: self.view.frame.width, height: 10.0)
+        let (resizeFrame, panelFrame) = self.view.bounds.divided(atDistance: 10.0, from: .minYEdge)
+
+        self.resizeHandle.frame = resizeFrame
+        self.panelView.frame = panelFrame
     }
 }
 
@@ -136,13 +139,15 @@ private extension Panel {
         return PanelView(configuration: self.configuration)
     }
 
-    func makeContainer(for view: UIView) -> UIView {
-        let container = ContainerView(configuration: self.configuration)
+    func makeShadowView(for view: UIView) -> UIView {
+        let shadowView = ShadowView(configuration: self.configuration)
+        let container = ContainerView(frame: shadowView.bounds, configuration: self.configuration)
 
-        container.translatesAutoresizingMaskIntoConstraints = false
+        shadowView.translatesAutoresizingMaskIntoConstraints = false
+        shadowView.addSubview(container)
         container.addSubview(view)
 
-        return container
+        return shadowView
     }
 
     func makeDimmingView() -> UIView {
@@ -197,9 +202,10 @@ private extension Panel {
     }
 
     func handleConfigurationChange(from oldConfiguration: Panel.Configuration, to newConfiguration: Panel.Configuration) {
+        self.shadowView?.configure(with: newConfiguration)
+        self.containerView?.configure(with: newConfiguration)
         self.panelView.configure(with: newConfiguration)
         self.resizeHandle.configure(with: newConfiguration)
-        self.containerView?.configure(with: newConfiguration)
 
         let modeChanged = oldConfiguration.mode != newConfiguration.mode
         let positionChanged = oldConfiguration.position != newConfiguration.position

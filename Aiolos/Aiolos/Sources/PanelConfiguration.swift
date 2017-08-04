@@ -34,6 +34,7 @@ public extension Panel {
         public var maskedCorners: CACornerMask
         public var borderColor: UIColor
         public var resizeHandleColor: UIColor
+        public var resizeHandleBackgroundColor: UIColor
     }
 }
 
@@ -47,6 +48,7 @@ public extension Panel.Configuration {
                                    cornerRadius: 10.0,
                                    maskedCorners: [.layerMinXMinYCorner, .layerMinXMaxYCorner, .layerMaxXMinYCorner, .layerMaxXMaxYCorner],
                                    borderColor: UIColor.gray.withAlphaComponent(0.5),
-                                   resizeHandleColor: UIColor.gray.withAlphaComponent(0.5))
+                                   resizeHandleColor: UIColor.gray.withAlphaComponent(0.3),
+                                   resizeHandleBackgroundColor: .white)
     }
 }
