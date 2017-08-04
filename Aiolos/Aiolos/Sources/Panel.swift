@@ -79,7 +79,7 @@ public extension Panel {
 
         let (resizeFrame, panelFrame) = self.view.bounds.divided(atDistance: 10.0, from: .minYEdge)
         // if we don't increase the size by 1pt there sometimes is a visual glitch when used with a NavCtrl
-        self.resizeHandle.frame = UIEdgeInsetsInsetRect(resizeFrame, UIEdgeInsetsMake(0.0, 0.0, -1.0, 0.0))
+        self.resizeHandle.frame = UIEdgeInsetsInsetRect(resizeFrame, UIEdgeInsets(top: 0.0, left: 0.0, bottom: -1.0, right: 0.0))
         self.panelView.frame = panelFrame
     }
 }

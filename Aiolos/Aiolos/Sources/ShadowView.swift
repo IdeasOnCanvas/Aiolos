@@ -38,4 +38,3 @@ final class ShadowView: UIView {
         self.layer.borderWidth = 1.0 / UIScreen.main.scale
     }
 }
-
