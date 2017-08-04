@@ -71,15 +71,15 @@ public extension Panel {
         super.viewDidLoad()
 
         self.gestures.install()
-        self.containerView?.addSubview(self.resizeHandle)
+        self.containerView?.insertSubview(self.resizeHandle, at: 0)
     }
 
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
 
         let (resizeFrame, panelFrame) = self.view.bounds.divided(atDistance: 10.0, from: .minYEdge)
-
-        self.resizeHandle.frame = resizeFrame
+        // if we don't increase the size by 1pt there sometimes is a visual glitch when used with a NavCtrl
+        self.resizeHandle.frame = UIEdgeInsetsInsetRect(resizeFrame, UIEdgeInsetsMake(0.0, 0.0, -1.0, 0.0))
         self.panelView.frame = panelFrame
     }
 }

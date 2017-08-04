@@ -77,7 +77,7 @@ extension ViewController: PanelSizeDelegate {
         let width = self.panelWidth(for: self.traitCollection, position: panel.configuration.position)
         switch mode {
         case .compact:
-            return CGSize(width: width, height: 64.0)
+            return CGSize(width: width, height: 54.0)
         case .expanded:
             let height: CGFloat = self.traitCollection.userInterfaceIdiom == .phone ? 270.0 : 320.0
             return CGSize(width: width, height: height)
@@ -106,9 +106,12 @@ private extension ViewController {
     func makePanelController() -> Panel {
         let configuration = Panel.Configuration.default
         let panelController = Panel(configuration: configuration)
-        let contentNavigationController = PanelContentViewController(color: .clear) // UINavigationController(rootViewController: PanelContentViewController(color: .clear))
-//        contentNavigationController.setToolbarHidden(false, animated: false)
-//        contentNavigationController.view.bringSubview(toFront: contentNavigationController.navigationBar)
+        let contentNavigationController = UINavigationController(rootViewController: PanelContentViewController(color: UIColor.red.withAlphaComponent(0.4)))
+        contentNavigationController.navigationBar.barTintColor = .white
+        contentNavigationController.navigationBar.isTranslucent = false
+        contentNavigationController.setToolbarHidden(false, animated: false)
+        contentNavigationController.toolbar.barTintColor = .darkGray
+        contentNavigationController.view.bringSubview(toFront: contentNavigationController.navigationBar)
 
         panelController.sizeDelegate = self
         panelController.animationDelegate = self
