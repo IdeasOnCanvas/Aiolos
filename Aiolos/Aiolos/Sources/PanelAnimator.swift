@@ -67,6 +67,13 @@ final class PanelAnimator {
         let transitionCoordinator = PanelTransitionCoordinator(animator: self)
         animationDelegate.panel(self.panel, willTransitionTo: size, with: transitionCoordinator)
     }
+
+    func notifyDelegateOfTransition(to mode: Panel.Configuration.Mode) {
+        guard let animationDelegate = self.panel.animationDelegate else { return }
+
+        let transitionCoordinator = PanelTransitionCoordinator(animator: self)
+        animationDelegate.panel(self.panel, willTransitionTo: mode, with: transitionCoordinator)
+    }
 }
 
 // MARK: - Private

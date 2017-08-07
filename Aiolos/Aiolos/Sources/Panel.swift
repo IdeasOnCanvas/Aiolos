@@ -106,6 +106,7 @@ public extension Panel {
         let size = self.size(for: self.configuration.mode)
         self.animator.performWithoutAnimation {
             self.animator.notifyDelegateOfTransition(to: size)
+            self.animator.notifyDelegateOfTransition(to: self.configuration.mode)
             self.constraints.updateSizeConstraints(for: size)
             self.constraints.updatePositionConstraints(for: self.configuration.position, margins: self.configuration.margins)
         }
@@ -228,6 +229,8 @@ private extension Panel {
 
         if modeChanged || positionChanged {
             let size = self.size(for: newConfiguration.mode)
+
+            if modeChanged { self.animator.notifyDelegateOfTransition(to: newConfiguration.mode) }
             self.animator.notifyDelegateOfTransition(to: size)
             self.constraints.updateSizeConstraints(for: size)
         }

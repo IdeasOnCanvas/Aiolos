@@ -97,6 +97,10 @@ extension ViewController: PanelAnimationDelegate {
 //            self.lineView.center = CGPoint(x: panel.view.center.x, y: panel.view.frame.minY - 5.0)
 //        })
     }
+
+    func panel(_ panel: Panel, willTransitionTo mode: Panel.Configuration.Mode, with coordinator: PanelTransitionCoordinator) {
+        print(mode)
+    }
 }
 
 // MARK: - Private
