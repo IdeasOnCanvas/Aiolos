@@ -83,8 +83,9 @@ public extension Panel {
         self.resizeHandle.frame = resizeFrame
         self.panelView.frame = panelFrame
 
-        var dividerFrame = panelFrame.insetBy(dx: 1.0, dy: 0.0)
-        dividerFrame.size.height = 1.0 / (self.view.window?.screen.scale ?? 1.0)
+        let lineWidth = 1.0 / UIScreen.main.scale
+        var dividerFrame = panelFrame.insetBy(dx: lineWidth, dy: 0.0)
+        dividerFrame.size.height = lineWidth
         dividerFrame.origin.y -= dividerFrame.size.height / 2.0
         self.dividerView.frame = dividerFrame
     }
