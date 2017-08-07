@@ -13,7 +13,6 @@ import UIKit
 final class ViewController: UIViewController {
 
     private lazy var panelController: Panel = self.makePanelController()
-    private lazy var lineView: UIView = self.makeLineView()
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -36,7 +35,6 @@ final class ViewController: UIViewController {
         textField.layer.borderWidth = 1.0
         textField.delegate = self
         self.view.addSubview(textField)
-        self.view.addSubview(self.lineView)
 
         self.navigationItem.rightBarButtonItems = [
             UIBarButtonItem(barButtonSystemItem: .refresh, target: self, action: #selector(handleToggleVisibilityPress)),
@@ -92,14 +90,21 @@ extension ViewController: PanelSizeDelegate {
 extension ViewController: PanelAnimationDelegate {
 
     func panel(_ panel: Panel, willTransitionTo size: CGSize, with coordinator: PanelTransitionCoordinator) {
-        // print("Will transition to \(size), animated: \(coordinator.isAnimated)")
-//        coordinator.animateAlongsideTransition({
-//            self.lineView.center = CGPoint(x: panel.view.center.x, y: panel.view.frame.minY - 5.0)
-//        })
+        print("Will transition to \(size), animated: \(coordinator.isAnimated)")
+        coordinator.animateAlongsideTransition({
+            print("Animating willTransitionToSize")
+        }) { _ in
+            print("Completed willTransitionToSize")
+        }
     }
 
     func panel(_ panel: Panel, willTransitionTo mode: Panel.Configuration.Mode, with coordinator: PanelTransitionCoordinator) {
         print(mode)
+        coordinator.animateAlongsideTransition({
+            print("Animating willTransitionToMode")
+        }) { _ in
+            print("Completed willTransitionToMode")
+        }
     }
 }
 
@@ -130,12 +135,6 @@ private extension ViewController {
         }
 
         return panelController
-    }
-
-    func makeLineView() -> UIView {
-        let view = UIView(frame: CGRect(x: 0.0, y: 0.0, width: 100.0, height: 1.0))
-        view.backgroundColor = .red
-        return view
     }
 
     func panelWidth(for traitCollection: UITraitCollection, position: Panel.Configuration.Position) -> CGFloat {

@@ -28,7 +28,7 @@ public final class PanelTransitionCoordinator {
     // MARK: - PanelTransitionCoordinator
 
     public func animateAlongsideTransition(_ animations: @escaping () -> Void, completion: ((UIViewAnimatingPosition) -> Void)? = nil) {
-        self.animator.transitionCoordinatorQueuedAnimation = Animation(animations: animations, completion: completion)
+        self.animator.transitionCoordinatorQueuedAnimations.append(Animation(animations: animations, completion: completion))
     }
 }
 

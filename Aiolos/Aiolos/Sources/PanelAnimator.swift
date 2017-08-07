@@ -15,7 +15,7 @@ final class PanelAnimator {
     private unowned let panel: Panel
 
     var animateChanges: Bool = true
-    var transitionCoordinatorQueuedAnimation: PanelTransitionCoordinator.Animation?
+    var transitionCoordinatorQueuedAnimations: [PanelTransitionCoordinator.Animation] = []
 
     // MARK: - Lifecycle
 
@@ -39,11 +39,13 @@ final class PanelAnimator {
         })
 
         // we might have enqueued animations from a transition coordinator, perform them along the main changes
-        if let transitionCoordinatorQueuedAnimation = self.transitionCoordinatorQueuedAnimation {
-            animator.addAnimations(transitionCoordinatorQueuedAnimation.animations)
-            transitionCoordinatorQueuedAnimation.completion.map(animator.addCompletion)
-            self.transitionCoordinatorQueuedAnimation = nil
+        self.transitionCoordinatorQueuedAnimations.forEach {
+            animator.addAnimations($0.animations)
+            if let completion = $0.completion {
+                animator.addCompletion(completion)
+            }
         }
+        self.transitionCoordinatorQueuedAnimations = []
 
         // if we don't want to animate, perform changes directly by setting the completion state to 100 %
         if shouldAnimate == false {
