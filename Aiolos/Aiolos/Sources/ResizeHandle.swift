@@ -76,7 +76,7 @@ private extension ResizeHandle {
         layer.contentsScale = UIScreen.main.scale
         layer.backgroundColor = UIColor.clear.cgColor
         layer.fillColor = UIColor.clear.cgColor
-        layer.lineWidth = 3.0
+        layer.lineWidth = 5.0
         layer.lineCap = kCALineCapRound
         return layer
     }
@@ -88,9 +88,9 @@ private extension ResizeHandle {
 
     func updateResizeHandlePath(animated: Bool = false) {
         let path = UIBezierPath()
-        let width: CGFloat = self.isResizing ? 35.0 : 30.0
+        let width: CGFloat = self.isResizing ? 38.0 : 32.0
 
-        let r = self.bounds.divided(atDistance: 6.0, from: .maxYEdge).slice
+        let r = self.bounds.divided(atDistance: 13.0, from: .maxYEdge).slice
         let centerX = r.width / 2.0
         let y = r.minY + self.resizeHandle.lineWidth / 2.0
 

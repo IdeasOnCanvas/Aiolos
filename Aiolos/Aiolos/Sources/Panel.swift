@@ -14,10 +14,11 @@ import Foundation
 public final class Panel: UIViewController {
 
     lazy var panelView: PanelView = self.makePanelView()
+    lazy var resizeHandle: ResizeHandle = self.makeResizeHandle()
     private var shadowView: ShadowView? { return self.viewIfLoaded as? ShadowView }
     private var containerView: ContainerView? { return self.viewIfLoaded?.subviews.first as? ContainerView }
     private lazy var dimmingView: UIView = self.makeDimmingView()
-    lazy var resizeHandle: ResizeHandle = self.makeResizeHandle()
+    private lazy var dividerView: UIView = self.makeDividerView()
 
     private lazy var gestures: PanelGestures = self.makeGestures()
     lazy var constraints: PanelConstraints = self.makeConstraints()
@@ -72,15 +73,20 @@ public extension Panel {
 
         self.gestures.install()
         self.containerView?.insertSubview(self.resizeHandle, at: 0)
+        self.containerView?.addSubview(self.dividerView)
     }
 
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
 
-        let (resizeFrame, panelFrame) = self.view.bounds.divided(atDistance: 10.0, from: .minYEdge)
-        // if we don't increase the size by 1pt there sometimes is a visual glitch when used with a NavCtrl
-        self.resizeHandle.frame = UIEdgeInsetsInsetRect(resizeFrame, UIEdgeInsets(top: 0.0, left: 0.0, bottom: -1.0, right: 0.0))
+        let (resizeFrame, panelFrame) = self.view.bounds.divided(atDistance: 20.0, from: .minYEdge)
+        self.resizeHandle.frame = resizeFrame
         self.panelView.frame = panelFrame
+
+        var dividerFrame = panelFrame.insetBy(dx: 1.0, dy: 0.0)
+        dividerFrame.size.height = 1.0 / (self.view.window?.screen.scale ?? 1.0)
+        dividerFrame.origin.y -= dividerFrame.size.height / 2.0
+        self.dividerView.frame = dividerFrame
     }
 }
 
@@ -90,6 +96,8 @@ public extension Panel {
 
     @objc(addToParent:)
     func add(to parent: UIViewController) {
+        guard self.parent !== parent else { return }
+
         parent.addChildViewController(self)
         parent.view.addSubview(self.view)
         self.didMove(toParentViewController: parent)
@@ -161,6 +169,12 @@ private extension Panel {
         return ResizeHandle(configuration: self.configuration)
     }
 
+    func makeDividerView() -> UIView {
+        let view = UIView()
+        view.backgroundColor = self.configuration.borderColor
+        return view
+    }
+
     func makeGestures() -> PanelGestures {
         return PanelGestures(panel: self)
     }
@@ -206,6 +220,7 @@ private extension Panel {
         self.containerView?.configure(with: newConfiguration)
         self.panelView.configure(with: newConfiguration)
         self.resizeHandle.configure(with: newConfiguration)
+        self.dividerView.backgroundColor = newConfiguration.borderColor
 
         let modeChanged = oldConfiguration.mode != newConfiguration.mode
         let positionChanged = oldConfiguration.position != newConfiguration.position
