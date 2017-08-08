@@ -95,8 +95,7 @@ public extension Panel {
 
 public extension Panel {
 
-    @objc(addToParent:)
-    func add(to parent: UIViewController) {
+    func add(to parent: UIViewController, transition: Transition = .none) {
         guard self.parent !== parent else { return }
 
         parent.addChildViewController(self)
@@ -104,21 +103,17 @@ public extension Panel {
         self.didMove(toParentViewController: parent)
 
         let size = self.size(for: self.configuration.mode)
-        self.animator.performWithoutAnimation {
-            self.animator.notifyDelegateOfTransition(to: size)
-            self.animator.notifyDelegateOfTransition(to: self.configuration.mode)
-            self.constraints.updateSizeConstraints(for: size)
-            self.constraints.updatePositionConstraints(for: self.configuration.position, margins: self.configuration.margins)
-        }
+        self.animator.transitionToParent(with: size, transition: transition)
     }
 
-    @objc
-    func removeFromParent() {
+    func removeFromParent(transition: Transition = .none) {
         guard self.parent != nil else { return }
 
-        self.willMove(toParentViewController: nil)
-        self.view.removeFromSuperview()
-        self.removeFromParentViewController()
+        self.animator.removeFromParent(transition: transition) {
+            self.willMove(toParentViewController: nil)
+            self.view.removeFromSuperview()
+            self.removeFromParentViewController()
+        }
     }
 }
 

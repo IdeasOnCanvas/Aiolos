@@ -23,6 +23,7 @@
 		9B2252801F151046006DE55D /* PanelConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B22527F1F151046006DE55D /* PanelConfiguration.swift */; };
 		9BC45F8A1F320A860099EE5B /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 9BC45F891F320A860099EE5B /* Launch Screen.storyboard */; };
 		9BC5F42F1F34757C001DDBEE /* ShadowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9BC5F42E1F34757C001DDBEE /* ShadowView.swift */; };
+		9BC6A9411F3A03D100CE9499 /* PanelTransition.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9BC6A9401F3A03D100CE9499 /* PanelTransition.swift */; };
 		9BEB70271F16582F00EDB0C1 /* PanelContentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9BEB70261F16582F00EDB0C1 /* PanelContentViewController.swift */; };
 		9BEB70291F17715700EDB0C1 /* ContainerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9BEB70281F17715700EDB0C1 /* ContainerView.swift */; };
 		9BEB702B1F179D2A00EDB0C1 /* PanelConstraints.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9BEB702A1F179D2A00EDB0C1 /* PanelConstraints.swift */; };
@@ -74,6 +75,7 @@
 		9B22527F1F151046006DE55D /* PanelConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PanelConfiguration.swift; sourceTree = "<group>"; };
 		9BC45F891F320A860099EE5B /* Launch Screen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = "Launch Screen.storyboard"; sourceTree = "<group>"; };
 		9BC5F42E1F34757C001DDBEE /* ShadowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShadowView.swift; sourceTree = "<group>"; };
+		9BC6A9401F3A03D100CE9499 /* PanelTransition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PanelTransition.swift; sourceTree = "<group>"; };
 		9BEB70261F16582F00EDB0C1 /* PanelContentViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PanelContentViewController.swift; sourceTree = "<group>"; };
 		9BEB70281F17715700EDB0C1 /* ContainerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContainerView.swift; sourceTree = "<group>"; };
 		9BEB702A1F179D2A00EDB0C1 /* PanelConstraints.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PanelConstraints.swift; sourceTree = "<group>"; };
@@ -149,6 +151,7 @@
 				9BEB70301F19154300EDB0C1 /* KeyboardLayoutGuide.swift */,
 				9B2252791F150B14006DE55D /* Panel.swift */,
 				9BEB702C1F17A2CF00EDB0C1 /* PanelAnimator.swift */,
+				9BC6A9401F3A03D100CE9499 /* PanelTransition.swift */,
 				9B22527F1F151046006DE55D /* PanelConfiguration.swift */,
 				9BEB702A1F179D2A00EDB0C1 /* PanelConstraints.swift */,
 				9B2252771F150A8E006DE55D /* PanelDelegate.swift */,
@@ -296,6 +299,7 @@
 				9B2252801F151046006DE55D /* PanelConfiguration.swift in Sources */,
 				9BEB70291F17715700EDB0C1 /* ContainerView.swift in Sources */,
 				9B0A24731F34ACB500BCAA91 /* UIViewController+Panel.swift in Sources */,
+				9BC6A9411F3A03D100CE9499 /* PanelTransition.swift in Sources */,
 				9B2209601F1E4CC700BD4E72 /* ResizeHandle.swift in Sources */,
 				9BC5F42F1F34757C001DDBEE /* ShadowView.swift in Sources */,
 				9BEB702F1F18F9C600EDB0C1 /* PanelGestures.swift in Sources */,

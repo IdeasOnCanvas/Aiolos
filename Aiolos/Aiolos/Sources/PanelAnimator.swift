@@ -78,6 +78,50 @@ final class PanelAnimator {
     }
 }
 
+// MARK: - Transitions
+
+extension PanelAnimator {
+
+    func transitionToParent(with size: CGSize, transition: Panel.Transition) {
+        self.prepare(for: transition, size: size)
+        self.performWithoutAnimation {
+            self.notifyDelegateOfTransition(to: size)
+            self.notifyDelegateOfTransition(to: self.panel.configuration.mode)
+            self.panel.constraints.updateSizeConstraints(for: size)
+            self.panel.constraints.updatePositionConstraints(for: self.panel.configuration.position, margins: self.panel.configuration.margins)
+        }
+        self.finalizeTransition(transition)
+    }
+
+    func removeFromParent(transition: Panel.Transition, completion: @escaping () -> Void) {
+        let animator = UIViewPropertyAnimator(duration: Constants.Animation.duration, dampingRatio: Constants.Animation.damping)
+
+        switch transition {
+        case .none:
+            completion()
+            return
+
+        case .fade:
+            animator.addAnimations {
+                self.panel.view.alpha = 0.0
+            }
+
+        case .slide(let edge):
+            animator.addAnimations {
+                self.panel.view.transform = self.transform(for: edge, size: self.panel.view.frame.size)
+            }
+        }
+
+        animator.addCompletion { _ in
+            completion()
+            // reset values to normal values
+            self.finalizeTransition(.none)
+        }
+
+        animator.startAnimation()
+    }
+}
+
 // MARK: - Private
 
 private extension PanelAnimator {
@@ -86,6 +130,51 @@ private extension PanelAnimator {
         struct Animation {
             static let duration: TimeInterval = 0.42
             static let damping: CGFloat = 0.8
+        }
+    }
+
+    func prepare(for transition: Panel.Transition, size: CGSize) {
+        switch transition {
+        case .none:
+            break
+        case .fade:
+            self.panel.view.alpha = 0.0
+        case .slide(let direction):
+            self.panel.view.transform = self.transform(for: direction, size: size)
+            break
+        }
+    }
+
+    func finalizeTransition(_ transition: Panel.Transition) {
+        let changes = {
+            self.panel.view.alpha = 1.0
+            self.panel.view.transform = .identity
+        }
+
+        switch transition {
+        case .none:
+            changes()
+
+        case .fade:
+            fallthrough
+        case .slide(_):
+            let animator = UIViewPropertyAnimator(duration: Constants.Animation.duration, dampingRatio: Constants.Animation.damping, animations: changes)
+            animator.startAnimation()
+        }
+    }
+
+    func transform(for direction: Panel.Direction, size: CGSize) -> CGAffineTransform {
+        let isRTL = self.panel.view.effectiveUserInterfaceLayoutDirection == .rightToLeft
+        let position = self.panel.configuration.position
+        let margins = self.panel.configuration.margins
+        let animateToLeft = isRTL != (position == .leadingBottom)
+
+        switch direction {
+        case .horizontal:
+            let translationX = animateToLeft ? -(size.width + margins.left) : size.width + margins.right
+            return CGAffineTransform(translationX: translationX, y: 0.0)
+        case .vertical:
+            return CGAffineTransform(translationX: 0.0, y: size.height + margins.bottom)
         }
     }
 }

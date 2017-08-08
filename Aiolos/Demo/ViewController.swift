@@ -41,7 +41,7 @@ final class ViewController: UIViewController {
             UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(handleToggleModePress))
         ]
 
-        self.panelController.add(to: self)
+        self.panelController.add(to: self, transition: .fade)
     }
 
     override func willTransition(to newCollection: UITraitCollection, with coordinator: UIViewControllerTransitionCoordinator) {
@@ -159,9 +159,9 @@ private extension ViewController {
     @objc
     func handleToggleVisibilityPress() {
         if self.panelController.isVisible {
-            self.panelController.removeFromParent()
+            self.panelController.removeFromParent(transition: .slide(direction: .vertical))
         } else {
-            self.panelController.add(to: self)
+            self.panelController.add(to: self, transition: .slide(direction: .vertical))
         }
     }
 
