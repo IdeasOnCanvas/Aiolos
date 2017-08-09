@@ -41,7 +41,7 @@ final class ViewController: UIViewController {
             UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(handleToggleModePress))
         ]
 
-        self.panelController.add(to: self, transition: .fade)
+        self.panelController.add(to: self, transition: .none)
     }
 
     override func willTransition(to newCollection: UITraitCollection, with coordinator: UIViewControllerTransitionCoordinator) {
@@ -90,21 +90,21 @@ extension ViewController: PanelSizeDelegate {
 extension ViewController: PanelAnimationDelegate {
 
     func panel(_ panel: Panel, willTransitionTo size: CGSize, with coordinator: PanelTransitionCoordinator) {
-        print("Will transition to \(size), animated: \(coordinator.isAnimated)")
-        coordinator.animateAlongsideTransition({
-            print("Animating willTransitionToSize")
-        }) { _ in
-            print("Completed willTransitionToSize")
-        }
+//        print("Will transition to \(size), animated: \(coordinator.isAnimated)")
+//        coordinator.animateAlongsideTransition({
+//            print("Animating willTransitionToSize")
+//        }) { _ in
+//            print("Completed willTransitionToSize")
+//        }
     }
 
     func panel(_ panel: Panel, willTransitionTo mode: Panel.Configuration.Mode, with coordinator: PanelTransitionCoordinator) {
-        print(mode)
-        coordinator.animateAlongsideTransition({
-            print("Animating willTransitionToMode")
-        }) { _ in
-            print("Completed willTransitionToMode")
-        }
+//        print(mode)
+//        coordinator.animateAlongsideTransition({
+//            print("Animating willTransitionToMode")
+//        }) { _ in
+//            print("Completed willTransitionToMode")
+//        }
     }
 }
 

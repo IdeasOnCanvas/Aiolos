@@ -21,5 +21,14 @@ public extension Panel {
         case none
         case fade
         case slide(direction: Direction)
+
+        var isAnimated: Bool {
+            switch self {
+            case .none:
+                return false
+            default:
+                return true
+            }
+        }
     }
 }

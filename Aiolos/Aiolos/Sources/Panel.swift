@@ -64,6 +64,10 @@ public final class Panel: UIViewController {
 
 public extension Panel {
 
+    public override var shouldAutomaticallyForwardAppearanceMethods: Bool {
+        return false
+    }
+
     override func loadView() {
         self.view = self.makeShadowView(for: self.panelView)
     }
@@ -98,18 +102,23 @@ public extension Panel {
     func add(to parent: UIViewController, transition: Transition = .none) {
         guard self.parent !== parent else { return }
 
+        self.contentViewController?.beginAppearanceTransition(true, animated: transition.isAnimated)
         parent.addChildViewController(self)
         parent.view.addSubview(self.view)
         self.didMove(toParentViewController: parent)
 
         let size = self.size(for: self.configuration.mode)
-        self.animator.transitionToParent(with: size, transition: transition)
+        self.animator.transitionToParent(with: size, transition: transition) {
+            self.contentViewController?.endAppearanceTransition()
+        }
     }
 
     func removeFromParent(transition: Transition = .none) {
         guard self.parent != nil else { return }
 
+        self.contentViewController?.beginAppearanceTransition(false, animated: transition.isAnimated)
         self.animator.removeFromParent(transition: transition) {
+            self.contentViewController?.endAppearanceTransition()
             self.willMove(toParentViewController: nil)
             self.view.removeFromSuperview()
             self.removeFromParentViewController()
@@ -209,6 +218,10 @@ private extension Panel {
             self.addChildViewController(newContentViewController)
             self.panelView.contentView.addSubview(newContentViewController.view)
             newContentViewController.didMove(toParentViewController: self)
+
+            let horizontalTraits = UITraitCollection(horizontalSizeClass: .compact)
+            let verticalTraits = UITraitCollection(verticalSizeClass: .compact)
+            self.setOverrideTraitCollection(UITraitCollection(traitsFrom: [horizontalTraits, verticalTraits]), forChildViewController: newContentViewController)
         }
     }
 

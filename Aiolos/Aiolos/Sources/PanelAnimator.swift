@@ -82,7 +82,7 @@ final class PanelAnimator {
 
 extension PanelAnimator {
 
-    func transitionToParent(with size: CGSize, transition: Panel.Transition) {
+    func transitionToParent(with size: CGSize, transition: Panel.Transition, completion: @escaping () -> Void) {
         self.prepare(for: transition, size: size)
         self.performWithoutAnimation {
             self.notifyDelegateOfTransition(to: size)
@@ -90,7 +90,7 @@ extension PanelAnimator {
             self.panel.constraints.updateSizeConstraints(for: size)
             self.panel.constraints.updatePositionConstraints(for: self.panel.configuration.position, margins: self.panel.configuration.margins)
         }
-        self.finalizeTransition(transition)
+        self.finalizeTransition(transition, completion: completion)
     }
 
     func removeFromParent(transition: Panel.Transition, completion: @escaping () -> Void) {
@@ -114,8 +114,7 @@ extension PanelAnimator {
 
         animator.addCompletion { _ in
             completion()
-            // reset values to normal values
-            self.finalizeTransition(.none)
+            self.resetPanel()
         }
 
         animator.startAnimation()
@@ -145,20 +144,22 @@ private extension PanelAnimator {
         }
     }
 
-    func finalizeTransition(_ transition: Panel.Transition) {
-        let changes = {
-            self.panel.view.alpha = 1.0
-            self.panel.view.transform = .identity
-        }
+    func resetPanel() {
+        self.panel.view.alpha = 1.0
+        self.panel.view.transform = .identity
+    }
 
+    func finalizeTransition(_ transition: Panel.Transition, completion: @escaping () -> Void) {
         switch transition {
         case .none:
-            changes()
+            self.resetPanel()
+            completion()
 
         case .fade:
             fallthrough
         case .slide(_):
-            let animator = UIViewPropertyAnimator(duration: Constants.Animation.duration, dampingRatio: Constants.Animation.damping, animations: changes)
+            let animator = UIViewPropertyAnimator(duration: Constants.Animation.duration, dampingRatio: Constants.Animation.damping, animations: self.resetPanel)
+            animator.addCompletion { _ in completion() }
             animator.startAnimation()
         }
     }
