@@ -94,6 +94,12 @@ private extension PanelGestures {
         self.panel.animator.performWithoutAnimation {
             self.panel.constraints.updateForDragStart(with: configuration.size)
         }
+
+        if let contentViewController = self.panel.contentViewController {
+            pan.didStartOnScrollableArea =
+                self.gestureRecognizer(pan, isWithinContentAreaOf: contentViewController) &&
+                self.contentIsScrollableVertically(of: contentViewController, at: pan.location(in: self.panel.view))
+        }
     }
 
     func handlePanChanged(_ pan: PanGestureRecognizer) {
@@ -117,10 +123,7 @@ private extension PanelGestures {
         let dY = dragOffset(for: translation)
 
         // cancel pan if it was started on the content/safeArea and it's used to grow the panel in height
-        if translation.y < 0.0,
-            let contentViewController = self.panel.contentViewController,
-            self.gestureRecognizer(pan, isWithinContentAreaOf: contentViewController),
-            self.contentIsScrollableVertically(of: contentViewController, at: pan.location(in: self.panel.view)) {
+        if translation.y < 0.0 && pan.didStartOnScrollableArea {
             pan.isEnabled = false
             pan.isEnabled = true
             return

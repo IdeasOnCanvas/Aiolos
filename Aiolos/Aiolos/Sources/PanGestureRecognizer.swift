@@ -23,6 +23,7 @@ public final class PanGestureRecognizer: UIGestureRecognizer {
     // MARK: Properties
 
     private(set) var didPan: Bool = false
+    var didStartOnScrollableArea: Bool = false
 }
 
 // MARK: - UIGestureRecognizer+Subclass
@@ -90,6 +91,7 @@ public extension PanGestureRecognizer {
         super.reset()
 
         self.didPan = false
+        self.didStartOnScrollableArea = false
     }
 }
 
