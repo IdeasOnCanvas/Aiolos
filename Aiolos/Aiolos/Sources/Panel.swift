@@ -23,10 +23,11 @@ public final class Panel: UIViewController {
     private lazy var gestures: PanelGestures = self.makeGestures()
     lazy var constraints: PanelConstraints = self.makeConstraints()
     lazy var animator: PanelAnimator = self.makeAnimator()
+    private var isTransitioningFromParent: Bool = false
 
     // MARK: - Properties
 
-    @objc public var isVisible: Bool { return self.parent != nil && self.isMovingFromParentViewController == false }
+    @objc public var isVisible: Bool { return self.parent != nil && self.isTransitioningFromParent == false }
     public weak var sizeDelegate: PanelSizeDelegate?
     public weak var animationDelegate: PanelAnimationDelegate?
 
@@ -116,12 +117,14 @@ public extension Panel {
     func removeFromParent(transition: Transition = .none) {
         guard self.parent != nil else { return }
 
+        self.isTransitioningFromParent = true
         self.contentViewController?.beginAppearanceTransition(false, animated: transition.isAnimated)
         self.willMove(toParentViewController: nil)
         self.animator.removeFromParent(transition: transition) {
             self.contentViewController?.endAppearanceTransition()
             self.view.removeFromSuperview()
             self.removeFromParentViewController()
+            self.isTransitioningFromParent = false
         }
     }
 }
