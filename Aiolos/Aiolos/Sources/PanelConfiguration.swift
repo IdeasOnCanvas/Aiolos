@@ -14,13 +14,13 @@ public extension Panel {
 
     public struct Configuration {
 
-        public enum Position {
+        public enum Position: Int {
             case bottom
             case leadingBottom
             case trailingBottom
         }
 
-        public enum Mode {
+        public enum Mode: Int {
             case compact
             case expanded
             case fullHeight
