@@ -18,7 +18,7 @@ public final class Panel: UIViewController {
     private var shadowView: ShadowView? { return self.viewIfLoaded as? ShadowView }
     private var containerView: ContainerView? { return self.viewIfLoaded?.subviews.first as? ContainerView }
     private lazy var dimmingView: UIView = self.makeDimmingView()
-    private lazy var dividerView: UIView = self.makeDividerView()
+    private lazy var separatorView: SeparatorView = self.makeSeparatorView()
 
     private lazy var gestures: PanelGestures = self.makeGestures()
     lazy var constraints: PanelConstraints = self.makeConstraints()
@@ -78,7 +78,7 @@ public extension Panel {
 
         self.gestures.install()
         self.containerView?.insertSubview(self.resizeHandle, at: 0)
-        self.containerView?.addSubview(self.dividerView)
+        self.containerView?.addSubview(self.separatorView)
     }
 
     override func viewDidLayoutSubviews() {
@@ -92,7 +92,7 @@ public extension Panel {
         var dividerFrame = panelFrame.insetBy(dx: lineWidth, dy: 0.0)
         dividerFrame.size.height = lineWidth
         dividerFrame.origin.y -= dividerFrame.size.height / 2.0
-        self.dividerView.frame = dividerFrame
+        self.separatorView.frame = dividerFrame
     }
 }
 
@@ -178,10 +178,8 @@ private extension Panel {
         return ResizeHandle(configuration: self.configuration)
     }
 
-    func makeDividerView() -> UIView {
-        let view = UIView()
-        view.backgroundColor = self.configuration.borderColor
-        return view
+    func makeSeparatorView() -> SeparatorView {
+        return SeparatorView(configuration: self.configuration)
     }
 
     func makeGestures() -> PanelGestures {
@@ -233,7 +231,7 @@ private extension Panel {
         self.containerView?.configure(with: newConfiguration)
         self.panelView.configure(with: newConfiguration)
         self.resizeHandle.configure(with: newConfiguration)
-        self.dividerView.backgroundColor = newConfiguration.borderColor
+        self.separatorView.configure(with: newConfiguration)
 
         let modeChanged = oldConfiguration.mode != newConfiguration.mode
         let positionChanged = oldConfiguration.position != newConfiguration.position

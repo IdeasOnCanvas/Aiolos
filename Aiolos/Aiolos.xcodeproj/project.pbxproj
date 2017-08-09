@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		9B037A8D1F3B618C00ACCC26 /* SeparatorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B037A8C1F3B618C00ACCC26 /* SeparatorView.swift */; };
 		9B0A24731F34ACB500BCAA91 /* UIViewController+Panel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B0A24721F34ACB500BCAA91 /* UIViewController+Panel.swift */; };
 		9B22095E1F1E1C1400BD4E72 /* PanGestureRecognizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B22095D1F1E1C1400BD4E72 /* PanGestureRecognizer.swift */; };
 		9B2209601F1E4CC700BD4E72 /* ResizeHandle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B22095F1F1E4CC700BD4E72 /* ResizeHandle.swift */; };
@@ -57,6 +58,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		9B037A8C1F3B618C00ACCC26 /* SeparatorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SeparatorView.swift; sourceTree = "<group>"; };
 		9B0A24721F34ACB500BCAA91 /* UIViewController+Panel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIViewController+Panel.swift"; sourceTree = "<group>"; };
 		9B22095D1F1E1C1400BD4E72 /* PanGestureRecognizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PanGestureRecognizer.swift; sourceTree = "<group>"; };
 		9B22095F1F1E4CC700BD4E72 /* ResizeHandle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResizeHandle.swift; sourceTree = "<group>"; };
@@ -151,15 +153,16 @@
 				9BEB70301F19154300EDB0C1 /* KeyboardLayoutGuide.swift */,
 				9B2252791F150B14006DE55D /* Panel.swift */,
 				9BEB702C1F17A2CF00EDB0C1 /* PanelAnimator.swift */,
-				9BC6A9401F3A03D100CE9499 /* PanelTransition.swift */,
 				9B22527F1F151046006DE55D /* PanelConfiguration.swift */,
 				9BEB702A1F179D2A00EDB0C1 /* PanelConstraints.swift */,
 				9B2252771F150A8E006DE55D /* PanelDelegate.swift */,
 				9BEB702E1F18F9C600EDB0C1 /* PanelGestures.swift */,
+				9BC6A9401F3A03D100CE9499 /* PanelTransition.swift */,
 				9B2252751F150995006DE55D /* PanelTransitionCoordinator.swift */,
 				9B22527D1F150F39006DE55D /* PanelView.swift */,
 				9B22095D1F1E1C1400BD4E72 /* PanGestureRecognizer.swift */,
 				9B22095F1F1E4CC700BD4E72 /* ResizeHandle.swift */,
+				9B037A8C1F3B618C00ACCC26 /* SeparatorView.swift */,
 				9BC5F42E1F34757C001DDBEE /* ShadowView.swift */,
 				9B0A24721F34ACB500BCAA91 /* UIViewController+Panel.swift */,
 			);
@@ -299,6 +302,7 @@
 				9B2252801F151046006DE55D /* PanelConfiguration.swift in Sources */,
 				9BEB70291F17715700EDB0C1 /* ContainerView.swift in Sources */,
 				9B0A24731F34ACB500BCAA91 /* UIViewController+Panel.swift in Sources */,
+				9B037A8D1F3B618C00ACCC26 /* SeparatorView.swift in Sources */,
 				9BC6A9411F3A03D100CE9499 /* PanelTransition.swift in Sources */,
 				9B2209601F1E4CC700BD4E72 /* ResizeHandle.swift in Sources */,
 				9BC5F42F1F34757C001DDBEE /* ShadowView.swift in Sources */,

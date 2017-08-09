@@ -99,12 +99,12 @@ extension ViewController: PanelAnimationDelegate {
     }
 
     func panel(_ panel: Panel, willTransitionTo mode: Panel.Configuration.Mode, with coordinator: PanelTransitionCoordinator) {
-//        print(mode)
-//        coordinator.animateAlongsideTransition({
-//            print("Animating willTransitionToMode")
-//        }) { _ in
-//            print("Completed willTransitionToMode")
-//        }
+        print("Will transition to mode \(mode)")
+        coordinator.animateAlongsideTransition({
+            print("Animating willTransitionToMode")
+        }) { _ in
+            print("Completed willTransitionToMode")
+        }
     }
 }
 
@@ -127,6 +127,7 @@ private extension ViewController {
         panelController.contentViewController = contentNavigationController
         panelController.configuration.position = self.panelPosition(for: self.traitCollection)
         panelController.configuration.margins = self.panelMargins(for: self.traitCollection)
+        panelController.configuration.separatorColor = .white
 
         if self.traitCollection.userInterfaceIdiom == .pad {
             panelController.configuration.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner, .layerMinXMaxYCorner, .layerMaxXMaxYCorner]
