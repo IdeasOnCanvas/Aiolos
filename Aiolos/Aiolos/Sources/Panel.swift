@@ -209,16 +209,20 @@ private extension Panel {
     func exchangeContentViewController(_ oldContentViewController: UIViewController?, with newContentViewController: UIViewController?) {
         // remove old contentViewController
         if let oldContentViewController = oldContentViewController {
+            oldContentViewController.beginAppearanceTransition(false, animated: false)
             oldContentViewController.willMove(toParentViewController: nil)
             oldContentViewController.view.removeFromSuperview()
             oldContentViewController.removeFromParentViewController()
+            oldContentViewController.endAppearanceTransition()
         }
 
         // add new contentViewController
         if let newContentViewController = newContentViewController {
+            newContentViewController.beginAppearanceTransition(true, animated: false)
             self.addChildViewController(newContentViewController)
             self.panelView.contentView.addSubview(newContentViewController.view)
             newContentViewController.didMove(toParentViewController: self)
+            newContentViewController.endAppearanceTransition()
 
             let horizontalTraits = UITraitCollection(horizontalSizeClass: .compact)
             let verticalTraits = UITraitCollection(verticalSizeClass: .compact)
