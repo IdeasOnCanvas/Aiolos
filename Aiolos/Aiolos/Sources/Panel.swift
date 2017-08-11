@@ -13,20 +13,20 @@ import Foundation
 @objc
 public final class Panel: UIViewController {
 
-    lazy var panelView: PanelView = self.makePanelView()
-    lazy var resizeHandle: ResizeHandle = self.makeResizeHandle()
+    private(set) lazy var resizeHandle: ResizeHandle = self.makeResizeHandle()
     private var shadowView: ShadowView? { return self.viewIfLoaded as? ShadowView }
     private var containerView: ContainerView? { return self.viewIfLoaded?.subviews.first as? ContainerView }
     private lazy var dimmingView: UIView = self.makeDimmingView()
     private lazy var separatorView: SeparatorView = self.makeSeparatorView()
 
     private lazy var gestures: PanelGestures = self.makeGestures()
-    lazy var constraints: PanelConstraints = self.makeConstraints()
-    lazy var animator: PanelAnimator = self.makeAnimator()
+    private(set) lazy var constraints: PanelConstraints = self.makeConstraints()
+    private(set) lazy var animator: PanelAnimator = self.makeAnimator()
     private var isTransitioningFromParent: Bool = false
 
     // MARK: - Properties
 
+    @objc private(set) public lazy var panelView: PanelView = self.makePanelView()
     @objc public var isVisible: Bool { return self.parent != nil && self.isTransitioningFromParent == false }
     public weak var sizeDelegate: PanelSizeDelegate?
     public weak var animationDelegate: PanelAnimationDelegate?
@@ -84,7 +84,7 @@ public extension Panel {
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
 
-        let (resizeFrame, panelFrame) = self.view.bounds.divided(atDistance: 20.0, from: .minYEdge)
+        let (resizeFrame, panelFrame) = self.view.bounds.divided(atDistance: ResizeHandle.Constants.height, from: .minYEdge)
         self.resizeHandle.frame = resizeFrame
         self.panelView.frame = panelFrame
 

@@ -10,6 +10,7 @@ import Foundation
 
 
 /// The view of the Panel
+@objc
 public final class PanelView: UIVisualEffectView {
 
     // MARK: - Lifecycle

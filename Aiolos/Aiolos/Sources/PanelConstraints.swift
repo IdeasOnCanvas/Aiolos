@@ -113,10 +113,6 @@ internal extension PanelConstraints {
 
 private extension PanelConstraints {
 
-    struct Constants {
-        static let minHeight: CGFloat = 44.0
-    }
-
     func makeKeyboardLayoutGuide() -> KeyboardLayoutGuide {
         guard let parentView = self.panel.parent?.view else { fatalError("Must have a parent by now") }
 
@@ -129,7 +125,7 @@ private extension PanelConstraints {
             constraint.priority = .defaultHigh
         }
 
-        let minHeightConstraint = self.panel.view.heightAnchor.constraint(greaterThanOrEqualToConstant: Constants.minHeight).withIdentifier("Panel Min Height")
+        let minHeightConstraint = self.panel.view.heightAnchor.constraint(greaterThanOrEqualToConstant: ResizeHandle.Constants.height).withIdentifier("Panel Min Height")
         let heightConstraint = self.panel.view.heightAnchor.constraint(equalToConstant: size.height).configure { constraint in
             constraint.identifier = "Panel Height"
             constraint.priority = .defaultHigh

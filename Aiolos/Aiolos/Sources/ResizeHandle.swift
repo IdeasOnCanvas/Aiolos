@@ -10,7 +10,11 @@ import Foundation
 
 
 /// View that is used to display the resize handle
-final class ResizeHandle: UIView {
+public final class ResizeHandle: UIView {
+
+    public struct Constants {
+        public static let height: CGFloat = 20.0
+    }
 
     private lazy var resizeHandle: CAShapeLayer = self.makeResizeHandle()
 
@@ -43,7 +47,7 @@ final class ResizeHandle: UIView {
         self.configure(with: configuration)
     }
 
-    required init?(coder aDecoder: NSCoder) {
+    public required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 
@@ -59,7 +63,7 @@ final class ResizeHandle: UIView {
 
 extension ResizeHandle {
 
-    override func layoutSubviews() {
+    override public func layoutSubviews() {
         super.layoutSubviews()
 
         self.resizeHandle.frame = self.bounds
