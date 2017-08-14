@@ -52,15 +52,21 @@ private extension KeyboardLayoutGuide {
         guard let window = owningView.window else { return }
         guard let keyboardInfo = KeyboardInfo(userInfo: notification.userInfo) else { return }
 
-        // convert own frame to window coordinates, frame is in superview's coordinates
-        let owningViewFrame = window.convert(owningView.frame, from: owningView.superview)
-        // calculate the area of own frame that is covered by keyboard
-        var coveredFrame = owningViewFrame.intersection(keyboardInfo.endFrame)
-        // now this might be rotated, so convert it back
-        coveredFrame = window.convert(coveredFrame, to: owningView.superview)
+        let coveredHeight: CGFloat
+
+        if keyboardInfo.isFloatingKeyboard {
+            coveredHeight = 0.0
+        } else {
+            // convert own frame to window coordinates
+            let owningViewFrame = window.convert(owningView.frame, from: owningView.superview)
+            // calculate the area of own frame that is covered by keyboard
+            let coveredFrame = owningViewFrame.intersection(keyboardInfo.endFrame)
+            // now this might be rotated, so convert it back
+            coveredHeight = window.convert(coveredFrame, to: owningView.superview).height
+        }
 
         keyboardInfo.animateAlongsideKeyboard {
-            self.bottomConstraint.constant = coveredFrame.height
+            self.bottomConstraint.constant = coveredHeight
             owningView.layoutIfNeeded()
         }
     }
@@ -77,6 +83,14 @@ private struct KeyboardInfo {
     let endFrame: CGRect
     let animationOptions: UIViewAnimationOptions
     let animationDuration: TimeInterval
+
+    var isFloatingKeyboard: Bool {
+        guard UIDevice.current.userInterfaceIdiom == .pad else { return false }
+        guard self.endFrame.size != .zero else { return true }
+
+        let parentBounds = UIScreen.main.bounds
+        return self.endFrame.maxY < parentBounds.height
+    }
 
     init?(userInfo: [AnyHashable: Any]?) {
         guard let userInfo = userInfo else { return nil }
