@@ -1,0 +1,31 @@
+disabled_rules:
+  - line_length
+  - nesting
+  
+opt_in_rules:
+  - empty_count
+  - redundant_nil_coalesing
+  - overridden_super_call
+  - explicit_init
+  - closure_spacing
+  - operator_usage_whitespace 
+  - overridden_super_call
+  - prohibited_super_call
+  - nimble_operator
+  - redundant_nil_coalescing
+  - switch_case_on_newline
+  - first_where
+  - attributes
+  - private_outlet
+  - fatal_error_message
+  - sorted_imports
+ 
+file_length:
+  warning: 500
+private_outlet:
+  allow_private_set: true
+large_tuple:
+   warning: 3
+   error: 4
+vertical_whitespace:
+   max_empty_lines: 2

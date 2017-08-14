@@ -157,7 +157,7 @@ private extension PanelAnimator {
 
         case .fade:
             fallthrough
-        case .slide(_):
+        case .slide:
             let animator = UIViewPropertyAnimator(duration: Constants.Animation.duration, dampingRatio: Constants.Animation.damping, animations: self.resetPanel)
             animator.addCompletion { _ in completion() }
             animator.startAnimation()
