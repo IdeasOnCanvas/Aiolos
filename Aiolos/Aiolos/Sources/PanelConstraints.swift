@@ -107,6 +107,10 @@ internal extension PanelConstraints {
     func updateForDragEnd() {
         self.topConstraint?.isActive = true
     }
+
+    func updateForDragEndAnimation(to height: CGFloat) {
+        self.heightConstraint?.constant = height
+    }
 }
 
 // MARK: - Private

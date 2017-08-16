@@ -14,7 +14,7 @@ import UIKit.UIGestureRecognizerSubclass
 /// GestureRecognizer that recognizes a pan gesture without any delay
 public final class PanGestureRecognizer: UIGestureRecognizer {
 
-    private var firstPoint: CGPoint?
+    private lazy var panForVelocity: UIPanGestureRecognizer = self.makeVelocityPan()
     private var lastPoint: CGPoint?
     private var currentPoint: CGPoint?
     private var initialTimestamp: TimeInterval?
@@ -32,6 +32,7 @@ public extension PanGestureRecognizer {
 
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent) {
         super.touchesBegan(touches, with: event)
+        self.panForVelocity.touchesBegan(touches, with: event)
 
         // we only handle single-touch
         guard touches.count == 1 else {
@@ -50,7 +51,6 @@ public extension PanGestureRecognizer {
         self.currentVelocity = .zero
         self.lastPoint = location
         self.currentPoint = location
-        self.firstPoint = location
         self.initialTimestamp = touch.timestamp
         self.state = .began
         self.didPan = false
@@ -58,6 +58,7 @@ public extension PanGestureRecognizer {
 
     override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent) {
         super.touchesMoved(touches, with: event)
+        self.panForVelocity.touchesMoved(touches, with: event)
 
         guard let touch = touches.first else { return }
         guard let initialTimestamp = self.initialTimestamp else { return }
@@ -77,18 +78,21 @@ public extension PanGestureRecognizer {
 
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent) {
         super.touchesEnded(touches, with: event)
+        self.panForVelocity.touchesEnded(touches, with: event)
 
         self.state = .ended
     }
 
     override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent) {
         super.touchesCancelled(touches, with: event)
+        self.panForVelocity.touchesCancelled(touches, with: event)
 
         self.state = .cancelled
     }
 
     override func reset() {
         super.reset()
+        self.panForVelocity.reset()
 
         self.didPan = false
         self.didStartOnScrollableArea = false
@@ -117,6 +121,19 @@ extension PanGestureRecognizer {
     }
 
     func velocity(in view: UIView) -> CGPoint {
-        return self.currentVelocity
+        return self.panForVelocity.velocity(in: view)
+    }
+}
+
+// MARK: - Private
+
+private extension PanGestureRecognizer {
+
+    func makeVelocityPan() -> UIPanGestureRecognizer {
+        let pan = UIPanGestureRecognizer(target: nil, action: nil)
+        pan.cancelsTouchesInView = false
+        pan.delaysTouchesBegan = false
+        pan.delaysTouchesEnded = false
+        return pan
     }
 }

@@ -57,9 +57,9 @@ private extension PanelGestures {
 
     struct Constants {
         struct Animation {
-            static let mass: CGFloat = 25.0
-            static let stiffness: CGFloat = 200.0
-            static let damping: CGFloat = 0.65
+            static let mass: CGFloat = 9.0
+            static let stiffness: CGFloat = 2200.0
+            static let damping: CGFloat = 185.0
         }
     }
 
@@ -107,7 +107,7 @@ private extension PanelGestures {
 
         func dragOffset(for translation: CGPoint) -> CGFloat {
             let fudgeFactor: CGFloat = 60.0
-            let minHeight = self.panel.size(for: .compact).height + fudgeFactor
+            let minHeight = self.height(for: .compact) + fudgeFactor
             let maxHeight = self.panel.constraints.maxHeight - fudgeFactor
             let currentHeight = self.currentPanelHeight
 
@@ -164,7 +164,7 @@ private extension PanelGestures {
         let offset: CGFloat = 100.0
         let minVelocity: CGFloat = 20.0
         let velocity = pan.velocity(in: self.panel.view).y
-        let heightExpanded = self.panel.size(for: .expanded).height
+        let heightExpanded = self.height(for: .expanded)
         let currentHeight = self.currentPanelHeight
 
         let isMovingUpwards = velocity < -minVelocity
@@ -203,34 +203,35 @@ private extension PanelGestures {
         self.originalConfiguration = nil
     }
 
+    func height(for mode: Panel.Configuration.Mode) -> CGFloat {
+        if mode == .fullHeight {
+            return self.panel.constraints.maxHeight
+        } else {
+            return self.panel.size(for: mode).height
+        }
+    }
+
     func initialVelocity(for pan: PanGestureRecognizer, targetMode: Panel.Configuration.Mode) -> CGFloat {
         let velocity = pan.velocity(in: self.panel.view).y
         let currentHeight = self.currentPanelHeight
-        let targetHeight = self.panel.size(for: targetMode).height
+        let targetHeight = self.height(for: targetMode)
 
         let distance = targetHeight - currentHeight
         return abs(velocity / distance)
     }
 
     func animate(to targetMode: Panel.Configuration.Mode, initialVelocity: CGFloat) {
-        let size = self.panel.size(for: targetMode)
-        let maxHeight = self.panel.constraints.maxHeight
-        let currentHeight = self.currentPanelHeight
-
-        let timing: UITimingCurveProvider
-        if currentHeight < maxHeight - 30.0 {
-            timing = UISpringTimingParameters(mass: Constants.Animation.mass,
+        let height = self.height(for: targetMode)
+        let timing = UISpringTimingParameters(mass: Constants.Animation.mass,
                                               stiffness: Constants.Animation.stiffness,
                                               damping: Constants.Animation.damping,
                                               initialVelocity: CGVector(dx: initialVelocity, dy: initialVelocity))
-        } else {
-            timing = UISpringTimingParameters()
-        }
 
-        let animator = UIViewPropertyAnimator(duration: 0.0, timingParameters: timing)
-        animator.addAnimations { self.panel.constraints.updateSizeConstraints(for: size) }
-        animator.addCompletion { _ in self.panel.configuration.mode = targetMode }
-        animator.startAnimation()
+        self.panel.animator.animateWithTiming(timing, animations: {
+            self.panel.constraints.updateForDragEndAnimation(to: height)
+        }, completion: {
+            self.panel.configuration.mode = targetMode
+        })
     }
 
     // allow pan gestures to be triggered within non-safe area on top (UINavigationBar)
