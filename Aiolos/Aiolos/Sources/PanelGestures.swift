@@ -227,10 +227,13 @@ private extension PanelGestures {
                                               damping: Constants.Animation.damping,
                                               initialVelocity: CGVector(dx: initialVelocity, dy: initialVelocity))
 
+        self.panel.animator.notifyDelegateOfTransition(to: targetMode)
         self.panel.animator.animateWithTiming(timing, animations: {
             self.panel.constraints.updateForDragEndAnimation(to: height)
         }, completion: {
+            self.panel.animator.isDelegateNotificationEnabled = false
             self.panel.configuration.mode = targetMode
+            self.panel.animator.isDelegateNotificationEnabled = true
         })
     }
 

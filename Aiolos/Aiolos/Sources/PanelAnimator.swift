@@ -13,8 +13,10 @@ import Foundation
 final class PanelAnimator {
 
     private unowned let panel: Panel
+    private var animator: UIViewPropertyAnimator?
 
     var animateChanges: Bool = true
+    var isDelegateNotificationEnabled: Bool = true
     var transitionCoordinatorQueuedAnimations: [PanelTransitionCoordinator.Animation] = []
 
     // MARK: - Lifecycle
@@ -45,6 +47,7 @@ final class PanelAnimator {
     }
 
     func notifyDelegateOfTransition(to size: CGSize) {
+        guard self.isDelegateNotificationEnabled else { return }
         guard let animationDelegate = self.panel.animationDelegate else { return }
 
         let transitionCoordinator = PanelTransitionCoordinator(animator: self)
@@ -52,6 +55,7 @@ final class PanelAnimator {
     }
 
     func notifyDelegateOfTransition(to mode: Panel.Configuration.Mode) {
+        guard self.isDelegateNotificationEnabled else { return }
         guard let animationDelegate = self.panel.animationDelegate else { return }
 
         let transitionCoordinator = PanelTransitionCoordinator(animator: self)
@@ -64,6 +68,7 @@ final class PanelAnimator {
 extension PanelAnimator {
 
     func transitionToParent(with size: CGSize, transition: Panel.Transition, completion: @escaping () -> Void) {
+        self.stopCurrentAnimation()
         self.prepare(for: transition, size: size)
         self.performWithoutAnimation {
             self.notifyDelegateOfTransition(to: size)
@@ -75,6 +80,8 @@ extension PanelAnimator {
     }
 
     func removeFromParent(transition: Panel.Transition, completion: @escaping () -> Void) {
+        self.stopCurrentAnimation()
+
         let animator = UIViewPropertyAnimator(duration: Constants.Animation.duration, timingParameters: UISpringTimingParameters())
 
         switch transition {
@@ -112,10 +119,16 @@ private extension PanelAnimator {
         }
     }
 
+    func stopCurrentAnimation() {
+        self.animator?.stopAnimation(true)
+        self.animator = nil
+    }
+
     func performChanges(_ changes: @escaping () -> Void, animated: Bool, timing: UITimingCurveProvider, completion: (() -> Void)? = nil) {
         guard let parentView = self.panel.parent?.view else { return }
 
         parentView.layoutIfNeeded()
+        self.stopCurrentAnimation()
 
         let animator = UIViewPropertyAnimator(duration: Constants.Animation.duration, timingParameters: timing)
         animator.addAnimations {
@@ -143,6 +156,7 @@ private extension PanelAnimator {
         }
 
         animator.startAnimation()
+        self.animator = animator
     }
 
     func prepare(for transition: Panel.Transition, size: CGSize) {
