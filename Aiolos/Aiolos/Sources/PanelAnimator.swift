@@ -27,7 +27,7 @@ final class PanelAnimator {
 
     func animateIfNeeded(_ changes: @escaping () -> Void) {
         let shouldAnimate = self.animateChanges && self.panel.isVisible
-        let timing = UISpringTimingParameters(dampingRatio: Constants.Animation.damping)
+        let timing = UISpringTimingParameters()
 
         self.performChanges(changes, animated: shouldAnimate, timing: timing)
     }
@@ -75,7 +75,7 @@ extension PanelAnimator {
     }
 
     func removeFromParent(transition: Panel.Transition, completion: @escaping () -> Void) {
-        let animator = UIViewPropertyAnimator(duration: Constants.Animation.duration, dampingRatio: Constants.Animation.damping)
+        let animator = UIViewPropertyAnimator(duration: Constants.Animation.duration, timingParameters: UISpringTimingParameters())
 
         switch transition {
         case .none:
@@ -109,7 +109,6 @@ private extension PanelAnimator {
     struct Constants {
         struct Animation {
             static let duration: TimeInterval = 0.42
-            static let damping: CGFloat = 0.8
         }
     }
 
@@ -172,7 +171,8 @@ private extension PanelAnimator {
         case .fade:
             fallthrough
         case .slide:
-            let animator = UIViewPropertyAnimator(duration: Constants.Animation.duration, dampingRatio: Constants.Animation.damping, animations: self.resetPanel)
+            let animator = UIViewPropertyAnimator(duration: Constants.Animation.duration, timingParameters: UISpringTimingParameters())
+            animator.addAnimations(self.resetPanel)
             animator.addCompletion { _ in completion() }
             animator.startAnimation()
         }
