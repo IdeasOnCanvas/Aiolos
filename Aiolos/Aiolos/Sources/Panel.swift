@@ -31,7 +31,7 @@ public final class Panel: UIViewController {
     public weak var sizeDelegate: PanelSizeDelegate?
     public weak var animationDelegate: PanelAnimationDelegate?
 
-    public var configuration: Panel.Configuration {
+    public var configuration: Configuration {
         didSet {
             self.handleConfigurationChange(from: oldValue, to: self.configuration)
         }
@@ -46,7 +46,7 @@ public final class Panel: UIViewController {
 
     // MARK: - Lifecycle
 
-    public init(configuration: Panel.Configuration) {
+    public init(configuration: Configuration) {
         self.configuration = configuration
         super.init(nibName: nil, bundle: nil)
     }
@@ -133,7 +133,7 @@ public extension Panel {
 
 internal extension Panel {
 
-    func size(for mode: Panel.Configuration.Mode) -> CGSize {
+    func size(for mode: Configuration.Mode) -> CGSize {
         guard let sizeDelegate = self.sizeDelegate else { return .zero }
         guard let parent = self.parent else { return .zero }
 
@@ -230,7 +230,7 @@ private extension Panel {
         }
     }
 
-    func handleConfigurationChange(from oldConfiguration: Panel.Configuration, to newConfiguration: Panel.Configuration) {
+    func handleConfigurationChange(from oldConfiguration: Configuration, to newConfiguration: Configuration) {
         self.shadowView?.configure(with: newConfiguration)
         self.containerView?.configure(with: newConfiguration)
         self.panelView.configure(with: newConfiguration)

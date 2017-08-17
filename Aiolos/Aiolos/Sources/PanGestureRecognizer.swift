@@ -96,6 +96,7 @@ public extension PanGestureRecognizer {
 
         self.didPan = false
         self.didStartOnScrollableArea = false
+        self.panForVelocity = self.makeVelocityPan()
     }
 }
 

@@ -92,7 +92,7 @@ private extension PanelGestures {
 
         self.panel.animator.animateChanges = false
         self.panel.animator.performWithoutAnimation {
-            self.panel.constraints.updateForDragStart(with: configuration.size)
+            self.panel.constraints.updateForPanStart(with: configuration.size)
         }
 
         if let contentViewController = self.panel.contentViewController {
@@ -120,7 +120,7 @@ private extension PanelGestures {
         }
 
         let translation = pan.translation(in: self.panel.view)
-        let dY = dragOffset(for: translation)
+        let yOffset = dragOffset(for: translation)
 
         // cancel pan if it was started on the content/safeArea and it's used to grow the panel in height
         if translation.y < 0.0 && pan.didStartOnScrollableArea {
@@ -134,13 +134,13 @@ private extension PanelGestures {
 
         self.panel.resizeHandle.isResizing = true
         self.panel.animator.animateIfNeeded {
-            self.panel.constraints.updateForDrag(with: dY)
+            self.panel.constraints.updateForPan(with: yOffset)
             self.panel.animator.notifyDelegateOfTransition(to: CGSize(width: self.panel.view.frame.width, height: self.currentPanelHeight))
         }
     }
 
     func handlePanEnded(_ pan: PanGestureRecognizer) {
-        self.panel.constraints.updateForDragEnd()
+        self.panel.constraints.updateForPanEnd()
         guard pan.didPan else {
             self.cleanUp(pan: pan)
             return
@@ -227,13 +227,11 @@ private extension PanelGestures {
                                               damping: Constants.Animation.damping,
                                               initialVelocity: CGVector(dx: initialVelocity, dy: initialVelocity))
 
-        self.panel.animator.notifyDelegateOfTransition(to: targetMode)
+        self.panel.configuration.mode = targetMode
         self.panel.animator.animateWithTiming(timing, animations: {
-            self.panel.constraints.updateForDragEndAnimation(to: height)
+            self.panel.constraints.updateForPanEndAnimation(to: height)
         }, completion: {
-            self.panel.animator.isDelegateNotificationEnabled = false
-            self.panel.configuration.mode = targetMode
-            self.panel.animator.isDelegateNotificationEnabled = true
+            self.panel.constraints.updateSizeConstraints(for: self.panel.size(for: targetMode))
         })
     }
 

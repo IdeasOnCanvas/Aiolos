@@ -13,9 +13,9 @@ import Foundation
 final class PanelConstraints {
 
     private unowned let panel: Panel
+    private var isPanning: Bool = false
     private lazy var keyboardLayoutGuide: KeyboardLayoutGuide = self.makeKeyboardLayoutGuide()
     private var topConstraint: NSLayoutConstraint?
-
     private var widthConstraint: NSLayoutConstraint?
     private var positionConstraints: [NSLayoutConstraint] = []
     private(set) var heightConstraint: NSLayoutConstraint?
@@ -29,6 +29,7 @@ final class PanelConstraints {
     // MARK: - PanelConstraints
 
     func updateSizeConstraints(for size: CGSize) {
+        guard self.isPanning == false else { return }
         guard let widthConstraint = self.widthConstraint, let heightConstraint = self.heightConstraint else {
             self.activateSizeConstraints(for: size)
             return
@@ -41,6 +42,7 @@ final class PanelConstraints {
     }
 
     func updatePositionConstraints(for position: Panel.Configuration.Position, margins: UIEdgeInsets) {
+        guard self.isPanning == false else { return }
         guard let view = self.panel.view else { return }
         guard let parentView = self.panel.parent?.view else { return }
 
@@ -92,24 +94,26 @@ internal extension PanelConstraints {
         return self.panel.view.frame.maxY - safeArea.minY
     }
 
-    func updateForDragStart(with currentSize: CGSize) {
+    func updateForPanStart(with currentSize: CGSize) {
         // the normal height constraint for .fullHeight can have a higher constant, but the actual height is constrained by the safeAreaInsets
         // this fixes this discrepancy by setting the heightConstraint's constant to the actual current height of the panel, when a drag starts
         self.heightConstraint?.constant = currentSize.height
         // we don't want to limit the height by the safeAreaInsets during dragging
         self.topConstraint?.isActive = false
+        self.isPanning = true
     }
 
-    func updateForDrag(with yOffset: CGFloat) {
+    func updateForPan(with yOffset: CGFloat) {
         self.heightConstraint?.constant -= yOffset
     }
 
-    func updateForDragEnd() {
+    func updateForPanEnd() {
         self.topConstraint?.isActive = true
     }
 
-    func updateForDragEndAnimation(to height: CGFloat) {
+    func updateForPanEndAnimation(to height: CGFloat) {
         self.heightConstraint?.constant = height
+        self.isPanning = false
     }
 }
 
