@@ -124,7 +124,6 @@ private extension PanelAnimator {
     func performChanges(_ changes: @escaping () -> Void, animated: Bool, timing: UITimingCurveProvider, completion: (() -> Void)? = nil) {
         guard let parentView = self.panel.parent?.view else { return }
 
-        parentView.layoutIfNeeded()
         self.stopCurrentAnimation()
 
         let animator = UIViewPropertyAnimator(duration: Constants.Animation.duration, timingParameters: timing)
