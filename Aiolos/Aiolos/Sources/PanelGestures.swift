@@ -135,8 +135,8 @@ private extension PanelGestures {
         self.panel.resizeHandle.isResizing = true
         self.panel.animator.animateIfNeeded {
             self.panel.constraints.updateForPan(with: yOffset)
-            self.panel.animator.notifyDelegateOfTransition(to: CGSize(width: self.panel.view.frame.width, height: self.currentPanelHeight))
         }
+        self.panel.animator.notifyDelegateOfTransition(to: CGSize(width: self.panel.view.frame.width, height: self.currentPanelHeight))
     }
 
     func handlePanEnded(_ pan: PanGestureRecognizer) {

@@ -92,7 +92,6 @@ public extension PanGestureRecognizer {
 
     override func reset() {
         super.reset()
-        self.panForVelocity.reset()
 
         self.didPan = false
         self.didStartOnScrollableArea = false
