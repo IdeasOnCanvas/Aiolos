@@ -93,6 +93,7 @@ private extension PanelContentViewController {
 
     @objc
     func handleAddPress(_ sender: UIBarButtonItem) {
+        print("+ pressed")
         guard let panel = self.aiolosPanel else { return }
 
         if panel.configuration.mode == .compact {

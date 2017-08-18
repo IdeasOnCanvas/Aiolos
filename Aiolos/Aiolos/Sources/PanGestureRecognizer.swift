@@ -15,10 +15,9 @@ import UIKit.UIGestureRecognizerSubclass
 public final class PanGestureRecognizer: UIGestureRecognizer {
 
     private lazy var panForVelocity: UIPanGestureRecognizer = self.makeVelocityPan()
+    private var initialPoint: CGPoint?
     private var lastPoint: CGPoint?
     private var currentPoint: CGPoint?
-    private var initialTimestamp: TimeInterval?
-    private var currentVelocity: CGPoint = .zero
 
     // MARK: Properties
 
@@ -48,10 +47,9 @@ public extension PanGestureRecognizer {
         guard let touch = touches.first else { return }
 
         let location = touch.location(in: self.view?.window)
-        self.currentVelocity = .zero
+        self.initialPoint = location
         self.lastPoint = location
         self.currentPoint = location
-        self.initialTimestamp = touch.timestamp
         self.state = .began
         self.didPan = false
     }
@@ -61,19 +59,14 @@ public extension PanGestureRecognizer {
         self.panForVelocity.touchesMoved(touches, with: event)
 
         guard let touch = touches.first else { return }
-        guard let initialTimestamp = self.initialTimestamp else { return }
 
         let currentPoint = touch.location(in: self.view?.window)
         self.currentPoint = currentPoint
 
-        let currentLocation = touch.location(in: self.view)
-        let previousLocation = touch.previousLocation(in: self.view)
-        let translation = CGVector(dx: currentLocation.x - previousLocation.x, dy: currentLocation.y - previousLocation.y)
-        let timeInterval = touch.timestamp - initialTimestamp
-        self.currentVelocity = CGPoint(x: Double(translation.dx) / timeInterval, y: Double(translation.dy) / timeInterval)
-
         self.state = .changed
-        self.didPan = true
+        if self.totalTranslation.hypotenuse() > Constants.minTranslation {
+            self.didPan = true
+        }
     }
 
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent) {
@@ -104,14 +97,10 @@ public extension PanGestureRecognizer {
 extension PanGestureRecognizer {
 
     func translation(in view: UIView) -> CGPoint {
-        guard let window = self.view?.window else { return .zero }
         guard let lastPoint = self.lastPoint else { return .zero }
         guard let currentPoint = self.currentPoint else { return .zero }
 
-        let lastPointInView = window.convert(lastPoint, to: view)
-        let currentPointInView = window.convert(currentPoint, to: view)
-
-        return CGPoint(x: currentPointInView.x - lastPointInView.x, y: currentPointInView.y - lastPointInView.y)
+        return self.translation(from: lastPoint, to: currentPoint, in: view)
     }
 
     func setTranslation(_ translation: CGPoint, in view: UIView) {
@@ -129,11 +118,39 @@ extension PanGestureRecognizer {
 
 private extension PanGestureRecognizer {
 
+    struct Constants {
+        static let minTranslation: CGFloat = 5.0
+    }
+
     func makeVelocityPan() -> UIPanGestureRecognizer {
         let pan = UIPanGestureRecognizer(target: nil, action: nil)
         pan.cancelsTouchesInView = false
         pan.delaysTouchesBegan = false
         pan.delaysTouchesEnded = false
         return pan
+    }
+
+    var totalTranslation: CGPoint {
+        guard let view = self.view else { return .zero }
+        guard let initialPoint = self.initialPoint else { return .zero }
+        guard let currentPoint = self.currentPoint else { return .zero }
+
+        return self.translation(from: initialPoint, to: currentPoint, in: view)
+    }
+
+    func translation(from startPoint: CGPoint, to endPoint: CGPoint, in view: UIView) -> CGPoint {
+        guard let window = self.view?.window else { return .zero }
+
+        let startPointInView = window.convert(startPoint, to: view)
+        let endPointInView = window.convert(endPoint, to: view)
+
+        return CGPoint(x: endPointInView.x - startPointInView.x, y: endPointInView.y - startPointInView.y)
+    }
+}
+
+private extension CGPoint {
+
+    func hypotenuse() -> CGFloat {
+        return sqrt(self.x * self.x + self.y * self.y)
     }
 }

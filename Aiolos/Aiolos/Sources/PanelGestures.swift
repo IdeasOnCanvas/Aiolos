@@ -77,7 +77,7 @@ private extension PanelGestures {
         case .ended:
             self.handlePanEnded(pan)
         case .cancelled:
-            self.handlePanCanceled(pan)
+            self.handlePanCancelled(pan)
         default:
             break
         }
@@ -130,9 +130,11 @@ private extension PanelGestures {
         }
 
         pan.setTranslation(.zero, in: self.panel.view)
-        pan.cancelsTouchesInView = true
+        if pan.didPan {
+            pan.cancelsTouchesInView = true
+            self.panel.resizeHandle.isResizing = true
+        }
 
-        self.panel.resizeHandle.isResizing = true
         self.panel.animator.performWithoutAnimation {
             self.panel.constraints.updateForPan(with: yOffset)
         }
@@ -153,11 +155,11 @@ private extension PanelGestures {
         self.animate(to: targetMode, initialVelocity: initialVelocity)
     }
 
-    func handlePanCanceled(_ pan: PanGestureRecognizer) {
+    func handlePanCancelled(_ pan: PanGestureRecognizer) {
         guard let originalSize = self.originalConfiguration?.size else { return }
 
         self.cleanUp(pan: pan)
-        self.panel.constraints.updateForPanCanceled(with: originalSize)
+        self.panel.constraints.updateForPanCancelled(with: originalSize)
     }
 
     func targetMode(for pan: PanGestureRecognizer) -> Panel.Configuration.Mode {
