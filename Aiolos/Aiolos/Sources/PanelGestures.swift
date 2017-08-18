@@ -58,8 +58,8 @@ private extension PanelGestures {
     struct Constants {
         struct Animation {
             static let mass: CGFloat = 9.0
-            static let stiffness: CGFloat = 2200.0
-            static let damping: CGFloat = 185.0
+            static let stiffness: CGFloat = 2400.0
+            static let damping: CGFloat = 190.0
         }
     }
 
@@ -133,7 +133,7 @@ private extension PanelGestures {
         pan.cancelsTouchesInView = true
 
         self.panel.resizeHandle.isResizing = true
-        self.panel.animator.animateIfNeeded {
+        self.panel.animator.performWithoutAnimation {
             self.panel.constraints.updateForPan(with: yOffset)
         }
         self.panel.animator.notifyDelegateOfTransition(to: CGSize(width: self.panel.view.frame.width, height: self.currentPanelHeight))
@@ -157,7 +157,7 @@ private extension PanelGestures {
         guard let originalSize = self.originalConfiguration?.size else { return }
 
         self.cleanUp(pan: pan)
-        self.panel.constraints.updateSizeConstraints(for: originalSize)
+        self.panel.constraints.updateForPanCanceled(with: originalSize)
     }
 
     func targetMode(for pan: PanGestureRecognizer) -> Panel.Configuration.Mode {

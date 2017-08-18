@@ -100,10 +100,10 @@ internal extension PanelConstraints {
         self.heightConstraint?.constant = currentSize.height
         // we don't want to limit the height by the safeAreaInsets during dragging
         self.topConstraint?.isActive = false
-        self.isPanning = true
     }
 
     func updateForPan(with yOffset: CGFloat) {
+        self.isPanning = true
         self.heightConstraint?.constant -= yOffset
     }
 
@@ -114,6 +114,11 @@ internal extension PanelConstraints {
     func updateForPanEndAnimation(to height: CGFloat) {
         self.heightConstraint?.constant = height
         self.isPanning = false
+    }
+
+    func updateForPanCanceled(with originalSize: CGSize) {
+        self.isPanning = false
+        self.updateSizeConstraints(for: originalSize)
     }
 }
 

@@ -42,7 +42,12 @@ final class PanelAnimator {
         self.animateChanges = false
         defer { self.animateChanges = animateBefore }
 
-        self.animateIfNeeded(changes)
+        self.animateIfNeeded {
+            UIView.performWithoutAnimation {
+                changes()
+                self.panel.parent?.view?.layoutIfNeeded()
+            }
+        }
     }
 
     func notifyDelegateOfTransition(to size: CGSize) {
@@ -131,10 +136,8 @@ private extension PanelAnimator {
 
         let animator = UIViewPropertyAnimator(duration: Constants.Animation.duration, timingParameters: timing)
         animator.addAnimations {
-            UIView.performWithoutAnimation(if: animated == false) {
-                changes()
-                parentView.layoutIfNeeded()
-            }
+            changes()
+            parentView.layoutIfNeeded()
         }
         if let completion = completion {
             animator.addCompletion { _ in completion() }
@@ -203,17 +206,6 @@ private extension PanelAnimator {
             return CGAffineTransform(translationX: translationX, y: 0.0)
         case .vertical:
             return CGAffineTransform(translationX: 0.0, y: size.height + margins.bottom)
-        }
-    }
-}
-
-private extension UIView {
-
-    static func performWithoutAnimation(`if` preventAnimation: Bool, animations: () -> Void) {
-        if preventAnimation {
-            UIView.performWithoutAnimation(animations)
-        } else {
-            animations()
         }
     }
 }

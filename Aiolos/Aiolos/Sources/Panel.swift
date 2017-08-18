@@ -127,6 +127,14 @@ public extension Panel {
             self.isTransitioningFromParent = false
         }
     }
+
+    func performWithoutAnimation(_ changes: () -> Void) {
+        let animateChanges = self.animator.animateChanges
+        self.animator.animateChanges = false
+        defer { self.animator.animateChanges = animateChanges }
+
+        changes()
+    }
 }
 
 // MARK: - Internal

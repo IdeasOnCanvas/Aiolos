@@ -52,7 +52,9 @@ final class ViewController: UIViewController {
         configuration.margins = self.panelMargins(for: newCollection)
 
         coordinator.animate(alongsideTransition: { _ in
-            self.panelController.configuration = configuration
+            self.panelController.performWithoutAnimation {
+                self.panelController.configuration = configuration
+            }
         }, completion: nil)
     }
 }
