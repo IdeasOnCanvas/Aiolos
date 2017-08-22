@@ -257,6 +257,7 @@ private extension PanelGestures {
         let location = gestureRecognizer.location(in: contentViewController.view)
         guard let hitView = contentViewController.view.hitTest(location, with: nil) else { return true }
         guard let enclosingScrollView = hitView.superview(with: UIScrollView.self) as? UIScrollView else { return true }
+        guard (enclosingScrollView is UITextView) == false else { return false }
 
         return enclosingScrollView.isScrolledToTop || self.contentIsScrollableVertically(of: contentViewController, at: location) == false
     }
