@@ -249,6 +249,7 @@ private extension Panel {
         self.panelView.configure(with: newConfiguration)
         self.resizeHandle.configure(with: newConfiguration)
         self.separatorView.configure(with: newConfiguration)
+        self.gestures.isEnabled = newConfiguration.isGestureBasedResizingEnabled
 
         let modeChanged = oldConfiguration.mode != newConfiguration.mode
         let positionChanged = oldConfiguration.position != newConfiguration.position

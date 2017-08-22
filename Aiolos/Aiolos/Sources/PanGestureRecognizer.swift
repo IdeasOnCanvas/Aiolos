@@ -63,10 +63,17 @@ public extension PanGestureRecognizer {
         let currentPoint = touch.location(in: self.view?.window)
         self.currentPoint = currentPoint
 
-        self.state = .changed
         if self.totalTranslation.hypotenuse() > Constants.minTranslation {
             self.didPan = true
+
+            // if we recognized a pan, make sure it can be considered a vertical pan
+            guard self.totalTranslation.direction() == .vertical else {
+                self.state = .cancelled
+                return
+            }
         }
+
+        self.state = .changed
     }
 
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent) {
@@ -150,7 +157,19 @@ private extension PanGestureRecognizer {
 
 private extension CGPoint {
 
+    enum Direction {
+        case horizontal
+        case vertical
+    }
+
     func hypotenuse() -> CGFloat {
         return sqrt(self.x * self.x + self.y * self.y)
+    }
+
+    func direction() -> Direction {
+        let horizontalDiff = self.x * self.x
+        let verticalDiff = self.y * self.y
+
+        return horizontalDiff > verticalDiff ? .horizontal : .vertical
     }
 }

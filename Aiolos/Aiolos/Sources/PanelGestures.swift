@@ -16,6 +16,11 @@ final class PanelGestures: NSObject {
     private var originalConfiguration: PanelGestures.Configuration?
     private lazy var pan: PanGestureRecognizer = self.makePanGestureRecognizer()
 
+    var isEnabled: Bool {
+        get { return self.pan.isEnabled }
+        set { self.pan.isEnabled = newValue }
+    }
+
     // MARK: - Lifecycle
 
     init(panel: Panel) {
@@ -29,6 +34,8 @@ final class PanelGestures: NSObject {
     }
 
     func cancel() {
+        guard self.pan.isEnabled else { return }
+
         self.pan.isEnabled = false
         self.pan.isEnabled = true
     }

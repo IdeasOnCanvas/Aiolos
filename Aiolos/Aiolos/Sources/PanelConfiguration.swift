@@ -36,6 +36,7 @@ public extension Panel {
         public var resizeHandleColor: UIColor
         public var resizeHandleBackgroundColor: UIColor
         public var separatorColor: UIColor
+        public var isGestureBasedResizingEnabled: Bool
     }
 }
 
@@ -51,6 +52,7 @@ public extension Panel.Configuration {
                                    borderColor: UIColor.gray.withAlphaComponent(0.5),
                                    resizeHandleColor: UIColor.gray.withAlphaComponent(0.3),
                                    resizeHandleBackgroundColor: .white,
-                                   separatorColor: UIColor.gray.withAlphaComponent(0.5))
+                                   separatorColor: UIColor.gray.withAlphaComponent(0.5),
+                                   isGestureBasedResizingEnabled: false)
     }
 }
