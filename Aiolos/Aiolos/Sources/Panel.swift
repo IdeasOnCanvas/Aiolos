@@ -94,6 +94,11 @@ public extension Panel {
         dividerFrame.origin.y -= dividerFrame.size.height / 2.0
         self.separatorView.frame = dividerFrame
     }
+
+    override public func willTransition(to newCollection: UITraitCollection, with coordinator: UIViewControllerTransitionCoordinator) {
+        self.gestures.cancel()
+        super.willTransition(to: newCollection, with: coordinator)
+    }
 }
 
 // MARK: - Panel

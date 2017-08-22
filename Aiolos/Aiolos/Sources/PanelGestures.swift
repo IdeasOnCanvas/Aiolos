@@ -14,6 +14,7 @@ final class PanelGestures: NSObject {
 
     private let panel: Panel
     private var originalConfiguration: PanelGestures.Configuration?
+    private lazy var pan: PanGestureRecognizer = self.makePanGestureRecognizer()
 
     // MARK: - Lifecycle
 
@@ -24,10 +25,12 @@ final class PanelGestures: NSObject {
     // MARK: - PanelGestures
 
     func install() {
-        let pan = PanGestureRecognizer(target: self, action: #selector(handlePan))
-        pan.delegate = self
-        pan.cancelsTouchesInView = false
-        self.panel.view.addGestureRecognizer(pan)
+        self.panel.view.addGestureRecognizer(self.pan)
+    }
+
+    func cancel() {
+        self.pan.isEnabled = false
+        self.pan.isEnabled = true
     }
 }
 
@@ -60,6 +63,13 @@ private extension PanelGestures {
             static let stiffness: CGFloat = 2400.0
             static let damping: CGFloat = 190.0
         }
+    }
+
+    func makePanGestureRecognizer() -> PanGestureRecognizer {
+        let pan = PanGestureRecognizer(target: self, action: #selector(handlePan))
+        pan.delegate = self
+        pan.cancelsTouchesInView = false
+        return pan
     }
 
     var currentPanelHeight: CGFloat {
@@ -127,8 +137,7 @@ private extension PanelGestures {
 
         // cancel pan if it was started on the content/safeArea and it's used to grow the panel in height
         if translation.y < 0.0 && pan.didStartOnScrollableArea {
-            pan.isEnabled = false
-            pan.isEnabled = true
+            self.cancel()
             return
         }
 
