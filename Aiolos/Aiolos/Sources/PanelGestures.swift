@@ -229,6 +229,7 @@ private extension PanelGestures {
                                               damping: Constants.Animation.damping,
                                               initialVelocity: CGVector(dx: initialVelocity, dy: initialVelocity))
 
+        self.panel.constraints.prepareForPanEndAnimation()
         self.panel.configuration.mode = targetMode
         self.panel.animator.animateWithTiming(timing, animations: {
             self.panel.constraints.updateForPanEndAnimation(to: height)

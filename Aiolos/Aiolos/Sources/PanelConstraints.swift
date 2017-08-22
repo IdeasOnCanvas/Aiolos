@@ -109,6 +109,11 @@ internal extension PanelConstraints {
 
     func updateForPanEnd() {
         self.topConstraint?.isActive = true
+        self.isPanning = false
+    }
+
+    func prepareForPanEndAnimation() {
+        self.isPanning = true
     }
 
     func updateForPanEndAnimation(to height: CGFloat) {
