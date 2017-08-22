@@ -121,9 +121,9 @@ internal extension PanelConstraints {
         self.isPanning = false
     }
 
-    func updateForPanCancelled(with originalSize: CGSize) {
+    func updateForPanCancelled(with targetSize: CGSize) {
         self.isPanning = false
-        self.updateSizeConstraints(for: originalSize)
+        self.updateSizeConstraints(for: targetSize)
     }
 }
 

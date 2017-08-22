@@ -37,7 +37,7 @@ extension PanelGestures: UIGestureRecognizerDelegate {
         guard let contentViewController = self.panel.contentViewController else { return true }
 
         return self.gestureRecognizer(gestureRecognizer, isWithinContentAreaOf: contentViewController) == false ||
-               self.gestureRecognizer(gestureRecognizer, isAllowedToStartByContentOf: contentViewController)
+            self.gestureRecognizer(gestureRecognizer, isAllowedToStartByContentOf: contentViewController)
     }
 
     func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
@@ -51,7 +51,6 @@ private extension PanelGestures {
 
     struct Configuration {
         let mode: Panel.Configuration.Mode
-        let size: CGSize
         let animateChanges: Bool
     }
 
@@ -85,21 +84,25 @@ private extension PanelGestures {
 
     func handlePanStarted(_ pan: PanGestureRecognizer) {
         let configuration = PanelGestures.Configuration(mode: self.panel.configuration.mode,
-                                                        size: self.panel.view.frame.size,
                                                         animateChanges: self.panel.animator.animateChanges)
         // remember initial state
         self.originalConfiguration = configuration
-
-        self.panel.animator.animateChanges = false
-        self.panel.animator.performWithoutAnimation {
-            self.panel.constraints.updateForPanStart(with: configuration.size)
-        }
 
         if let contentViewController = self.panel.contentViewController {
             pan.didStartOnScrollableArea =
                 self.gestureRecognizer(pan, isWithinContentAreaOf: contentViewController) &&
                 self.contentIsScrollableVertically(of: contentViewController, at: pan.location(in: self.panel.view))
         }
+    }
+
+    func handlePanDragStart(_ pan: PanGestureRecognizer) {
+        self.panel.animator.animateChanges = false
+        self.panel.animator.performWithoutAnimation {
+            self.panel.constraints.updateForPanStart(with: self.panel.view.frame.size)
+        }
+
+        pan.cancelsTouchesInView = true
+        self.panel.resizeHandle.isResizing = true
     }
 
     func handlePanChanged(_ pan: PanGestureRecognizer) {
@@ -130,9 +133,8 @@ private extension PanelGestures {
         }
 
         pan.setTranslation(.zero, in: self.panel.view)
-        if pan.didPan {
-            pan.cancelsTouchesInView = true
-            self.panel.resizeHandle.isResizing = true
+        if pan.didPan && pan.cancelsTouchesInView == false {
+            self.handlePanDragStart(pan)
         }
 
         self.panel.animator.performWithoutAnimation {
@@ -144,7 +146,7 @@ private extension PanelGestures {
     func handlePanEnded(_ pan: PanGestureRecognizer) {
         self.panel.constraints.updateForPanEnd()
         guard pan.didPan else {
-            self.cleanUp(pan: pan)
+            self.handlePanCancelled(pan)
             return
         }
 
@@ -156,10 +158,12 @@ private extension PanelGestures {
     }
 
     func handlePanCancelled(_ pan: PanGestureRecognizer) {
-        guard let originalSize = self.originalConfiguration?.size else { return }
+        guard let mode = self.originalConfiguration?.mode else { return }
 
         self.cleanUp(pan: pan)
-        self.panel.constraints.updateForPanCancelled(with: originalSize)
+
+        let size = self.panel.size(for: mode)
+        self.panel.constraints.updateForPanCancelled(with: size)
     }
 
     func targetMode(for pan: PanGestureRecognizer) -> Panel.Configuration.Mode {
