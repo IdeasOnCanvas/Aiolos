@@ -183,6 +183,7 @@ private extension PanelGestures {
 
         let size = self.panel.size(for: mode)
         self.panel.constraints.updateForPanCancelled(with: size)
+        self.panel.animator.notifyDelegateOfTransition(to: size)
     }
 
     func targetMode(for pan: PanGestureRecognizer) -> Panel.Configuration.Mode {
@@ -254,6 +255,7 @@ private extension PanelGestures {
 
     func animate(to targetMode: Panel.Configuration.Mode, initialVelocity: CGFloat) {
         let height = self.height(for: targetMode)
+        let size = self.panel.size(for: targetMode)
         let timing = UISpringTimingParameters(mass: Constants.Animation.mass,
                                               stiffness: Constants.Animation.stiffness,
                                               damping: Constants.Animation.damping,
@@ -263,8 +265,9 @@ private extension PanelGestures {
         self.panel.configuration.mode = targetMode
         self.panel.animator.animateWithTiming(timing, animations: {
             self.panel.constraints.updateForPanEndAnimation(to: height)
+            self.panel.animator.notifyDelegateOfTransition(to: size)
         }, completion: {
-            self.panel.constraints.updateSizeConstraints(for: self.panel.size(for: targetMode))
+            self.panel.constraints.updateSizeConstraints(for: size)
         })
     }
 
