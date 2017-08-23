@@ -118,6 +118,7 @@ internal extension PanelConstraints {
 
     func updateForPanEndAnimation(to height: CGFloat) {
         self.heightConstraint?.constant = height
+        self.panel.parent?.view.layoutIfNeeded()
         self.isPanning = false
     }
 
