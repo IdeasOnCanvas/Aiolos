@@ -100,8 +100,13 @@ public extension Panel {
     }
 
     override public func willTransition(to newCollection: UITraitCollection, with coordinator: UIViewControllerTransitionCoordinator) {
+        // not calling through to contentVC because we set a fixed traitCollection
         self.gestures.cancel()
         super.willTransition(to: newCollection, with: coordinator)
+    }
+
+    override public func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        self.contentViewController?.viewWillTransition(to: size, with: coordinator)
     }
 }
 
