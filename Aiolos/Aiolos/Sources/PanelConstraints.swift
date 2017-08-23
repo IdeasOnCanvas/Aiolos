@@ -122,6 +122,7 @@ internal extension PanelConstraints {
     }
 
     func updateForPanCancelled(with targetSize: CGSize) {
+        self.topConstraint?.isActive = true
         self.isPanning = false
         self.updateSizeConstraints(for: targetSize)
     }
