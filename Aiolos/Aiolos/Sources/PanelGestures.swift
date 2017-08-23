@@ -15,8 +15,7 @@ final class PanelGestures: NSObject {
     private let panel: Panel
     private var originalConfiguration: PanelGestures.Configuration?
     private lazy var pan: PanGestureRecognizer = self.makePanGestureRecognizer()
-
-    var isEnabled: Bool {
+    private var isEnabled: Bool {
         get { return self.pan.isEnabled }
         set { self.pan.isEnabled = newValue }
     }
@@ -31,6 +30,10 @@ final class PanelGestures: NSObject {
 
     func install() {
         self.panel.view.addGestureRecognizer(self.pan)
+    }
+
+    func configure(with configuration: Panel.Configuration) {
+        self.isEnabled = configuration.isGestureBasedResizingEnabled
     }
 
     func cancel() {
@@ -188,30 +191,37 @@ private extension PanelGestures {
         let velocity = pan.velocity(in: self.panel.view).y
         let heightExpanded = self.height(for: .expanded)
         let currentHeight = self.currentPanelHeight
+        let supportedModes = self.panel.configuration.supportedModes
 
         let isMovingUpwards = velocity < -minVelocity
         let isMovingDownwards = velocity > minVelocity
 
         // moving upwards + current size > .expanded -> grow to .fullHeight
-        if currentHeight >= heightExpanded && isMovingUpwards { return .fullHeight }
+        if currentHeight >= heightExpanded && isMovingUpwards && supportedModes.contains(.fullHeight) { return .fullHeight }
         // moving downwards + current size < .expanded -> shrink to .collapsed
-        if currentHeight <= heightExpanded && isMovingDownwards { return .compact }
+        if currentHeight <= heightExpanded && isMovingDownwards && supportedModes.contains(.compact) { return .compact }
         // moving upwards + current size < .expanded -> grow to .expanded
-        if currentHeight <= heightExpanded && isMovingUpwards { return .expanded }
+        if currentHeight <= heightExpanded && isMovingUpwards {
+            if supportedModes.contains(.expanded) { return .expanded }
+            if supportedModes.contains(.fullHeight) { return .fullHeight }
+        }
         // moving downwards + current size > .expanded -> shrink to .expanded
-        if currentHeight >= heightExpanded && isMovingDownwards { return .expanded }
+        if currentHeight >= heightExpanded && isMovingDownwards {
+            if supportedModes.contains(.expanded) { return .expanded }
+            if supportedModes.contains(.compact) { return .compact }
+        }
 
-        // velocity was too small to count as "movement"
-        assert(isMovingUpwards == false && isMovingDownwards == false)
-        // -> check distance from .expanded mode
+        // check distance from .expanded mode
         let diffToExpanded = currentHeight - heightExpanded
 
-        if diffToExpanded > offset {
+        if diffToExpanded > offset && supportedModes.contains(.fullHeight) {
             return .fullHeight
-        } else if diffToExpanded < -offset {
+        } else if diffToExpanded < -offset && supportedModes.contains(.compact) {
             return .compact
-        } else {
+        } else if supportedModes.contains(.expanded) {
             return .expanded
+        } else {
+            return supportedModes[0]
         }
     }
 

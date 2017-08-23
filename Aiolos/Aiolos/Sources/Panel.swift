@@ -23,6 +23,11 @@ public final class Panel: UIViewController {
     private(set) lazy var constraints: PanelConstraints = self.makeConstraints()
     private(set) lazy var animator: PanelAnimator = self.makeAnimator()
     private var isTransitioningFromParent: Bool = false
+    private var _configuration: Configuration {
+        didSet {
+            self.handleConfigurationChange(from: oldValue, to: self.configuration)
+        }
+    }
 
     // MARK: - Properties
 
@@ -32,9 +37,8 @@ public final class Panel: UIViewController {
     public weak var animationDelegate: PanelAnimationDelegate?
 
     public var configuration: Configuration {
-        didSet {
-            self.handleConfigurationChange(from: oldValue, to: self.configuration)
-        }
+        get { return self._configuration }
+        set { self._configuration = newValue.validated() }
     }
 
     @objc public var contentViewController: UIViewController? {
@@ -47,7 +51,7 @@ public final class Panel: UIViewController {
     // MARK: - Lifecycle
 
     public init(configuration: Configuration) {
-        self.configuration = configuration
+        self._configuration = configuration.validated()
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -249,7 +253,7 @@ private extension Panel {
         self.panelView.configure(with: newConfiguration)
         self.resizeHandle.configure(with: newConfiguration)
         self.separatorView.configure(with: newConfiguration)
-        self.gestures.isEnabled = newConfiguration.isGestureBasedResizingEnabled
+        self.gestures.configure(with: newConfiguration)
 
         let modeChanged = oldConfiguration.mode != newConfiguration.mode
         let positionChanged = oldConfiguration.position != newConfiguration.position
