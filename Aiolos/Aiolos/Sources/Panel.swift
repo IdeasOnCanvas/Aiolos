@@ -128,7 +128,7 @@ public extension Panel {
         }
     }
 
-    func removeFromParent(transition: Transition = .none) {
+    func removeFromParent(transition: Transition = .none, completion: (() -> Void)? = nil) {
         guard self.parent != nil else { return }
 
         self.isTransitioningFromParent = true
@@ -139,6 +139,7 @@ public extension Panel {
             self.view.removeFromSuperview()
             self.removeFromParentViewController()
             self.isTransitioningFromParent = false
+            completion?()
         }
     }
 
