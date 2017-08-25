@@ -12,7 +12,7 @@ import Foundation
 /// Manages Gestures added to the Panel
 final class PanelGestures: NSObject {
 
-    private let panel: Panel
+    private unowned let panel: Panel
     private var originalConfiguration: PanelGestures.Configuration?
     private lazy var pan: PanGestureRecognizer = self.makePanGestureRecognizer()
     private var isEnabled: Bool {
