@@ -150,6 +150,13 @@ public extension Panel {
 
         changes()
     }
+
+    func reloadSize() {
+        let size = self.size(for: self.configuration.mode)
+
+        self.animator.notifyDelegateOfTransition(to: size)
+        self.constraints.updateSizeConstraints(for: size)
+    }
 }
 
 // MARK: - Internal
