@@ -186,6 +186,7 @@ private extension PanelGestures {
         self.panel.animator.notifyDelegateOfTransition(to: size)
     }
 
+    // swiftlint:disable cyclomatic_complexity
     func targetMode(for pan: PanGestureRecognizer) -> Panel.Configuration.Mode {
         let offset: CGFloat = 100.0
         let minVelocity: CGFloat = 20.0
@@ -225,6 +226,7 @@ private extension PanelGestures {
             return supportedModes[0]
         }
     }
+    // swiftlint:enable cyclomatic_complexity
 
     func cleanUp(pan: PanGestureRecognizer) {
         pan.cancelsTouchesInView = false
