@@ -152,11 +152,11 @@ private extension ViewController {
         return traitCollection.verticalSizeClass == .compact ? .leadingBottom : .bottom
     }
 
-    func panelMargins(for traitCollection: UITraitCollection) -> UIEdgeInsets {
-        if traitCollection.userInterfaceIdiom == .pad { return UIEdgeInsets(top: 20.0, left: 20.0, bottom: 20.0, right: 20.0) }
+    func panelMargins(for traitCollection: UITraitCollection) -> NSDirectionalEdgeInsets {
+        if traitCollection.userInterfaceIdiom == .pad { return NSDirectionalEdgeInsets(top: 20.0, leading: 20.0, bottom: 20.0, trailing: 20.0) }
 
         let horizontalMargin: CGFloat = traitCollection.verticalSizeClass == .compact ? 20.0 : 0.0
-        return UIEdgeInsets(top: 20.0, left: horizontalMargin, bottom: 0.0, right: horizontalMargin)
+        return NSDirectionalEdgeInsets(top: 20.0, leading: horizontalMargin, bottom: 0.0, trailing: horizontalMargin)
     }
 
     @objc

@@ -41,7 +41,7 @@ final class PanelConstraints {
         }
     }
 
-    func updatePositionConstraints(for position: Panel.Configuration.Position, margins: UIEdgeInsets) {
+    func updatePositionConstraints(for position: Panel.Configuration.Position, margins: NSDirectionalEdgeInsets) {
         guard self.isPanning == false else { return }
         guard let view = self.panel.view else { return }
         guard let parentView = self.panel.parent?.view else { return }
@@ -57,20 +57,20 @@ final class PanelConstraints {
         switch position {
         case .bottom:
             positionConstraints += [
-                view.leadingAnchor.constraint(equalTo: guide.leadingAnchor, constant: margins.left).withIdentifier("Panel Leading"),
-                view.trailingAnchor.constraint(equalTo: guide.trailingAnchor, constant: -margins.right).withIdentifier("Panel Trailing")
+                view.leadingAnchor.constraint(equalTo: guide.leadingAnchor, constant: margins.leading).withIdentifier("Panel Leading"),
+                view.trailingAnchor.constraint(equalTo: guide.trailingAnchor, constant: -margins.trailing).withIdentifier("Panel Trailing")
             ]
 
         case .leadingBottom:
             positionConstraints += [
-                view.leadingAnchor.constraint(equalTo: guide.leadingAnchor, constant: margins.left).withIdentifier("Panel Leading"),
-                view.trailingAnchor.constraint(lessThanOrEqualTo: guide.trailingAnchor, constant: -margins.right).withIdentifier("Panel Trailing")
+                view.leadingAnchor.constraint(equalTo: guide.leadingAnchor, constant: margins.leading).withIdentifier("Panel Leading"),
+                view.trailingAnchor.constraint(lessThanOrEqualTo: guide.trailingAnchor, constant: -margins.trailing).withIdentifier("Panel Trailing")
             ]
 
         case .trailingBottom:
             positionConstraints += [
-                view.leadingAnchor.constraint(greaterThanOrEqualTo: guide.leadingAnchor, constant: margins.left).withIdentifier("Panel Leading"),
-                view.trailingAnchor.constraint(equalTo: guide.trailingAnchor, constant: -margins.right).withIdentifier("Panel Trailing")
+                view.leadingAnchor.constraint(greaterThanOrEqualTo: guide.leadingAnchor, constant: margins.leading).withIdentifier("Panel Leading"),
+                view.trailingAnchor.constraint(equalTo: guide.trailingAnchor, constant: -margins.trailing).withIdentifier("Panel Trailing")
             ]
         }
 

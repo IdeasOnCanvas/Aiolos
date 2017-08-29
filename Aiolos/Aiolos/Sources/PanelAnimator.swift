@@ -202,7 +202,7 @@ private extension PanelAnimator {
 
         switch direction {
         case .horizontal:
-            let translationX = animateToLeft ? -(size.width + margins.left) : size.width + margins.right
+            let translationX = animateToLeft ? -(size.width + margins.leading) : size.width + margins.trailing
             return CGAffineTransform(translationX: translationX, y: 0.0)
         case .vertical:
             return CGAffineTransform(translationX: 0.0, y: size.height + margins.bottom)

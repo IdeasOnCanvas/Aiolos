@@ -30,7 +30,7 @@ public extension Panel {
         public var mode: Mode
         public var supportedModes: [Mode]
         public var visualEffect: UIVisualEffect?
-        public var margins: UIEdgeInsets
+        public var margins: NSDirectionalEdgeInsets
         public var cornerRadius: CGFloat
         public var maskedCorners: CACornerMask
         public var borderColor: UIColor
@@ -48,7 +48,7 @@ public extension Panel.Configuration {
                                    mode: .compact,
                                    supportedModes: [.compact, .expanded, .fullHeight],
                                    visualEffect: UIBlurEffect(style: .extraLight),
-                                   margins: UIEdgeInsets(top: 10.0, left: 10.0, bottom: 0.0, right: 10.0),
+                                   margins: NSDirectionalEdgeInsets(top: 10.0, leading: 10.0, bottom: 0.0, trailing: 10.0),
                                    cornerRadius: 10.0,
                                    maskedCorners: [.layerMinXMinYCorner, .layerMinXMaxYCorner, .layerMaxXMinYCorner, .layerMaxXMaxYCorner],
                                    borderColor: UIColor.gray.withAlphaComponent(0.5),
