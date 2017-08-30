@@ -21,6 +21,7 @@ public extension Panel {
         }
 
         public enum Mode: Int {
+            case minimized
             case compact
             case expanded
             case fullHeight
@@ -71,9 +72,15 @@ extension Panel.Configuration {
         } else {
             // mode must be included in `supportedModes`
             if validated.supportedModes.contains(validated.mode) == false {
-                // if we try to set .expanded we prefer to fall back to .fullHeight rather than  .compact
-                if validated.mode == .expanded && validated.supportedModes.contains(.fullHeight) {
-                    validated.mode = .fullHeight
+                let fallbackModes: [Mode: Mode] = [
+                    .minimized: .compact,
+                    .compact: .minimized,
+                    .expanded: .fullHeight,
+                    .fullHeight: .expanded
+                ]
+
+                if let fallbackMode = fallbackModes[validated.mode], validated.supportedModes.contains(fallbackMode) {
+                    validated.mode = fallbackMode
                 } else {
                     validated.mode = validated.supportedModes[0]
                 }

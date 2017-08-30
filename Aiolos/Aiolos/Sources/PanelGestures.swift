@@ -188,9 +188,12 @@ private extension PanelGestures {
 
     // swiftlint:disable cyclomatic_complexity
     func targetMode(for pan: PanGestureRecognizer) -> Panel.Configuration.Mode {
+        guard let originalConfiguration = self.originalConfiguration else { return .expanded }
+
         let offset: CGFloat = 100.0
         let minVelocity: CGFloat = 20.0
         let velocity = pan.velocity(in: self.panel.view).y
+        let heightCompact = self.height(for: .compact)
         let heightExpanded = self.height(for: .expanded)
         let currentHeight = self.currentPanelHeight
         let supportedModes = self.panel.configuration.supportedModes
@@ -198,10 +201,22 @@ private extension PanelGestures {
         let isMovingUpwards = velocity < -minVelocity
         let isMovingDownwards = velocity > minVelocity
 
+        // .minimized is only allowed when moving downwards from .compact
+        if isMovingDownwards && originalConfiguration.mode == .compact && currentHeight < heightCompact && supportedModes.contains(.minimized) {
+            return .minimized
+        }
+        // if we move up from .minimized we have a higher threshold for .expanded and prefer .compact
+        if isMovingUpwards && originalConfiguration.mode == .minimized && currentHeight < heightCompact + 50.0 && supportedModes.contains(.compact) {
+            return .compact
+        }
         // moving upwards + current size > .expanded -> grow to .fullHeight
-        if currentHeight >= heightExpanded && isMovingUpwards && supportedModes.contains(.fullHeight) { return .fullHeight }
+        if currentHeight >= heightExpanded && isMovingUpwards && supportedModes.contains(.fullHeight) {
+            return .fullHeight
+        }
         // moving downwards + current size < .expanded -> shrink to .collapsed
-        if currentHeight <= heightExpanded && isMovingDownwards && supportedModes.contains(.compact) { return .compact }
+        if currentHeight <= heightExpanded && isMovingDownwards && supportedModes.contains(.compact) {
+            return .compact
+        }
         // moving upwards + current size < .expanded -> grow to .expanded
         if currentHeight <= heightExpanded && isMovingUpwards {
             if supportedModes.contains(.expanded) { return .expanded }

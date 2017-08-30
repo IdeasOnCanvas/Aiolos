@@ -168,10 +168,19 @@ internal extension Panel {
         guard let parent = self.parent else { return .zero }
 
         let delegateSize = sizeDelegate.panel(self, sizeForMode: mode)
-        let screen = parent.view.window?.screen ?? UIScreen.main
 
-        // we overwrite the height in .fullHeight mode
-        let height = mode == .fullHeight ? screen.fixedCoordinateSpace.bounds.height : delegateSize.height
+        // we overwrite the height in .minimized/.fullHeight mode
+        let height: CGFloat
+        switch mode {
+        case .minimized:
+            height = 0.0
+        case .fullHeight:
+            let screen = parent.view.window?.screen ?? UIScreen.main
+            height = screen.fixedCoordinateSpace.bounds.height
+        default:
+            height = delegateSize.height
+        }
+
         return CGSize(width: delegateSize.width, height: height)
     }
 }
