@@ -55,6 +55,9 @@ final class PanelAnimator {
 
         let transitionCoordinator = PanelTransitionCoordinator(animator: self)
         animationDelegate.panel(self.panel, willTransitionTo: size, with: transitionCoordinator)
+        if let contentViewController = self.panel.contentViewController as? PanelAnimationDelegate {
+            contentViewController.panel(self.panel, willTransitionTo: size, with: transitionCoordinator)
+        }
     }
 
     func notifyDelegateOfTransition(to mode: Panel.Configuration.Mode) {
@@ -62,6 +65,9 @@ final class PanelAnimator {
 
         let transitionCoordinator = PanelTransitionCoordinator(animator: self)
         animationDelegate.panel(self.panel, willTransitionTo: mode, with: transitionCoordinator)
+        if let contentViewController = self.panel.contentViewController as? PanelAnimationDelegate {
+            contentViewController.panel(self.panel, willTransitionTo: mode, with: transitionCoordinator)
+        }
     }
 }
 
