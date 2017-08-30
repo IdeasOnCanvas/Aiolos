@@ -188,7 +188,8 @@ private extension PanelGestures {
 
     // swiftlint:disable cyclomatic_complexity
     func targetMode(for pan: PanGestureRecognizer) -> Panel.Configuration.Mode {
-        guard let originalConfiguration = self.originalConfiguration else { return .expanded }
+        let supportedModes = self.panel.configuration.supportedModes
+        guard let originalConfiguration = self.originalConfiguration else { return supportedModes.first! }
 
         let offset: CGFloat = 100.0
         let minVelocity: CGFloat = 20.0
@@ -196,17 +197,16 @@ private extension PanelGestures {
         let heightCompact = self.height(for: .compact)
         let heightExpanded = self.height(for: .expanded)
         let currentHeight = self.currentPanelHeight
-        let supportedModes = self.panel.configuration.supportedModes
 
         let isMovingUpwards = velocity < -minVelocity
         let isMovingDownwards = velocity > minVelocity
 
-        // .minimized is only allowed when moving downwards from .compact
-        if isMovingDownwards && originalConfiguration.mode == .compact && currentHeight < heightCompact && supportedModes.contains(.minimized) {
-            return .minimized
+        // .minimal is only allowed when moving downwards from .compact
+        if isMovingDownwards && originalConfiguration.mode == .compact && currentHeight < heightCompact && supportedModes.contains(.minimal) {
+            return .minimal
         }
-        // if we move up from .minimized we have a higher threshold for .expanded and prefer .compact
-        if isMovingUpwards && originalConfiguration.mode == .minimized && currentHeight < heightCompact + 50.0 && supportedModes.contains(.compact) {
+        // if we move up from .minimal we have a higher threshold for .expanded and prefer .compact
+        if isMovingUpwards && originalConfiguration.mode == .minimal && currentHeight < heightCompact + 50.0 && supportedModes.contains(.compact) {
             return .compact
         }
         // moving upwards + current size > .expanded -> grow to .fullHeight
@@ -238,7 +238,7 @@ private extension PanelGestures {
         } else if supportedModes.contains(.expanded) {
             return .expanded
         } else {
-            return supportedModes[0]
+            return supportedModes.first!
         }
     }
     // swiftlint:enable cyclomatic_complexity

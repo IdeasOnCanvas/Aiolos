@@ -80,7 +80,7 @@ extension ViewController: PanelSizeDelegate {
     func panel(_ panel: Panel, sizeForMode mode: Panel.Configuration.Mode) -> CGSize {
         let width = self.panelWidth(for: self.traitCollection, position: panel.configuration.position)
         switch mode {
-        case .minimized:
+        case .minimal:
             return CGSize(width: width, height: 0.0)
         case .compact:
             return CGSize(width: width, height: 64.0)
@@ -140,7 +140,7 @@ private extension ViewController {
         if self.traitCollection.userInterfaceIdiom == .pad {
             panelController.configuration.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner, .layerMinXMaxYCorner, .layerMaxXMaxYCorner]
         } else {
-            panelController.configuration.supportedModes = [.minimized, .compact, .expanded, .fullHeight]
+            panelController.configuration.supportedModes = [.minimal, .compact, .expanded, .fullHeight]
             panelController.configuration.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
         }
 

@@ -21,7 +21,7 @@ public extension Panel {
         }
 
         public enum Mode: Int {
-            case minimized
+            case minimal
             case compact
             case expanded
             case fullHeight
@@ -29,7 +29,7 @@ public extension Panel {
 
         public var position: Position
         public var mode: Mode
-        public var supportedModes: [Mode]
+        public var supportedModes: Set<Mode>
         public var visualEffect: UIVisualEffect?
         public var margins: NSDirectionalEdgeInsets
         public var cornerRadius: CGFloat
@@ -68,13 +68,13 @@ extension Panel.Configuration {
 
         if validated.supportedModes.isEmpty {
             // can't have an empty `supportedModes` array
-            validated.supportedModes.append(validated.mode)
+            validated.supportedModes.insert(validated.mode)
         } else {
             // mode must be included in `supportedModes`
             if validated.supportedModes.contains(validated.mode) == false {
                 let fallbackModes: [Mode: Mode] = [
-                    .minimized: .compact,
-                    .compact: .minimized,
+                    .minimal: .compact,
+                    .compact: .minimal,
                     .expanded: .fullHeight,
                     .fullHeight: .expanded
                 ]
@@ -82,7 +82,7 @@ extension Panel.Configuration {
                 if let fallbackMode = fallbackModes[validated.mode], validated.supportedModes.contains(fallbackMode) {
                     validated.mode = fallbackMode
                 } else {
-                    validated.mode = validated.supportedModes[0]
+                    validated.mode = validated.supportedModes.first!
                 }
             }
         }
