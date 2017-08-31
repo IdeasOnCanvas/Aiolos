@@ -172,8 +172,8 @@ private extension PanelGestures {
         let targetMode = self.targetMode(for: pan)
         let initialVelocity = self.initialVelocity(for: pan, targetMode: targetMode)
 
-        self.cleanUp(pan: pan)
         self.animate(to: targetMode, initialVelocity: initialVelocity)
+        self.cleanUp(pan: pan)
     }
 
     func handlePanCancelled(_ pan: PanGestureRecognizer) {
@@ -206,7 +206,7 @@ private extension PanelGestures {
             return .minimal
         }
         // if we move up from .minimal we have a higher threshold for .expanded and prefer .compact
-        if isMovingUpwards && originalConfiguration.mode == .minimal && currentHeight < heightCompact + 50.0 && supportedModes.contains(.compact) {
+        if isMovingUpwards && originalConfiguration.mode == .minimal && currentHeight < heightCompact + 40.0 && supportedModes.contains(.compact) {
             return .compact
         }
         // moving upwards + current size > .expanded -> grow to .fullHeight
@@ -270,13 +270,25 @@ private extension PanelGestures {
         return abs(velocity / distance)
     }
 
+    func timing(for initialVelocity: CGFloat) -> UITimingCurveProvider {
+        let springTiming = UISpringTimingParameters(mass: Constants.Animation.mass,
+                                                    stiffness: Constants.Animation.stiffness,
+                                                    damping: Constants.Animation.damping,
+                                                    initialVelocity: CGVector(dx: initialVelocity, dy: initialVelocity))
+
+        guard let originalConfiguration = self.originalConfiguration else { return springTiming }
+
+        if originalConfiguration.mode == .minimal || initialVelocity < 16.0 {
+            return UISpringTimingParameters()
+        } else {
+            return springTiming
+        }
+    }
+
     func animate(to targetMode: Panel.Configuration.Mode, initialVelocity: CGFloat) {
         let height = self.height(for: targetMode)
         let size = self.panel.size(for: targetMode)
-        let timing = UISpringTimingParameters(mass: Constants.Animation.mass,
-                                              stiffness: Constants.Animation.stiffness,
-                                              damping: Constants.Animation.damping,
-                                              initialVelocity: CGVector(dx: initialVelocity, dy: initialVelocity))
+        let timing = self.timing(for: initialVelocity)
 
         self.panel.constraints.prepareForPanEndAnimation()
         self.panel.configuration.mode = targetMode
