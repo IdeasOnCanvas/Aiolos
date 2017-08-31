@@ -144,6 +144,7 @@ private extension PanelGestures {
 
         let translation = pan.translation(in: self.panel.view)
         let yOffset = dragOffset(for: translation)
+        guard yOffset != 0.0 else { return }
 
         // cancel pan if it was started on the content/safeArea and it's used to grow the panel in height
         if translation.y < 0.0 && pan.didStartOnScrollableArea {
@@ -179,11 +180,14 @@ private extension PanelGestures {
     func handlePanCancelled(_ pan: PanGestureRecognizer) {
         guard let mode = self.originalConfiguration?.mode else { return }
 
+        let currentHeight = self.currentPanelHeight
         self.cleanUp(pan: pan)
 
         let size = self.panel.size(for: mode)
         self.panel.constraints.updateForPanCancelled(with: size)
-        self.panel.animator.notifyDelegateOfTransition(to: size)
+        if currentHeight != size.height {
+            self.panel.animator.notifyDelegateOfTransition(to: size)
+        }
     }
 
     // swiftlint:disable cyclomatic_complexity
