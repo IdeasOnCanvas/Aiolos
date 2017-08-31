@@ -169,6 +169,15 @@ internal extension Panel {
 
         let delegateSize = sizeDelegate.panel(self, sizeForMode: mode)
 
+        // we overwrite the width in .bottom position
+        let width: CGFloat
+        switch self.configuration.position {
+        case .bottom:
+            width = parent.view.frame.width
+        default:
+            width = delegateSize.width
+        }
+
         // we overwrite the height in .minimal/.fullHeight mode
         let height: CGFloat
         switch mode {
@@ -181,7 +190,7 @@ internal extension Panel {
             height = delegateSize.height
         }
 
-        return CGSize(width: delegateSize.width, height: height)
+        return CGSize(width: width, height: height)
     }
 }
 
