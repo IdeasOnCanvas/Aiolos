@@ -97,7 +97,7 @@ extension ViewController: PanelSizeDelegate {
 
 extension ViewController: PanelAnimationDelegate {
 
-    func panel(_ panel: Panel, willTransitionTo size: CGSize, with coordinator: PanelTransitionCoordinator) {
+    func panel(_ panel: Panel, willTransitionTo size: CGSize) {
 //        print("Will transition to \(size), animated: \(coordinator.isAnimated)")
 //        coordinator.animateAlongsideTransition({
 //            print("Animating willTransitionToSize")
