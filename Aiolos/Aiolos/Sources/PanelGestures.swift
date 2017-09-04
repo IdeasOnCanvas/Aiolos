@@ -68,10 +68,18 @@ private extension PanelGestures {
     }
 
     struct Constants {
+
         struct Animation {
-            static let mass: CGFloat = 9.0
-            static let stiffness: CGFloat = 2400.0
-            static let damping: CGFloat = 190.0
+            let mass: CGFloat
+            let stiffness: CGFloat
+            let damping: CGFloat
+
+            static let springy: Animation = Animation(mass: 9.0, stiffness: 2400.0, damping: 190.0)
+            static let overdamped: Animation = Animation(mass: 9.0, stiffness: 2400.0, damping: 250.0)
+
+            func makeTiming(with velocity: CGFloat) -> UISpringTimingParameters {
+                return UISpringTimingParameters(mass: self.mass, stiffness: self.stiffness, damping: self.damping, initialVelocity: CGVector(dx: velocity, dy: velocity))
+            }
         }
     }
 
@@ -275,15 +283,11 @@ private extension PanelGestures {
     }
 
     func timing(for initialVelocity: CGFloat) -> UITimingCurveProvider {
-        let springTiming = UISpringTimingParameters(mass: Constants.Animation.mass,
-                                                    stiffness: Constants.Animation.stiffness,
-                                                    damping: Constants.Animation.damping,
-                                                    initialVelocity: CGVector(dx: initialVelocity, dy: initialVelocity))
-
+        let springTiming = Constants.Animation.springy.makeTiming(with: initialVelocity)
         guard let originalConfiguration = self.originalConfiguration else { return springTiming }
 
-        if originalConfiguration.mode == .minimal || initialVelocity < 16.0 {
-            return UISpringTimingParameters()
+        if originalConfiguration.mode == .minimal || initialVelocity < 13.0 {
+            return Constants.Animation.overdamped.makeTiming(with: initialVelocity)
         } else {
             return springTiming
         }
