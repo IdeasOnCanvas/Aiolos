@@ -292,7 +292,7 @@ private extension Panel {
         if modeChanged || positionChanged {
             let size = self.size(for: newConfiguration.mode)
 
-            if modeChanged { self.animator.notifyDelegateOfTransition(to: newConfiguration.mode) }
+            if modeChanged { self.animator.notifyDelegateOfTransition(from: oldConfiguration.mode, to: newConfiguration.mode) }
             self.animator.notifyDelegateOfTransition(to: size)
             self.constraints.updateSizeConstraints(for: size)
         }

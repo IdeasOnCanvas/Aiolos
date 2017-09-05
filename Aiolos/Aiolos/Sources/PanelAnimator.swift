@@ -59,13 +59,13 @@ final class PanelAnimator {
         }
     }
 
-    func notifyDelegateOfTransition(to mode: Panel.Configuration.Mode) {
+    func notifyDelegateOfTransition(from oldMode: Panel.Configuration.Mode?, to newMode: Panel.Configuration.Mode) {
         guard let animationDelegate = self.panel.animationDelegate else { return }
 
         let transitionCoordinator = PanelTransitionCoordinator(animator: self)
-        animationDelegate.panel(self.panel, willTransitionTo: mode, with: transitionCoordinator)
+        animationDelegate.panel(self.panel, willTransitionFrom: oldMode, to: newMode, with: transitionCoordinator)
         if let contentViewController = self.panel.contentViewController as? PanelAnimationDelegate {
-            contentViewController.panel(self.panel, willTransitionTo: mode, with: transitionCoordinator)
+            contentViewController.panel(self.panel, willTransitionFrom: oldMode, to: newMode, with: transitionCoordinator)
         }
     }
 }
@@ -79,7 +79,7 @@ extension PanelAnimator {
         self.prepare(for: transition, size: size)
         self.performWithoutAnimation {
             self.notifyDelegateOfTransition(to: size)
-            self.notifyDelegateOfTransition(to: self.panel.configuration.mode)
+            self.notifyDelegateOfTransition(from: nil, to: self.panel.configuration.mode)
             self.panel.constraints.updateSizeConstraints(for: size)
             self.panel.constraints.updatePositionConstraints(for: self.panel.configuration.position, margins: self.panel.configuration.margins)
         }

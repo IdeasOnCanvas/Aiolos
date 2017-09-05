@@ -106,8 +106,8 @@ extension ViewController: PanelAnimationDelegate {
 //        }
     }
 
-    func panel(_ panel: Panel, willTransitionTo mode: Panel.Configuration.Mode, with coordinator: PanelTransitionCoordinator) {
-        print("Will transition to mode \(mode)")
+    func panel(_ panel: Panel, willTransitionFrom oldMode: Panel.Configuration.Mode?, to newMode: Panel.Configuration.Mode, with coordinator: PanelTransitionCoordinator) {
+        print("Will transition to mode \(newMode)")
         coordinator.animateAlongsideTransition({
             print("Animating willTransitionToMode")
         }) { _ in

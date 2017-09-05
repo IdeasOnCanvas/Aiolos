@@ -23,5 +23,5 @@ public protocol PanelAnimationDelegate: class {
     func panel(_ panel: Panel, willTransitionTo size: CGSize)
 
     /// Tells the delegate that the `panel` is transitioning to a specific mode
-    func panel(_ panel: Panel, willTransitionTo mode: Panel.Configuration.Mode, with coordinator: PanelTransitionCoordinator)
+    func panel(_ panel: Panel, willTransitionFrom oldMode: Panel.Configuration.Mode?, to newMode: Panel.Configuration.Mode, with coordinator: PanelTransitionCoordinator)
 }
