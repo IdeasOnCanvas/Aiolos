@@ -16,7 +16,7 @@ public final class Panel: UIViewController {
     private(set) lazy var resizeHandle: ResizeHandle = self.makeResizeHandle()
     private var shadowView: ShadowView? { return self.viewIfLoaded as? ShadowView }
     private var containerView: ContainerView? { return self.viewIfLoaded?.subviews.first as? ContainerView }
-    private lazy var dimmingView: UIView = self.makeDimmingView()
+    private(set) lazy var dimmingView: UIView = self.makeDimmingView()
     private lazy var separatorView: SeparatorView = self.makeSeparatorView()
 
     private lazy var gestures: PanelGestures = self.makeGestures()
@@ -119,6 +119,7 @@ public extension Panel {
 
         self.contentViewController?.beginAppearanceTransition(true, animated: transition.isAnimated)
         parent.addChildViewController(self)
+        parent.view.addSubview(self.dimmingView)
         parent.view.addSubview(self.view)
         self.didMove(toParentViewController: parent)
 
@@ -216,9 +217,10 @@ private extension Panel {
     }
 
     func makeDimmingView() -> UIView {
-        let view = UIView()
-        view.backgroundColor = UIColor(white: 0.0, alpha: 0.4)
+        let view = UIView(frame: self.parent?.view.bounds ?? .zero)
+        view.backgroundColor = UIColor(white: 0.0, alpha: 0.6)
         view.alpha = 0.0
+        view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         return view
     }
 

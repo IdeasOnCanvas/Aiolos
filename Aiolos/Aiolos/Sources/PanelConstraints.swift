@@ -30,14 +30,14 @@ final class PanelConstraints {
 
     func updateSizeConstraints(for size: CGSize) {
         guard self.isPanning == false else { return }
-        guard let widthConstraint = self.widthConstraint, let heightConstraint = self.heightConstraint else {
+        guard let widthConstraint = self.widthConstraint else {
             self.activateSizeConstraints(for: size)
             return
         }
 
         self.panel.animator.animateIfNeeded {
             widthConstraint.constant = size.width
-            heightConstraint.constant = size.height
+            self.setHeight(size.height)
         }
     }
 
@@ -97,14 +97,14 @@ internal extension PanelConstraints {
     func updateForPanStart(with currentSize: CGSize) {
         // the normal height constraint for .fullHeight can have a higher constant, but the actual height is constrained by the safeAreaInsets
         // this fixes this discrepancy by setting the heightConstraint's constant to the actual current height of the panel, when a drag starts
-        self.heightConstraint?.constant = currentSize.height
+        self.setHeight(currentSize.height)
         // we don't want to limit the height by the safeAreaInsets during dragging
         self.topConstraint?.isActive = false
     }
 
     func updateForPan(with yOffset: CGFloat) {
         self.isPanning = true
-        self.heightConstraint?.constant -= yOffset
+        self.setHeight(self.heightConstraint!.constant - yOffset)
     }
 
     func updateForPanEnd() {
@@ -117,7 +117,7 @@ internal extension PanelConstraints {
     }
 
     func updateForPanEndAnimation(to height: CGFloat) {
-        self.heightConstraint?.constant = height
+        self.setHeight(height)
         self.panel.parent?.view.layoutIfNeeded()
         self.isPanning = false
     }
@@ -154,6 +154,21 @@ private extension PanelConstraints {
         self.widthConstraint = widthConstraint
         self.heightConstraint = heightConstraint
         NSLayoutConstraint.activate([widthConstraint, heightConstraint, minHeightConstraint])
+    }
+
+    func setHeight(_ height: CGFloat) {
+        self.heightConstraint?.constant = height
+        self.panel.dimmingView.alpha = self.dimmingAlpha(for: height)
+    }
+
+    func dimmingAlpha(for height: CGFloat) -> CGFloat {
+        guard self.panel.configuration.isDimmingEnabled else { return 0.0 }
+
+        let expandedHeight = self.panel.size(for: .expanded).height
+        guard height > expandedHeight else { return 0.0 }
+
+        let heightDiff = self.maxHeight - expandedHeight
+        return (height - expandedHeight) / heightDiff
     }
 }
 
