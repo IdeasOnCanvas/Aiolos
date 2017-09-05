@@ -137,6 +137,7 @@ public extension Panel {
         self.willMove(toParentViewController: nil)
         self.animator.removeFromParent(transition: transition) {
             self.contentViewController?.endAppearanceTransition()
+            self.dimmingView.removeFromSuperview()
             self.view.removeFromSuperview()
             self.removeFromParentViewController()
             self.isTransitioningFromParent = false
@@ -287,6 +288,7 @@ private extension Panel {
         self.resizeHandle.configure(with: newConfiguration)
         self.separatorView.configure(with: newConfiguration)
         self.gestures.configure(with: newConfiguration)
+        self.dimmingView.isHidden = !newConfiguration.isDimmingEnabled
 
         let modeChanged = oldConfiguration.mode != newConfiguration.mode
         let positionChanged = oldConfiguration.position != newConfiguration.position
