@@ -310,8 +310,8 @@ private extension PanelGestures {
     func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, isWithinContentAreaOf contentViewController: UIViewController) -> Bool {
         let offset: CGFloat = 10.0
         let safeAreaTop: CGFloat
-        if let navigationController = contentViewController as? UINavigationController, let topViewController = navigationController.topViewController {
-            safeAreaTop = topViewController.view.safeAreaInsets.top + offset
+        if let navigationController = contentViewController as? UINavigationController {
+            safeAreaTop = navigationController.navigationBar.frame.maxY + offset
         } else {
             safeAreaTop = offset
         }
