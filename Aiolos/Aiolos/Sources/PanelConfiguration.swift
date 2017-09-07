@@ -27,6 +27,12 @@ public extension Panel {
             case fullHeight
         }
 
+        public enum GestureResizingMode: Int {
+            case disabled
+            case excludingContent
+            case includingContent
+        }
+
         public var position: Position
         public var mode: Mode
         public var supportedModes: Set<Mode>
@@ -38,7 +44,7 @@ public extension Panel {
         public var resizeHandleColor: UIColor
         public var resizeHandleBackgroundColor: UIColor
         public var separatorColor: UIColor
-        public var isGestureBasedResizingEnabled: Bool
+        public var gestureResizingMode: GestureResizingMode
     }
 }
 
@@ -56,7 +62,7 @@ public extension Panel.Configuration {
                                    resizeHandleColor: UIColor.gray.withAlphaComponent(0.3),
                                    resizeHandleBackgroundColor: .white,
                                    separatorColor: UIColor.gray.withAlphaComponent(0.5),
-                                   isGestureBasedResizingEnabled: true)
+                                   gestureResizingMode: .includingContent)
     }
 }
 

@@ -33,7 +33,8 @@ final class PanelGestures: NSObject {
     }
 
     func configure(with configuration: Panel.Configuration) {
-        self.isEnabled = configuration.isGestureBasedResizingEnabled
+        self.cancel()
+        self.isEnabled = configuration.gestureResizingMode != .disabled
     }
 
     func cancel() {
@@ -321,6 +322,8 @@ private extension PanelGestures {
 
     // allow pan gesture to be triggered when a) there's no scrollView or b) the scrollView can't be scrolled downwards
     func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, isAllowedToStartByContentOf contentViewController: UIViewController) -> Bool {
+        guard self.panel.configuration.gestureResizingMode == .includingContent else { return false }
+
         let location = gestureRecognizer.location(in: contentViewController.view)
         guard let hitView = contentViewController.view.hitTest(location, with: nil) else { return true }
         guard let enclosingScrollView = hitView.superview(with: UIScrollView.self) as? UIScrollView else { return true }
