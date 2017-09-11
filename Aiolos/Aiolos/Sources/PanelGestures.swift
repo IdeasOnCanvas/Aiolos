@@ -57,6 +57,12 @@ extension PanelGestures: UIGestureRecognizerDelegate {
     func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
         return true
     }
+
+    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRequireFailureOf otherGestureRecognizer: UIGestureRecognizer) -> Bool {
+        // fail for built-in drag gesture recognizers 🤷‍♂️
+        let className = String(describing: type(of: otherGestureRecognizer))
+        return className.contains("UIDrag")
+    }
 }
 
 // MARK: - Private
