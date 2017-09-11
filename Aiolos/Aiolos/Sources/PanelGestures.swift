@@ -190,6 +190,7 @@ private extension PanelGestures {
         self.cleanUp(pan: pan)
 
         let size = self.panel.size(for: mode)
+        self.panel.animator.notifyDelegateOfTransition(from: mode, to: mode)
         self.panel.constraints.updateForPanCancelled(with: size)
         if currentHeight != size.height {
             self.panel.animator.notifyDelegateOfTransition(to: size)

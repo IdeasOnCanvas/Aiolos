@@ -37,7 +37,7 @@ final class ShadowView: UIView {
 
     func configure(with configuration: Panel.Configuration) {
         // configure shadow
-        self.layer.shadowOpacity = 0.2
+        self.layer.shadowOpacity = 0.15
         self.layer.shadowOffset = .zero
 
         // configure border
