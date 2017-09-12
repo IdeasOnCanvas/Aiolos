@@ -78,11 +78,12 @@ extension PanelAnimator {
         self.stopCurrentAnimation()
         self.prepare(for: transition, size: size)
         self.performWithoutAnimation {
-            self.notifyDelegateOfTransition(to: size)
-            self.notifyDelegateOfTransition(from: nil, to: self.panel.configuration.mode)
             self.panel.constraints.updateSizeConstraints(for: size)
             self.panel.constraints.updatePositionConstraints(for: self.panel.configuration.position, margins: self.panel.configuration.margins)
         }
+
+        self.notifyDelegateOfTransition(to: size)
+        self.notifyDelegateOfTransition(from: nil, to: self.panel.configuration.mode)
         self.finalizeTransition(transition, completion: completion)
     }
 
@@ -149,13 +150,7 @@ private extension PanelAnimator {
         }
 
         // we might have enqueued animations from a transition coordinator, perform them along the main changes
-        self.transitionCoordinatorQueuedAnimations.forEach {
-            animator.addAnimations($0.animations)
-            if let completion = $0.completion {
-                animator.addCompletion(completion)
-            }
-        }
-        self.transitionCoordinatorQueuedAnimations = []
+        self.addQueuedAnimations(to: animator)
 
         // if we don't want to animate, perform changes directly by setting the completion state to 100 %
         if animated == false {
@@ -164,6 +159,17 @@ private extension PanelAnimator {
 
         animator.startAnimation()
         self.animator = animator
+    }
+
+    func addQueuedAnimations(to animator: UIViewPropertyAnimator) {
+        self.transitionCoordinatorQueuedAnimations.forEach {
+            animator.addAnimations($0.animations)
+            if let completion = $0.completion {
+                animator.addCompletion(completion)
+            }
+        }
+
+        self.transitionCoordinatorQueuedAnimations = []
     }
 
     func prepare(for transition: Panel.Transition, size: CGSize) {
@@ -184,19 +190,16 @@ private extension PanelAnimator {
     }
 
     func finalizeTransition(_ transition: Panel.Transition, completion: @escaping () -> Void) {
-        switch transition {
-        case .none:
-            self.resetPanel()
-            completion()
+        let animator = UIViewPropertyAnimator(duration: Constants.Animation.duration, timingParameters: UISpringTimingParameters())
+        animator.addAnimations(self.resetPanel)
+        animator.addCompletion { _ in completion() }
+        self.addQueuedAnimations(to: animator)
 
-        case .fade:
-            fallthrough
-        case .slide:
-            let animator = UIViewPropertyAnimator(duration: Constants.Animation.duration, timingParameters: UISpringTimingParameters())
-            animator.addAnimations(self.resetPanel)
-            animator.addCompletion { _ in completion() }
-            animator.startAnimation()
+        if case .none = transition {
+            animator.fractionComplete = 1.0
         }
+
+        animator.startAnimation()
     }
 
     func transform(for direction: Panel.Direction, size: CGSize) -> CGAffineTransform {
