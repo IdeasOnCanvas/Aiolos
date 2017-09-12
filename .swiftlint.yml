@@ -4,8 +4,6 @@ disabled_rules:
   
 opt_in_rules:
   - empty_count
-  - redundant_nil_coalesing
-  - overridden_super_call
   - explicit_init
   - closure_spacing
   - operator_usage_whitespace 
