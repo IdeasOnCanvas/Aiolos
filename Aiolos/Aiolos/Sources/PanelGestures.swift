@@ -176,8 +176,10 @@ private extension PanelGestures {
     }
 
     func handlePanEnded(_ pan: PanGestureRecognizer) {
+        guard let originalMode = self.originalConfiguration?.mode else { return }
+
         self.panel.constraints.updateForPanEnd()
-        guard pan.didPan else {
+        guard pan.didPan || originalMode == .minimal else {
             self.handlePanCancelled(pan)
             return
         }
@@ -190,13 +192,13 @@ private extension PanelGestures {
     }
 
     func handlePanCancelled(_ pan: PanGestureRecognizer) {
-        guard let mode = self.originalConfiguration?.mode else { return }
+        guard let originalMode = self.originalConfiguration?.mode else { return }
 
         let currentHeight = self.currentPanelHeight
         self.cleanUp(pan: pan)
 
-        let size = self.panel.size(for: mode)
-        self.panel.animator.notifyDelegateOfTransition(from: mode, to: mode)
+        let size = self.panel.size(for: originalMode)
+        self.panel.animator.notifyDelegateOfTransition(from: originalMode, to: originalMode)
         self.panel.constraints.updateForPanCancelled(with: size)
         if currentHeight != size.height {
             self.panel.animator.notifyDelegateOfTransition(to: size)
@@ -218,6 +220,10 @@ private extension PanelGestures {
         let isMovingUpwards = velocity < -minVelocity
         let isMovingDownwards = velocity > minVelocity
 
+        // expand to .compact if we "tap" on .minimal
+        if isMovingUpwards == false && isMovingDownwards == false && originalConfiguration.mode == .minimal && currentHeight < heightCompact && supportedModes.contains(.compact) {
+            return .compact
+        }
         // .minimal is only allowed when moving downwards from .compact
         if isMovingDownwards && originalConfiguration.mode == .compact && currentHeight < heightCompact && supportedModes.contains(.minimal) {
             return .minimal
