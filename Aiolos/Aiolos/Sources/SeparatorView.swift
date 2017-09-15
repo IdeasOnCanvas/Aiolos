@@ -27,6 +27,6 @@ final class SeparatorView: UIView {
     // MARK: - SeparatorView
 
     func configure(with configuration: Panel.Configuration) {
-        self.backgroundColor = configuration.separatorColor
+        self.backgroundColor = configuration.appearance.separatorColor
     }
 }

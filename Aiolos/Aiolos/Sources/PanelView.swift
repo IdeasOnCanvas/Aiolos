@@ -16,7 +16,7 @@ public final class PanelView: UIVisualEffectView {
     // MARK: - Lifecycle
 
     public init(configuration: Panel.Configuration) {
-        super.init(effect: configuration.visualEffect)
+        super.init(effect: configuration.appearance.visualEffect)
 
         self.clipsToBounds = true
         self.configure(with: configuration)
@@ -29,8 +29,8 @@ public final class PanelView: UIVisualEffectView {
     // MARK: - PanelView
 
     func configure(with configuration: Panel.Configuration) {
-        self.effect = configuration.visualEffect
-        self.layer.cornerRadius = configuration.cornerRadius
-        self.layer.maskedCorners = configuration.maskedCorners.subtracting([.layerMinXMinYCorner, .layerMaxXMinYCorner])
+        self.effect = configuration.appearance.visualEffect
+        self.layer.cornerRadius = configuration.appearance.cornerRadius
+        self.layer.maskedCorners = configuration.appearance.maskedCorners.subtracting([.layerMinXMinYCorner, .layerMaxXMinYCorner])
     }
 }

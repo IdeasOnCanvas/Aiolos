@@ -20,6 +20,11 @@ public extension Panel {
             case trailingBottom
         }
 
+        public enum PositionLogic: Int {
+            case respectSafeArea
+            case ignoreSafeArea
+        }
+
         public enum Mode: Int {
             case minimal
             case compact
@@ -33,36 +38,44 @@ public extension Panel {
             case includingContent
         }
 
+        public struct Appearance {
+            public var visualEffect: UIVisualEffect?
+            public var borderColor: UIColor
+            public var resizeHandleColor: UIColor
+            public var resizeHandleBackgroundColor: UIColor
+            public var separatorColor: UIColor
+            public var cornerRadius: CGFloat
+            public var maskedCorners: CACornerMask
+        }
+
         public var position: Position
+        public var positionLogic: PositionLogic
+        public var margins: NSDirectionalEdgeInsets
         public var mode: Mode
         public var supportedModes: Set<Mode>
-        public var visualEffect: UIVisualEffect?
-        public var margins: NSDirectionalEdgeInsets
-        public var cornerRadius: CGFloat
-        public var maskedCorners: CACornerMask
-        public var borderColor: UIColor
-        public var resizeHandleColor: UIColor
-        public var resizeHandleBackgroundColor: UIColor
-        public var separatorColor: UIColor
         public var gestureResizingMode: GestureResizingMode
+        public var appearance: Appearance
     }
 }
 
 public extension Panel.Configuration {
 
     static var `default`: Panel.Configuration {
+        let appearance = Appearance(visualEffect: UIBlurEffect(style: .extraLight),
+                                    borderColor: UIColor.gray.withAlphaComponent(0.5),
+                                    resizeHandleColor: UIColor.gray.withAlphaComponent(0.3),
+                                    resizeHandleBackgroundColor: .white,
+                                    separatorColor: UIColor.gray.withAlphaComponent(0.5),
+                                    cornerRadius: 10.0,
+                                    maskedCorners: [.layerMinXMinYCorner, .layerMinXMaxYCorner, .layerMaxXMinYCorner, .layerMaxXMaxYCorner])
+
         return Panel.Configuration(position: .bottom,
+                                   positionLogic: .respectSafeArea,
+                                   margins: NSDirectionalEdgeInsets(top: 10.0, leading: 10.0, bottom: 0.0, trailing: 10.0),
                                    mode: .compact,
                                    supportedModes: [.compact, .expanded, .fullHeight],
-                                   visualEffect: UIBlurEffect(style: .extraLight),
-                                   margins: NSDirectionalEdgeInsets(top: 10.0, leading: 10.0, bottom: 0.0, trailing: 10.0),
-                                   cornerRadius: 10.0,
-                                   maskedCorners: [.layerMinXMinYCorner, .layerMinXMaxYCorner, .layerMaxXMinYCorner, .layerMaxXMaxYCorner],
-                                   borderColor: UIColor.gray.withAlphaComponent(0.5),
-                                   resizeHandleColor: UIColor.gray.withAlphaComponent(0.3),
-                                   resizeHandleBackgroundColor: .white,
-                                   separatorColor: UIColor.gray.withAlphaComponent(0.5),
-                                   gestureResizingMode: .includingContent)
+                                   gestureResizingMode: .includingContent,
+                                   appearance: appearance)
     }
 }
 

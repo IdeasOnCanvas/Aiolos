@@ -280,6 +280,7 @@ private extension Panel {
 
         let modeChanged = oldConfiguration.mode != newConfiguration.mode
         let positionChanged = oldConfiguration.position != newConfiguration.position
+        let positionLogicChanged = oldConfiguration.positionLogic != newConfiguration.positionLogic
 
         if modeChanged || positionChanged {
             let size = self.size(for: newConfiguration.mode)
@@ -289,7 +290,7 @@ private extension Panel {
             self.constraints.updateSizeConstraints(for: size)
         }
 
-        if positionChanged {
+        if positionChanged || positionLogicChanged {
             self.constraints.updatePositionConstraints(for: newConfiguration.position, margins: newConfiguration.margins)
         }
     }

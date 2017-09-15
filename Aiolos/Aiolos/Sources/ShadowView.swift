@@ -41,9 +41,9 @@ final class ShadowView: UIView {
         self.layer.shadowOffset = .zero
 
         // configure border
-        self.layer.cornerRadius = configuration.cornerRadius
-        self.layer.maskedCorners = configuration.maskedCorners
-        self.layer.borderColor = configuration.borderColor.cgColor
+        self.layer.cornerRadius = configuration.appearance.cornerRadius
+        self.layer.maskedCorners = configuration.appearance.maskedCorners
+        self.layer.borderColor = configuration.appearance.borderColor.cgColor
         self.layer.borderWidth = 1.0 / UIScreen.main.scale
     }
 }

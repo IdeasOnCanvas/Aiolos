@@ -29,7 +29,7 @@ final class ContainerView: UIView {
 
     func configure(with configuration: Panel.Configuration) {
         self.layer.masksToBounds = true
-        self.layer.cornerRadius = configuration.cornerRadius
-        self.layer.maskedCorners = configuration.maskedCorners
+        self.layer.cornerRadius = configuration.appearance.cornerRadius
+        self.layer.maskedCorners = configuration.appearance.maskedCorners
     }
 }

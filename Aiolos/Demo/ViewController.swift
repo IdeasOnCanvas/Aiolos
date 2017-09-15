@@ -135,13 +135,13 @@ private extension ViewController {
         panelController.contentViewController = contentNavigationController
         panelController.configuration.position = self.panelPosition(for: self.traitCollection)
         panelController.configuration.margins = self.panelMargins(for: self.traitCollection)
-        panelController.configuration.separatorColor = .white
+        panelController.configuration.appearance.separatorColor = .white
 
         if self.traitCollection.userInterfaceIdiom == .pad {
-            panelController.configuration.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner, .layerMinXMaxYCorner, .layerMaxXMaxYCorner]
+            panelController.configuration.appearance.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner, .layerMinXMaxYCorner, .layerMaxXMaxYCorner]
         } else {
             panelController.configuration.supportedModes = [.minimal, .compact, .expanded, .fullHeight]
-            panelController.configuration.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
+            panelController.configuration.appearance.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
         }
 
         return panelController

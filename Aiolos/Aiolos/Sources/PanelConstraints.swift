@@ -46,7 +46,7 @@ final class PanelConstraints {
         guard let view = self.panel.view else { return }
         guard let parentView = self.panel.parent?.view else { return }
 
-        let guide = parentView.safeAreaLayoutGuide
+        let guide: AnchorOwner = self.panel.configuration.positionLogic == .respectSafeArea ? parentView.safeAreaLayoutGuide : parentView
         let topConstraint = view.topAnchor.constraint(greaterThanOrEqualTo: guide.topAnchor, constant: margins.top).withIdentifier("Panel Top")
         var positionConstraints = [
             view.bottomAnchor.constraint(lessThanOrEqualTo: guide.bottomAnchor, constant: -margins.bottom).withIdentifier("Panel Bottom"),
@@ -172,3 +172,21 @@ private extension NSLayoutConstraint {
         }
     }
 }
+
+// Compiler doesn't allow me to make this private…
+protocol AnchorOwner {
+
+    var leadingAnchor: NSLayoutXAxisAnchor { get }
+    var trailingAnchor: NSLayoutXAxisAnchor { get }
+    var leftAnchor: NSLayoutXAxisAnchor { get }
+    var rightAnchor: NSLayoutXAxisAnchor { get }
+    var topAnchor: NSLayoutYAxisAnchor { get }
+    var bottomAnchor: NSLayoutYAxisAnchor { get }
+    var widthAnchor: NSLayoutDimension { get }
+    var heightAnchor: NSLayoutDimension { get }
+    var centerXAnchor: NSLayoutXAxisAnchor { get }
+    var centerYAnchor: NSLayoutYAxisAnchor { get }
+}
+
+extension UIView: AnchorOwner { }
+extension UILayoutGuide: AnchorOwner { }
