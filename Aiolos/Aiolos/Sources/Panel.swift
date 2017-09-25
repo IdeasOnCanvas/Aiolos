@@ -107,6 +107,13 @@ public extension Panel {
     override public func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         self.contentViewController?.viewWillTransition(to: size, with: coordinator)
     }
+
+    public override func overrideTraitCollection(forChildViewController childViewController: UIViewController) -> UITraitCollection? {
+        let horizontalTraits = UITraitCollection(horizontalSizeClass: .compact)
+        let verticalTraits = UITraitCollection(verticalSizeClass: .compact)
+
+        return UITraitCollection(traitsFrom: [horizontalTraits, verticalTraits])
+    }
 }
 
 // MARK: - Panel
@@ -247,26 +254,24 @@ private extension Panel {
     }
 
     func exchangeContentViewController(_ oldContentViewController: UIViewController?, with newContentViewController: UIViewController?) {
+        let callAppearanceMethods = self.isVisible
+
         // remove old contentViewController
         if let oldContentViewController = oldContentViewController {
-            oldContentViewController.beginAppearanceTransition(false, animated: false)
+            if callAppearanceMethods { oldContentViewController.beginAppearanceTransition(false, animated: false) }
             oldContentViewController.willMove(toParentViewController: nil)
             oldContentViewController.view.removeFromSuperview()
             oldContentViewController.removeFromParentViewController()
-            oldContentViewController.endAppearanceTransition()
+            if callAppearanceMethods { oldContentViewController.endAppearanceTransition() }
         }
 
         // add new contentViewController
         if let newContentViewController = newContentViewController {
-            newContentViewController.beginAppearanceTransition(true, animated: false)
+            if callAppearanceMethods { newContentViewController.beginAppearanceTransition(true, animated: false) }
             self.addChildViewController(newContentViewController)
             self.panelView.contentView.addSubview(newContentViewController.view)
             newContentViewController.didMove(toParentViewController: self)
-            newContentViewController.endAppearanceTransition()
-
-            let horizontalTraits = UITraitCollection(horizontalSizeClass: .compact)
-            let verticalTraits = UITraitCollection(verticalSizeClass: .compact)
-            self.setOverrideTraitCollection(UITraitCollection(traitsFrom: [horizontalTraits, verticalTraits]), forChildViewController: newContentViewController)
+            if callAppearanceMethods { newContentViewController.endAppearanceTransition() }
         }
     }
 
