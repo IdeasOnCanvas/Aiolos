@@ -83,9 +83,11 @@ private struct KeyboardInfo {
     let endFrame: CGRect
     let animationOptions: UIViewAnimationOptions
     let animationDuration: TimeInterval
+    let isLocal: Bool
 
     var isFloatingKeyboard: Bool {
         guard UIDevice.current.userInterfaceIdiom == .pad else { return false }
+        guard self.isLocal else { return false }
         guard self.endFrame.size != .zero else { return true }
 
         let parentBounds = UIScreen.main.bounds
@@ -97,6 +99,7 @@ private struct KeyboardInfo {
         guard let endFrame = userInfo[UIKeyboardFrameEndUserInfoKey] as? CGRect else { return nil }
 
         self.endFrame = endFrame
+        self.isLocal = (userInfo[UIKeyboardIsLocalUserInfoKey] as? NSNumber)?.boolValue ?? true
 
         // UIViewAnimationOption is shifted by 16 bit from UIViewAnimationCurve, which we get here:
         // http://stackoverflow.com/questions/18870447/how-to-use-the-default-ios7-uianimation-curve
