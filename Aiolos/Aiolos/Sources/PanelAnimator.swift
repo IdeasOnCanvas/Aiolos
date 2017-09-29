@@ -52,6 +52,7 @@ final class PanelAnimator {
 
     func notifyDelegateOfTransition(to size: CGSize) {
         guard let animationDelegate = self.panel.animationDelegate else { return }
+        guard self.panel.isVisible else { return }
 
         animationDelegate.panel(self.panel, willTransitionTo: size)
         if let contentViewController = self.panel.contentViewController as? PanelAnimationDelegate {
@@ -61,6 +62,7 @@ final class PanelAnimator {
 
     func notifyDelegateOfTransition(from oldMode: Panel.Configuration.Mode?, to newMode: Panel.Configuration.Mode) {
         guard let animationDelegate = self.panel.animationDelegate else { return }
+        guard self.panel.isVisible else { return }
 
         let transitionCoordinator = PanelTransitionCoordinator(animator: self)
         animationDelegate.panel(self.panel, willTransitionFrom: oldMode, to: newMode, with: transitionCoordinator)
@@ -217,3 +219,4 @@ private extension PanelAnimator {
         }
     }
 }
+
