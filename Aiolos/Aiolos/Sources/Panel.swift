@@ -285,6 +285,7 @@ private extension Panel {
 
         let modeChanged = oldConfiguration.mode != newConfiguration.mode
         let positionChanged = oldConfiguration.position != newConfiguration.position
+        let marginsChanged = oldConfiguration.margins != newConfiguration.margins
         let positionLogicChanged = oldConfiguration.positionLogic != newConfiguration.positionLogic
 
         if modeChanged || positionChanged {
@@ -295,8 +296,17 @@ private extension Panel {
             self.constraints.updateSizeConstraints(for: size)
         }
 
-        if positionChanged || positionLogicChanged {
+        if positionChanged || positionLogicChanged || marginsChanged {
             self.constraints.updatePositionConstraints(for: newConfiguration.position, margins: newConfiguration.margins)
         }
+    }
+}
+
+// MARK: - NSDirectionalEdgeInsets
+
+extension NSDirectionalEdgeInsets: Equatable {
+
+    public static func ==(lhs: NSDirectionalEdgeInsets, rhs: NSDirectionalEdgeInsets) -> Bool {
+        return lhs.top == rhs.top && lhs.leading == rhs.leading && lhs.bottom == rhs.bottom && lhs.trailing == rhs.trailing
     }
 }
