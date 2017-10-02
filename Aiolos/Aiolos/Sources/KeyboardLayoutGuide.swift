@@ -52,6 +52,11 @@ private extension KeyboardLayoutGuide {
         guard let window = owningView.window else { return }
         guard let keyboardInfo = KeyboardInfo(userInfo: notification.userInfo) else { return }
 
+        // we only adjust the Panel frame, if the current first responder is a subview of the owning view
+        if let firstResponder = UIResponder.currentFirstResponder() as? UIView {
+            guard firstResponder.isDescendant(of: owningView) else { return }
+        }
+
         let coveredHeight: CGFloat
 
         if keyboardInfo.isFloatingKeyboard {
@@ -118,5 +123,23 @@ private struct KeyboardInfo {
 
     func animateAlongsideKeyboard(_ animations: @escaping () -> Void) {
         UIView.animate(withDuration: self.animationDuration, delay: 0.0, options: self.animationOptions, animations: animations)
+    }
+}
+
+
+private extension UIResponder {
+
+    static weak var _firstResponder: AnyObject?
+
+    static func currentFirstResponder() -> AnyObject? {
+        UIResponder._firstResponder = nil
+        // sending to nil sends the action to the first responder
+        UIApplication.shared.sendAction(#selector(_findFirstResponder), to: nil, from: nil, for: nil)
+        return UIResponder._firstResponder
+    }
+
+    @objc
+    func _findFirstResponder() {
+        UIResponder._firstResponder = self
     }
 }
