@@ -49,7 +49,8 @@ final class PanelConstraints {
         let guide: AnchorOwner = self.panel.configuration.positionLogic == .respectSafeArea ? parentView.safeAreaLayoutGuide : parentView
         let topConstraint = view.topAnchor.constraint(greaterThanOrEqualTo: guide.topAnchor, constant: margins.top).withIdentifier("Panel Top")
         var positionConstraints = [
-            view.bottomAnchor.constraint(lessThanOrEqualTo: guide.bottomAnchor, constant: -margins.bottom).withIdentifier("Panel Bottom"),
+            view.bottomAnchor.constraint(equalTo: guide.bottomAnchor, constant: -margins.bottom).configure { $0.priority = .defaultHigh; $0.identifier = "Panel Bottom" },
+            view.bottomAnchor.constraint(lessThanOrEqualTo: guide.bottomAnchor, constant: -margins.bottom).withIdentifier("Panel Bottom <="),
             view.bottomAnchor.constraint(lessThanOrEqualTo: self.keyboardLayoutGuide.topGuide.bottomAnchor, constant: -margins.bottom).withIdentifier("Keyboard Bottom"),
             topConstraint
         ]
