@@ -130,8 +130,11 @@ private extension PanelAnimator {
     }
 
     func stopCurrentAnimation() {
-        self.animator?.stopAnimation(true)
-        self.animator = nil
+        defer { self.animator = nil }
+        guard let animator = self.animator else { return }
+        guard animator.state == .active else { return }
+
+        animator.stopAnimation(true)
     }
 
     func performChanges(_ changes: @escaping () -> Void, animated: Bool, timing: UITimingCurveProvider, completion: (() -> Void)? = nil) {
@@ -219,4 +222,3 @@ private extension PanelAnimator {
         }
     }
 }
-
