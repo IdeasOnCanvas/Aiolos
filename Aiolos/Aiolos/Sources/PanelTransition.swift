@@ -32,3 +32,21 @@ public extension Panel {
         }
     }
 }
+
+// MARK: - Equatable
+
+extension Panel.Transition: Equatable {
+
+    public static func ==(lhs: Panel.Transition, rhs: Panel.Transition) -> Bool {
+        switch (lhs, rhs) {
+        case (.none, .none):
+            return true
+        case (.fade, .fade):
+            return true
+        case (.slide, .slide): // we ignore the direction intentionally
+            return true
+        default:
+            return false
+        }
+    }
+}
