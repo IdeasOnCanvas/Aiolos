@@ -79,8 +79,8 @@ private extension PanelGestures {
         let stiffness: CGFloat
         let damping: CGFloat
 
-        static let springy: Animation = Animation(mass: 9.0, stiffness: 2400.0, damping: 190.0)
-        static let overdamped: Animation = Animation(mass: 9.0, stiffness: 2400.0, damping: 250.0)
+        static let springy: Animation = Animation(mass: 6.0, stiffness: 2400.0, damping: 195.0)
+        static let overdamped: Animation = Animation(mass: 6.0, stiffness: 2400.0, damping: 250.0)
 
         func makeTiming(with velocity: CGFloat) -> UISpringTimingParameters {
             return UISpringTimingParameters(mass: self.mass, stiffness: self.stiffness, damping: self.damping, initialVelocity: CGVector(dx: velocity, dy: velocity))
