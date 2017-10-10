@@ -261,7 +261,7 @@ private extension PanelGestures {
         } else if supportedModes.contains(.expanded) {
             return .expanded
         } else {
-            return supportedModes.first!
+            return originalConfiguration.mode
         }
     }
     // swiftlint:enable cyclomatic_complexity
