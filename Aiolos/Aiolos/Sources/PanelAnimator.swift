@@ -160,10 +160,12 @@ private extension PanelAnimator {
         // if we don't want to animate, perform changes directly by setting the completion state to 100 %
         if animated == false {
             animator.fractionComplete = 1.0
+            animator.stopAnimation(false)
+            animator.finishAnimation(at: .end)
+        } else {
+            animator.startAnimation()
+            self.animator = animator
         }
-
-        animator.startAnimation()
-        self.animator = animator
     }
 
     func addQueuedAnimations(to animator: UIViewPropertyAnimator) {
