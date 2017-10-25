@@ -131,6 +131,7 @@ public extension Panel {
         let size = self.size(for: self.configuration.mode)
         self.animator.transitionToParent(with: size, transition: transition) {
             self.contentViewController?.endAppearanceTransition()
+            self.updateAccessibility(for: self.configuration.mode)
         }
     }
 
@@ -294,11 +295,23 @@ private extension Panel {
             if modeChanged { self.animator.notifyDelegateOfTransition(from: oldConfiguration.mode, to: newConfiguration.mode) }
             self.animator.notifyDelegateOfTransition(to: size)
             self.constraints.updateSizeConstraints(for: size)
+            self.updateAccessibility(for: newConfiguration.mode)
         }
 
         if positionChanged || positionLogicChanged || marginsChanged {
             self.constraints.updatePositionConstraints(for: newConfiguration.position, margins: newConfiguration.margins)
         }
+    }
+
+    func updateAccessibility(for mode: Configuration.Mode) {
+        guard let contentView = self.contentViewController?.view else { return }
+
+        let elementsHidden = mode == .minimal || mode == .compact
+        self.view.accessibilityViewIsModal = !elementsHidden
+        guard elementsHidden != contentView.accessibilityElementsHidden else { return }
+
+        contentView.accessibilityElementsHidden = elementsHidden
+        UIAccessibilityPostNotification(UIAccessibilityLayoutChangedNotification, nil)
     }
 }
 
