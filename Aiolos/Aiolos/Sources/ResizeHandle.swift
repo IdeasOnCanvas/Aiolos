@@ -35,6 +35,12 @@ public final class ResizeHandle: UIView {
         }
     }
 
+    var accessibilityActivateAction: (() -> Bool)? {
+        didSet {
+            self.isAccessibilityElement = self.accessibilityActivateAction != nil
+        }
+    }
+
     // MARK: - Lifecycle
 
     init(configuration: Panel.Configuration) {
@@ -57,6 +63,22 @@ public final class ResizeHandle: UIView {
         self.handleColor = configuration.appearance.resizeHandleColor
         self.backgroundColor = configuration.appearance.resizeHandleBackgroundColor
         self.resizeHandle.opacity = configuration.gestureResizingMode != .disabled && configuration.supportedModes.count > 1 ? 1.0 : 0.2
+
+        switch configuration.mode {
+        case .minimal, .compact:
+            self.accessibilityLabel = NSLocalizedString("Expand Panel", comment: "Accessibility Label to expand panel")
+        case .expanded, .fullHeight:
+            self.accessibilityLabel = NSLocalizedString("Collapse Panel", comment: "Accessibility Label to collapse panel")
+        }
+    }
+}
+
+// MARK: - UIAccessibility
+
+extension ResizeHandle {
+
+    override public func accessibilityActivate() -> Bool {
+        return self.accessibilityActivateAction?() ?? false
     }
 }
 

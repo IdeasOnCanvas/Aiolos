@@ -223,7 +223,21 @@ private extension Panel {
     }
 
     func makeResizeHandle() -> ResizeHandle {
-        return ResizeHandle(configuration: self.configuration)
+        let handle = ResizeHandle(configuration: self.configuration)
+        handle.accessibilityActivateAction = { [weak self] in
+            guard let `self` = self else { return false }
+
+            switch self.configuration.mode {
+            case .minimal, .compact:
+                self.configuration.mode = .fullHeight
+            case .expanded, .fullHeight:
+                self.configuration.mode = .compact
+            }
+
+            return true
+        }
+        
+        return handle
     }
 
     func makeSeparatorView() -> SeparatorView {
@@ -311,7 +325,7 @@ private extension Panel {
         guard elementsHidden != contentView.accessibilityElementsHidden else { return }
 
         contentView.accessibilityElementsHidden = elementsHidden
-        UIAccessibilityPostNotification(UIAccessibilityLayoutChangedNotification, nil)
+        UIAccessibilityPostNotification(UIAccessibilityScreenChangedNotification, nil)
     }
 }
 
