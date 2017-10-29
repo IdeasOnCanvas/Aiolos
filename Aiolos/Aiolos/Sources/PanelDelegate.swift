@@ -25,3 +25,12 @@ public protocol PanelAnimationDelegate: class {
     /// Tells the delegate that the `panel` is transitioning to a specific mode
     func panel(_ panel: Panel, willTransitionFrom oldMode: Panel.Configuration.Mode?, to newMode: Panel.Configuration.Mode, with coordinator: PanelTransitionCoordinator)
 }
+
+public protocol PanelAccessibilityDelegate: class {
+
+    /// Asks the delegate for the accessibility label of the resize handle
+    func panel(_ panel: Panel, accessibilityLabelForResizeHandle resizeHandle: ResizeHandle) -> String
+
+    /// Tells the delegate that the resize handle was activated with Voice Over
+    func panel(_ panel: Panel, didActivateResizeHandle resizeHandle: ResizeHandle) -> Bool
+}

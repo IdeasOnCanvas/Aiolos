@@ -34,6 +34,11 @@ public final class Panel: UIViewController {
     @objc public var isVisible: Bool { return self.parent != nil && self.isTransitioningFromParent == false }
     public weak var sizeDelegate: PanelSizeDelegate?
     public weak var animationDelegate: PanelAnimationDelegate?
+    public weak var accessibilityDelegate: PanelAccessibilityDelegate? {
+        didSet {
+            self.updateAccessibility(for: self.configuration.mode)
+        }
+    }
 
     public var configuration: Configuration {
         get { return self._configuration }
@@ -227,16 +232,9 @@ private extension Panel {
         handle.accessibilityActivateAction = { [weak self] in
             guard let `self` = self else { return false }
 
-            switch self.configuration.mode {
-            case .minimal, .compact:
-                self.configuration.mode = .fullHeight
-            case .expanded, .fullHeight:
-                self.configuration.mode = .compact
-            }
-
-            return true
+            return self.accessibilityDelegate?.panel(self, didActivateResizeHandle: self.resizeHandle) ?? false
         }
-        
+
         return handle
     }
 
@@ -318,6 +316,10 @@ private extension Panel {
     }
 
     func updateAccessibility(for mode: Configuration.Mode) {
+        if let accessibilityDelegate = self.accessibilityDelegate {
+            self.resizeHandle.accessibilityLabel = accessibilityDelegate.panel(self, accessibilityLabelForResizeHandle: self.resizeHandle)
+        }
+
         guard let contentView = self.contentViewController?.view else { return }
 
         let elementsHidden = mode == .minimal || mode == .compact

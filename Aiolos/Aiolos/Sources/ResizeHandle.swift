@@ -63,13 +63,6 @@ public final class ResizeHandle: UIView {
         self.handleColor = configuration.appearance.resizeHandleColor
         self.backgroundColor = configuration.appearance.resizeHandleBackgroundColor
         self.resizeHandle.opacity = configuration.gestureResizingMode != .disabled && configuration.supportedModes.count > 1 ? 1.0 : 0.2
-
-        switch configuration.mode {
-        case .minimal, .compact:
-            self.accessibilityLabel = NSLocalizedString("Expand Panel", comment: "Accessibility Label to expand panel")
-        case .expanded, .fullHeight:
-            self.accessibilityLabel = NSLocalizedString("Collapse Panel", comment: "Accessibility Label to collapse panel")
-        }
     }
 }
 
