@@ -36,6 +36,8 @@ public final class Panel: UIViewController {
     public weak var animationDelegate: PanelAnimationDelegate?
     public weak var accessibilityDelegate: PanelAccessibilityDelegate? {
         didSet {
+            guard self.accessibilityDelegate !== oldValue else { return }
+
             self.updateAccessibility(for: self.configuration.mode)
         }
     }
@@ -316,11 +318,11 @@ private extension Panel {
     }
 
     func updateAccessibility(for mode: Configuration.Mode) {
+        guard let contentView = self.contentViewController?.view else { return }
+
         if let accessibilityDelegate = self.accessibilityDelegate {
             self.resizeHandle.accessibilityLabel = accessibilityDelegate.panel(self, accessibilityLabelForResizeHandle: self.resizeHandle)
         }
-
-        guard let contentView = self.contentViewController?.view else { return }
 
         let elementsHidden = mode == .minimal || mode == .compact
         self.view.accessibilityViewIsModal = !elementsHidden
