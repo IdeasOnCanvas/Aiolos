@@ -91,7 +91,14 @@ internal extension PanelConstraints {
     var maxHeight: CGFloat {
         guard let parentView = self.panel.parent?.view else { return 0.0 }
 
-        let safeArea = UIEdgeInsetsInsetRect(parentView.bounds, parentView.safeAreaInsets)
+        let safeArea: CGRect
+        switch self.panel.configuration.positionLogic {
+        case .ignoreSafeArea:
+            safeArea = parentView.bounds
+        case .respectSafeArea:
+            safeArea = UIEdgeInsetsInsetRect(parentView.bounds, parentView.safeAreaInsets)
+        }
+
         return self.panel.view.frame.maxY - safeArea.minY
     }
 
