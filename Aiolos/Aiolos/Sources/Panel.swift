@@ -130,14 +130,15 @@ public extension Panel {
     func add(to parent: UIViewController, transition: Transition = .none) {
         guard self.parent !== parent else { return }
 
-        self.contentViewController?.beginAppearanceTransition(true, animated: transition.isAnimated)
+        let contentViewController = self.contentViewController
+        contentViewController?.beginAppearanceTransition(true, animated: transition.isAnimated)
         parent.addChildViewController(self)
         parent.view.addSubview(self.view)
         self.didMove(toParentViewController: parent)
 
         let size = self.size(for: self.configuration.mode)
         self.animator.transitionToParent(with: size, transition: transition) {
-            self.contentViewController?.endAppearanceTransition()
+            contentViewController?.endAppearanceTransition()
             self.updateAccessibility(for: self.configuration.mode)
         }
     }
