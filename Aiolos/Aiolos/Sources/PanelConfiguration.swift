@@ -46,6 +46,8 @@ public extension Panel {
             public var separatorColor: UIColor
             public var cornerRadius: CGFloat
             public var maskedCorners: CACornerMask
+            public var shadowColor: UIColor
+            public var shadowOpacity: Float
         }
 
         public var position: Position
@@ -67,7 +69,9 @@ public extension Panel.Configuration {
                                     resizeHandleBackgroundColor: .white,
                                     separatorColor: UIColor.gray.withAlphaComponent(0.5),
                                     cornerRadius: 10.0,
-                                    maskedCorners: [.layerMinXMinYCorner, .layerMinXMaxYCorner, .layerMaxXMinYCorner, .layerMaxXMaxYCorner])
+                                    maskedCorners: [.layerMinXMinYCorner, .layerMinXMaxYCorner, .layerMaxXMinYCorner, .layerMaxXMaxYCorner],
+                                    shadowColor: .black,
+                                    shadowOpacity: 0.15)
 
         return Panel.Configuration(position: .bottom,
                                    positionLogic: .respectSafeArea,

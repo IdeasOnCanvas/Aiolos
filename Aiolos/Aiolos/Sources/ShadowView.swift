@@ -37,13 +37,14 @@ final class ShadowView: UIView {
 
     func configure(with configuration: Panel.Configuration) {
         // configure shadow
-        self.layer.shadowOpacity = 0.15
+        self.layer.shadowOpacity = configuration.appearance.shadowOpacity
+        self.layer.shadowColor = configuration.appearance.shadowColor.cgColor
         self.layer.shadowOffset = .zero
 
         // configure border
         self.layer.cornerRadius = configuration.appearance.cornerRadius
         self.layer.maskedCorners = configuration.appearance.maskedCorners
         self.layer.borderColor = configuration.appearance.borderColor.cgColor
-        self.layer.borderWidth = 1.0 / UIScreen.main.scale
+        self.layer.borderWidth = configuration.appearance.borderColor == .clear ? 0.0 : 1.0 / UIScreen.main.scale
     }
 }
