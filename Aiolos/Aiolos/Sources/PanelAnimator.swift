@@ -210,9 +210,12 @@ private extension PanelAnimator {
     }
 
     func transform(for direction: Panel.Direction, size: CGSize) -> CGAffineTransform {
+        guard let safeAreaInsets = self.panel.parent?.view.safeAreaInsets else { return .identity }
+
         let isRTL = self.panel.view.effectiveUserInterfaceLayoutDirection == .rightToLeft
         let position = self.panel.configuration.position
         let margins = self.panel.configuration.margins
+
         let animateToLeft = isRTL != (position == .leadingBottom)
 
         switch direction {
@@ -220,7 +223,7 @@ private extension PanelAnimator {
             let translationX = animateToLeft ? -(size.width + margins.leading) : size.width + margins.trailing
             return CGAffineTransform(translationX: translationX, y: 0.0)
         case .vertical:
-            return CGAffineTransform(translationX: 0.0, y: size.height + margins.bottom)
+            return CGAffineTransform(translationX: 0.0, y: size.height + margins.bottom + safeAreaInsets.bottom)
         }
     }
 }
