@@ -48,6 +48,7 @@ public extension Panel {
             public var maskedCorners: CACornerMask
             public var shadowColor: UIColor
             public var shadowOpacity: Float
+            public var shadowOffset: UIOffset
         }
 
         public var position: Position
@@ -71,7 +72,8 @@ public extension Panel.Configuration {
                                     cornerRadius: 10.0,
                                     maskedCorners: [.layerMinXMinYCorner, .layerMinXMaxYCorner, .layerMaxXMinYCorner, .layerMaxXMaxYCorner],
                                     shadowColor: .black,
-                                    shadowOpacity: 0.15)
+                                    shadowOpacity: 0.15,
+                                    shadowOffset: UIOffset(horizontal: 0.0, vertical: 1.0))
 
         return Panel.Configuration(position: .bottom,
                                    positionLogic: .respectSafeArea,
