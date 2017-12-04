@@ -63,7 +63,7 @@ public extension PanGestureRecognizer {
         let currentPoint = touch.location(in: self.view?.window)
         self.currentPoint = currentPoint
 
-        if self.totalTranslation.hypotenuse() > Constants.minTranslation {
+        if self.totalTranslation.hypotenuse() > Constants.minTranslation && self.didPan == false {
             self.didPan = true
 
             // if we recognized a pan, make sure it can be considered a vertical pan
