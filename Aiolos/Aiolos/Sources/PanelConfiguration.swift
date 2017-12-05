@@ -14,6 +14,13 @@ public extension Panel {
 
     public struct Configuration {
 
+        public enum Edge: Int {
+            case top
+            case leading
+            case bottom
+            case trailing
+        }
+
         public enum Position: Int {
             case bottom
             case leadingBottom
@@ -52,7 +59,7 @@ public extension Panel {
         }
 
         public var position: Position
-        public var positionLogic: PositionLogic
+        public var positionLogic: [Edge: PositionLogic]
         public var margins: NSDirectionalEdgeInsets
         public var mode: Mode
         public var supportedModes: Set<Mode>
@@ -76,7 +83,7 @@ public extension Panel.Configuration {
                                     shadowOffset: UIOffset(horizontal: 0.0, vertical: 1.0))
 
         return Panel.Configuration(position: .bottom,
-                                   positionLogic: .respectSafeArea,
+                                   positionLogic: [.top: .respectSafeArea, .leading: .respectSafeArea, .bottom: .respectSafeArea, .trailing: .respectSafeArea],
                                    margins: NSDirectionalEdgeInsets(top: 10.0, leading: 10.0, bottom: 0.0, trailing: 10.0),
                                    mode: .compact,
                                    supportedModes: [.compact, .expanded, .fullHeight],
@@ -112,6 +119,34 @@ extension Panel.Configuration {
             }
         }
 
+        for edge in [Edge.top, .leading, .bottom, .trailing] where validated.positionLogic[edge] == nil {
+            validated.positionLogic[edge] = .respectSafeArea
+        }
+
         return validated
+    }
+}
+
+extension Panel.Configuration.PositionLogic {
+
+    func applyingInsets(of view: UIView, to insets: NSDirectionalEdgeInsets, edge: Panel.Configuration.Edge) -> NSDirectionalEdgeInsets {
+        var insets = insets
+        let isRTL = view.effectiveUserInterfaceLayoutDirection == .rightToLeft
+
+        switch (self, edge) {
+        case (.ignoreSafeArea, _):
+            break
+
+        case (.respectSafeArea, .top):
+            insets.top = view.safeAreaInsets.top
+        case (.respectSafeArea, .leading):
+            insets.leading = isRTL ? view.safeAreaInsets.right : view.safeAreaInsets.left
+        case (.respectSafeArea, .bottom):
+            insets.bottom = view.safeAreaInsets.bottom
+        case (.respectSafeArea, .trailing):
+            insets.trailing = isRTL ? view.safeAreaInsets.left : view.safeAreaInsets.right
+        }
+
+        return insets
     }
 }

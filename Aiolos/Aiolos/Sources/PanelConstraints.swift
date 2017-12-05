@@ -46,11 +46,11 @@ final class PanelConstraints {
         guard let view = self.panel.view else { return }
         guard let parentView = self.panel.parent?.view else { return }
 
-        let guide: AnchorOwner = self.panel.configuration.positionLogic == .respectSafeArea ? parentView.safeAreaLayoutGuide : parentView
-        let topConstraint = view.topAnchor.constraint(greaterThanOrEqualTo: guide.topAnchor, constant: margins.top).withIdentifier("Panel Top")
+        let anchors = self.guides(of: parentView, for: self.panel.configuration.positionLogic)
+        let topConstraint = view.topAnchor.constraint(greaterThanOrEqualTo: anchors.top, constant: margins.top).withIdentifier("Panel Top")
         var positionConstraints = [
-            view.bottomAnchor.constraint(equalTo: guide.bottomAnchor, constant: -margins.bottom).configure { $0.priority = .defaultHigh; $0.identifier = "Panel Bottom" },
-            view.bottomAnchor.constraint(lessThanOrEqualTo: guide.bottomAnchor, constant: -margins.bottom).withIdentifier("Panel Bottom <="),
+            view.bottomAnchor.constraint(equalTo: anchors.bottom, constant: -margins.bottom).configure { $0.priority = .defaultHigh; $0.identifier = "Panel Bottom" },
+            view.bottomAnchor.constraint(lessThanOrEqualTo: anchors.bottom, constant: -margins.bottom).withIdentifier("Panel Bottom <="),
             view.bottomAnchor.constraint(lessThanOrEqualTo: self.keyboardLayoutGuide.topGuide.bottomAnchor, constant: -margins.bottom).withIdentifier("Keyboard Bottom"),
             topConstraint
         ]
@@ -58,20 +58,20 @@ final class PanelConstraints {
         switch position {
         case .bottom:
             positionConstraints += [
-                view.leadingAnchor.constraint(equalTo: guide.leadingAnchor, constant: margins.leading).withIdentifier("Panel Leading"),
-                view.trailingAnchor.constraint(equalTo: guide.trailingAnchor, constant: -margins.trailing).withIdentifier("Panel Trailing")
+                view.leadingAnchor.constraint(equalTo: anchors.leading, constant: margins.leading).withIdentifier("Panel Leading"),
+                view.trailingAnchor.constraint(equalTo: anchors.trailing, constant: -margins.trailing).withIdentifier("Panel Trailing")
             ]
 
         case .leadingBottom:
             positionConstraints += [
-                view.leadingAnchor.constraint(equalTo: guide.leadingAnchor, constant: margins.leading).withIdentifier("Panel Leading"),
-                view.trailingAnchor.constraint(lessThanOrEqualTo: guide.trailingAnchor, constant: -margins.trailing).withIdentifier("Panel Trailing")
+                view.leadingAnchor.constraint(equalTo: anchors.leading, constant: margins.leading).withIdentifier("Panel Leading"),
+                view.trailingAnchor.constraint(lessThanOrEqualTo: anchors.trailing, constant: -margins.trailing).withIdentifier("Panel Trailing")
             ]
 
         case .trailingBottom:
             positionConstraints += [
-                view.leadingAnchor.constraint(greaterThanOrEqualTo: guide.leadingAnchor, constant: margins.leading).withIdentifier("Panel Leading"),
-                view.trailingAnchor.constraint(equalTo: guide.trailingAnchor, constant: -margins.trailing).withIdentifier("Panel Trailing")
+                view.leadingAnchor.constraint(greaterThanOrEqualTo: anchors.leading, constant: margins.leading).withIdentifier("Panel Leading"),
+                view.trailingAnchor.constraint(equalTo: anchors.trailing, constant: -margins.trailing).withIdentifier("Panel Trailing")
             ]
         }
 
@@ -91,14 +91,12 @@ internal extension PanelConstraints {
     var maxHeight: CGFloat {
         guard let parentView = self.panel.parent?.view else { return 0.0 }
 
-        let safeArea: CGRect
-        switch self.panel.configuration.positionLogic {
-        case .ignoreSafeArea:
-            safeArea = parentView.bounds
-        case .respectSafeArea:
-            safeArea = UIEdgeInsetsInsetRect(parentView.bounds, parentView.safeAreaInsets)
+        var insets: NSDirectionalEdgeInsets = .zero
+        for (edge, positionLogic) in self.panel.configuration.positionLogic {
+            insets = positionLogic.applyingInsets(of: parentView, to: insets, edge: edge)
         }
 
+        let safeArea = UIEdgeInsetsInsetRect(parentView.bounds, UIEdgeInsets(directionalEdgeInsets: insets, isRTL: parentView.effectiveUserInterfaceLayoutDirection == .rightToLeft))
         return self.panel.view.frame.maxY - safeArea.minY
     }
 
@@ -163,6 +161,15 @@ private extension PanelConstraints {
         self.heightConstraint = heightConstraint
         NSLayoutConstraint.activate([widthConstraint, heightConstraint, minHeightConstraint])
     }
+
+    func guides(of view: UIView, for positionLogic: [Panel.Configuration.Edge: Panel.Configuration.PositionLogic]) -> (top: NSLayoutYAxisAnchor, leading: NSLayoutXAxisAnchor, bottom: NSLayoutYAxisAnchor, trailing: NSLayoutXAxisAnchor) {
+        let top = positionLogic[.top] == .respectSafeArea ? view.safeAreaLayoutGuide.topAnchor : view.topAnchor
+        let leading = positionLogic[.leading] == .respectSafeArea ? view.safeAreaLayoutGuide.leadingAnchor : view.leadingAnchor
+        let bottom = positionLogic[.bottom] == .respectSafeArea ? view.safeAreaLayoutGuide.bottomAnchor : view.bottomAnchor
+        let trailing = positionLogic[.trailing] == .respectSafeArea ? view.safeAreaLayoutGuide.trailingAnchor : view.trailingAnchor
+
+        return (top, leading, bottom, trailing)
+    }
 }
 
 // MARK: - NSLayoutConstraint
@@ -181,20 +188,14 @@ private extension NSLayoutConstraint {
     }
 }
 
-// Compiler doesn't allow me to make this private…
-protocol AnchorOwner {
+// MARK: - UIEdgeInsets
 
-    var leadingAnchor: NSLayoutXAxisAnchor { get }
-    var trailingAnchor: NSLayoutXAxisAnchor { get }
-    var leftAnchor: NSLayoutXAxisAnchor { get }
-    var rightAnchor: NSLayoutXAxisAnchor { get }
-    var topAnchor: NSLayoutYAxisAnchor { get }
-    var bottomAnchor: NSLayoutYAxisAnchor { get }
-    var widthAnchor: NSLayoutDimension { get }
-    var heightAnchor: NSLayoutDimension { get }
-    var centerXAnchor: NSLayoutXAxisAnchor { get }
-    var centerYAnchor: NSLayoutYAxisAnchor { get }
+private extension UIEdgeInsets {
+
+    init(directionalEdgeInsets: NSDirectionalEdgeInsets, isRTL: Bool) {
+        let left = isRTL ? directionalEdgeInsets.trailing : directionalEdgeInsets.leading
+        let right = isRTL ? directionalEdgeInsets.leading : directionalEdgeInsets.trailing
+
+        self.init(top: directionalEdgeInsets.top, left: left, bottom: directionalEdgeInsets.bottom, right: right)
+    }
 }
-
-extension UIView: AnchorOwner { }
-extension UILayoutGuide: AnchorOwner { }
