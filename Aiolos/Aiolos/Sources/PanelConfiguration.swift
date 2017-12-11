@@ -31,11 +31,11 @@ public extension Panel {
             case respectSafeArea
             case ignoreSafeArea
 
-            static var respectAllSafeAreas: [Edge: PositionLogic] {
+            public static var respectAllSafeAreas: [Edge: PositionLogic] {
                 return [.top: .respectSafeArea, .leading: .respectSafeArea, .bottom: .respectSafeArea, .trailing: .respectSafeArea]
             }
 
-            static var ignoreAllSafeAreas: [Edge: PositionLogic] {
+            public static var ignoreAllSafeAreas: [Edge: PositionLogic] {
                 return [.top: .ignoreSafeArea, .leading: .ignoreSafeArea, .bottom: .ignoreSafeArea, .trailing: .ignoreSafeArea]
             }
         }
