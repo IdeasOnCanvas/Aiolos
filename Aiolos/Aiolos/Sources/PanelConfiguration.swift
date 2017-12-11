@@ -30,6 +30,14 @@ public extension Panel {
         public enum PositionLogic: Int {
             case respectSafeArea
             case ignoreSafeArea
+
+            static var respectAllSafeAreas: [Edge: PositionLogic] {
+                return [.top: .respectSafeArea, .leading: .respectSafeArea, .bottom: .respectSafeArea, .trailing: .respectSafeArea]
+            }
+
+            static var ignoreAllSafeAreas: [Edge: PositionLogic] {
+                return [.top: .ignoreSafeArea, .leading: .ignoreSafeArea, .bottom: .ignoreSafeArea, .trailing: .ignoreSafeArea]
+            }
         }
 
         public enum Mode: Int {
@@ -83,7 +91,7 @@ public extension Panel.Configuration {
                                     shadowOffset: UIOffset(horizontal: 0.0, vertical: 1.0))
 
         return Panel.Configuration(position: .bottom,
-                                   positionLogic: [.top: .respectSafeArea, .leading: .respectSafeArea, .bottom: .respectSafeArea, .trailing: .respectSafeArea],
+                                   positionLogic: PositionLogic.respectAllSafeAreas,
                                    margins: NSDirectionalEdgeInsets(top: 10.0, leading: 10.0, bottom: 0.0, trailing: 10.0),
                                    mode: .compact,
                                    supportedModes: [.compact, .expanded, .fullHeight],
