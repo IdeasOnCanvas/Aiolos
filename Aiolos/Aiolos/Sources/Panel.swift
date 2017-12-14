@@ -75,7 +75,7 @@ public final class Panel: UIViewController {
 
 public extension Panel {
 
-    public override var shouldAutomaticallyForwardAppearanceMethods: Bool {
+    override var shouldAutomaticallyForwardAppearanceMethods: Bool {
         return false
     }
 
@@ -105,17 +105,17 @@ public extension Panel {
         self.separatorView.frame = dividerFrame
     }
 
-    override public func willTransition(to newCollection: UITraitCollection, with coordinator: UIViewControllerTransitionCoordinator) {
+    override func willTransition(to newCollection: UITraitCollection, with coordinator: UIViewControllerTransitionCoordinator) {
         // not calling through to contentVC because we set a fixed traitCollection
         self.gestures.cancel()
         super.willTransition(to: newCollection, with: coordinator)
     }
 
-    override public func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         self.contentViewController?.viewWillTransition(to: size, with: coordinator)
     }
 
-    public override func overrideTraitCollection(forChildViewController childViewController: UIViewController) -> UITraitCollection? {
+    override func overrideTraitCollection(forChildViewController childViewController: UIViewController) -> UITraitCollection? {
         let horizontalTraits = UITraitCollection(horizontalSizeClass: .compact)
         let verticalTraits = UITraitCollection(verticalSizeClass: .compact)
 
