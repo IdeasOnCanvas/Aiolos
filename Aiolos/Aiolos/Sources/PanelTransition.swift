@@ -37,7 +37,7 @@ public extension Panel {
 
 extension Panel.Transition: Equatable {
 
-    public static func ==(lhs: Panel.Transition, rhs: Panel.Transition) -> Bool {
+    public static func == (lhs: Panel.Transition, rhs: Panel.Transition) -> Bool {
         switch (lhs, rhs) {
         case (.none, .none):
             return true

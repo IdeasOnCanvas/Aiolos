@@ -20,6 +20,13 @@ final class PanelGestures: NSObject {
         set { self.pan.isEnabled = newValue }
     }
 
+    // MARK: - Properties
+
+    var isPanning: Bool {
+        let states: Set<UIGestureRecognizerState> = [.began, .changed]
+        return states.contains(self.pan.state)
+    }
+
     // MARK: - Lifecycle
 
     init(panel: Panel) {

@@ -32,6 +32,7 @@ public final class Panel: UIViewController {
 
     @objc private(set) public lazy var panelView: PanelView = self.makePanelView()
     @objc public var isVisible: Bool { return self.parent != nil && self.isTransitioningFromParent == false }
+    @objc public var isPanning: Bool { return self.gestures.isPanning }
     public weak var sizeDelegate: PanelSizeDelegate?
     public weak var animationDelegate: PanelAnimationDelegate?
     public weak var accessibilityDelegate: PanelAccessibilityDelegate? {
@@ -338,7 +339,7 @@ private extension Panel {
 
 extension NSDirectionalEdgeInsets: Equatable {
 
-    public static func ==(lhs: NSDirectionalEdgeInsets, rhs: NSDirectionalEdgeInsets) -> Bool {
+    public static func == (lhs: NSDirectionalEdgeInsets, rhs: NSDirectionalEdgeInsets) -> Bool {
         return lhs.top == rhs.top && lhs.leading == rhs.leading && lhs.bottom == rhs.bottom && lhs.trailing == rhs.trailing
     }
 }
