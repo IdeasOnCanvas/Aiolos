@@ -17,6 +17,8 @@ final class PanelAnimator {
 
     var animateChanges: Bool = true
     var transitionCoordinatorQueuedAnimations: [PanelTransitionCoordinator.Animation] = []
+    var isTransitioningToParent: Bool = false
+    var isTransitioningFromParent: Bool = false
 
     // MARK: - Lifecycle
 
@@ -50,6 +52,15 @@ final class PanelAnimator {
         }
     }
 
+    func stopCurrentAnimation() {
+        defer { self.animator = nil }
+        guard let animator = self.animator else { return }
+        guard animator.state == .active else { return }
+
+        animator.stopAnimation(false)
+        animator.finishAnimation(at: .end)
+    }
+
     func notifyDelegateOfTransition(to size: CGSize) {
         guard let animationDelegate = self.panel.animationDelegate else { return }
         guard self.panel.isVisible else { return }
@@ -77,6 +88,9 @@ final class PanelAnimator {
 extension PanelAnimator {
 
     func transitionToParent(with size: CGSize, transition: Panel.Transition, completion: @escaping () -> Void) {
+        guard self.isTransitioningToParent == false else { return }
+
+        self.isTransitioningToParent = true
         self.stopCurrentAnimation()
         self.prepare(for: transition, size: size)
         self.performWithoutAnimation {
@@ -86,17 +100,29 @@ extension PanelAnimator {
 
         self.notifyDelegateOfTransition(to: size)
         self.notifyDelegateOfTransition(from: nil, to: self.panel.configuration.mode)
-        self.finalizeTransition(transition, completion: completion)
+        self.finalizeTransition(transition) {
+            self.isTransitioningToParent = false
+            completion()
+        }
     }
 
     func removeFromParent(transition: Panel.Transition, completion: @escaping () -> Void) {
+        guard self.isTransitioningFromParent == false else { return }
+
+        self.isTransitioningFromParent = true
         self.stopCurrentAnimation()
 
         let animator = UIViewPropertyAnimator(duration: Constants.Animation.duration, timingParameters: UISpringTimingParameters())
 
+        func finish() {
+            completion()
+            self.resetPanel()
+            self.isTransitioningFromParent = false
+        }
+
         switch transition {
         case .none:
-            completion()
+            finish()
             return
 
         case .fade:
@@ -111,11 +137,11 @@ extension PanelAnimator {
         }
 
         animator.addCompletion { _ in
-            completion()
-            self.resetPanel()
+            finish()
         }
 
         animator.startAnimation()
+        self.animator = animator
     }
 }
 
@@ -127,14 +153,6 @@ private extension PanelAnimator {
         struct Animation {
             static let duration: TimeInterval = 0.42
         }
-    }
-
-    func stopCurrentAnimation() {
-        defer { self.animator = nil }
-        guard let animator = self.animator else { return }
-        guard animator.state == .active else { return }
-
-        animator.stopAnimation(true)
     }
 
     func performChanges(_ changes: @escaping () -> Void, animated: Bool, timing: UITimingCurveProvider, completion: (() -> Void)? = nil) {
@@ -207,6 +225,7 @@ private extension PanelAnimator {
         }
 
         animator.startAnimation()
+        self.animator = animator
     }
 
     func transform(for direction: Panel.Direction, size: CGSize) -> CGAffineTransform {

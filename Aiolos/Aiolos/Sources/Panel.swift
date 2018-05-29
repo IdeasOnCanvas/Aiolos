@@ -21,7 +21,6 @@ public final class Panel: UIViewController {
     private lazy var gestures: PanelGestures = self.makeGestures()
     private(set) lazy var constraints: PanelConstraints = self.makeConstraints()
     private(set) lazy var animator: PanelAnimator = self.makeAnimator()
-    private var isTransitioningFromParent: Bool = false
     private var _configuration: Configuration {
         didSet {
             self.handleConfigurationChange(from: oldValue, to: self.configuration)
@@ -31,7 +30,7 @@ public final class Panel: UIViewController {
     // MARK: - Properties
 
     @objc private(set) public lazy var panelView: PanelView = self.makePanelView()
-    @objc public var isVisible: Bool { return self.parent != nil && self.isTransitioningFromParent == false }
+    @objc public var isVisible: Bool { return self.parent != nil && self.animator.isTransitioningFromParent == false }
     @objc public var isPanning: Bool { return self.gestures.isPanning }
     public weak var sizeDelegate: PanelSizeDelegate?
     public weak var animationDelegate: PanelAnimationDelegate?
@@ -129,7 +128,11 @@ public extension Panel {
 public extension Panel {
 
     func add(to parent: UIViewController, transition: Transition = .none) {
-        guard self.parent !== parent else { return }
+        guard self.parent !== parent || self.animator.isTransitioningFromParent else { return }
+
+        if self.animator.isTransitioningFromParent {
+            self.animator.stopCurrentAnimation()
+        }
 
         let contentViewController = self.contentViewController
         contentViewController?.beginAppearanceTransition(true, animated: transition.isAnimated)
@@ -145,16 +148,18 @@ public extension Panel {
     }
 
     func removeFromParent(transition: Transition = .none, completion: (() -> Void)? = nil) {
-        guard self.parent != nil else { return }
+        guard self.parent != nil || self.animator.isTransitioningToParent else { return }
 
-        self.isTransitioningFromParent = true
+        if self.animator.isTransitioningToParent {
+            self.animator.stopCurrentAnimation()
+        }
+
         self.contentViewController?.beginAppearanceTransition(false, animated: transition.isAnimated)
         self.willMove(toParentViewController: nil)
         self.animator.removeFromParent(transition: transition) {
             self.contentViewController?.endAppearanceTransition()
             self.view.removeFromSuperview()
             self.removeFromParentViewController()
-            self.isTransitioningFromParent = false
             completion?()
         }
     }
