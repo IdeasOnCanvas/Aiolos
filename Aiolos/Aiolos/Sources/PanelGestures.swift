@@ -45,10 +45,7 @@ final class PanelGestures: NSObject {
     }
 
     func cancel() {
-        guard self.pan.isEnabled else { return }
-
-        self.pan.isEnabled = false
-        self.pan.isEnabled = true
+        self.pan.cancel()
     }
 }
 
@@ -128,13 +125,15 @@ private extension PanelGestures {
         self.originalConfiguration = configuration
 
         if let contentViewController = self.panel.contentViewController {
-            pan.didStartOnScrollableArea =
-                self.gestureRecognizer(pan, isWithinContentAreaOf: contentViewController) &&
-                self.contentIsScrollableVertically(of: contentViewController, at: pan.location(in: self.panel.view))
+            if self.gestureRecognizer(pan, isWithinContentAreaOf: contentViewController), let scrollView = self.verticallyScrollableView(of: contentViewController, interactingWith: pan) {
+                pan.startMode = .onVerticallyScrollableArea(competingScrollView: scrollView)
+            } else {
+                pan.startMode = .onFixedArea
+            }
         }
     }
 
-    func handlePanDragStart(_ pan: PanGestureRecognizer) {
+    func handlePanDragStart(_ pan: PanGestureRecognizer) -> Bool {
         self.panel.animator.animateChanges = false
         self.panel.animator.performWithoutAnimation {
             self.panel.constraints.updateForPanStart(with: self.panel.view.frame.size)
@@ -142,6 +141,23 @@ private extension PanelGestures {
 
         pan.cancelsTouchesInView = true
         self.panel.resizeHandle.isResizing = true
+
+        let velocity = pan.velocity(in: self.panel.view)
+
+        if case .onVerticallyScrollableArea(let scrollView) = pan.startMode {
+            if velocity.y < 0.0 {
+                // if the gesture scrolls the content, cancel the resizing gesture itself
+                self.cancel()
+                return false
+            } else if velocity.y > 0.0 {
+                // if the gesture would shrink the panel, cancel all gestures on the competing scrollView
+                scrollView.gestureRecognizers?.forEach {
+                    $0.cancel()
+                }
+            }
+        }
+
+        return true
     }
 
     func handlePanChanged(_ pan: PanGestureRecognizer) {
@@ -165,20 +181,12 @@ private extension PanelGestures {
         let yOffset = dragOffset(for: translation)
         guard yOffset != 0.0 else { return }
 
-        // cancel pan if it was started on the content/safeArea and it's used to grow the panel in height
-        if translation.y < 0.0 && pan.didStartOnScrollableArea {
-            self.cancel()
-            return
-        }
-
         pan.setTranslation(.zero, in: self.panel.view)
         if pan.didPan && pan.cancelsTouchesInView == false {
-            self.handlePanDragStart(pan)
+            guard self.handlePanDragStart(pan) else { return }
         }
 
-        self.panel.animator.performWithoutAnimation {
-            self.panel.constraints.updateForPan(with: yOffset)
-        }
+        self.panel.animator.performWithoutAnimation { self.panel.constraints.updateForPan(with: yOffset) }
         self.panel.animator.notifyDelegateOfTransition(to: CGSize(width: self.panel.view.frame.width, height: self.currentPanelHeight))
     }
 
@@ -344,31 +352,33 @@ private extension PanelGestures {
     func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, isAllowedToStartByContentOf contentViewController: UIViewController) -> Bool {
         guard self.panel.configuration.gestureResizingMode == .includingContent else { return false }
 
-        let location = gestureRecognizer.location(in: contentViewController.view)
-        guard let hitView = contentViewController.view.hitTest(location, with: nil) else { return true }
-        guard let enclosingScrollView = hitView.superview(with: UIScrollView.self) as? UIScrollView else { return true }
-        guard (enclosingScrollView is UITextView) == false else { return false }
+        guard let enclosingScrollView = self.verticallyScrollableView(of: contentViewController, interactingWith: gestureRecognizer) else { return true }
+        guard (enclosingScrollView is UITextView) == false else { return false } // TODO: Fix this?
 
-        return enclosingScrollView.isScrolledToTop || self.contentIsScrollableVertically(of: contentViewController, at: location) == false
+        return enclosingScrollView.isScrolledToTop
     }
 
-    func contentIsScrollableVertically(of contentViewController: UIViewController, at location: CGPoint) -> Bool {
-        guard let hitView = contentViewController.view.hitTest(location, with: nil) else { return false }
-        guard let enclosingScrollView = hitView.superview(with: UIScrollView.self) as? UIScrollView else { return false }
+    func verticallyScrollableView(of contentViewController: UIViewController, interactingWith gestureRecognizer: UIGestureRecognizer) -> UIScrollView? {
+        let location = gestureRecognizer.location(in: contentViewController.view)
+        guard let hitView = contentViewController.view.hitTest(location, with: nil) else { return nil }
 
-        return (enclosingScrollView.isScrollEnabled && enclosingScrollView.scrollsVertically) || enclosingScrollView.alwaysBounceVertical
+        return hitView.superview(ofClass: UIScrollView.self, satisfying: { $0.scrollsVertically })
     }
 }
 
 private extension UIView {
 
-    func superview(with viewClass: AnyClass) -> UIView? {
+    func superview<T>(ofClass viewClass: T.Type, satisfying predicate: (T) -> Bool) -> T? where T: UIView {
         var view: UIView? = self
-        while view != nil && view!.isKind(of: viewClass) == false {
+        while view != nil {
+            if let typedView = view as? T, predicate(typedView) {
+                break
+            }
+
             view = view?.superview
         }
 
-        return view
+        return view as? T
     }
 }
 
@@ -379,6 +389,18 @@ private extension UIScrollView {
     }
 
     var scrollsVertically: Bool {
+        guard self.isScrollEnabled && self.isUserInteractionEnabled else { return false }
+
         return self.alwaysBounceVertical || self.contentSize.height > self.bounds.height
+    }
+}
+
+private extension UIGestureRecognizer {
+
+    func cancel() {
+        guard self.isEnabled else { return }
+
+        self.isEnabled = false
+        self.isEnabled = true
     }
 }

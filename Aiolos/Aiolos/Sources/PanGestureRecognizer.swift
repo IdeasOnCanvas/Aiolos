@@ -14,6 +14,11 @@ import UIKit.UIGestureRecognizerSubclass
 /// GestureRecognizer that recognizes a pan gesture without any delay
 public final class PanGestureRecognizer: UIGestureRecognizer {
 
+    enum StartMode: Equatable {
+        case onFixedArea
+        case onVerticallyScrollableArea(competingScrollView: UIScrollView)
+    }
+
     private lazy var panForVelocity: UIPanGestureRecognizer = self.makeVelocityPan()
     private var initialPoint: CGPoint?
     private var lastPoint: CGPoint?
@@ -22,7 +27,7 @@ public final class PanGestureRecognizer: UIGestureRecognizer {
     // MARK: Properties
 
     private(set) var didPan: Bool = false
-    var didStartOnScrollableArea: Bool = false
+    var startMode: StartMode = .onFixedArea
 }
 
 // MARK: - UIGestureRecognizer+Subclass
@@ -94,7 +99,7 @@ public extension PanGestureRecognizer {
         super.reset()
 
         self.didPan = false
-        self.didStartOnScrollableArea = false
+        self.startMode = .onFixedArea
         self.panForVelocity = self.makeVelocityPan()
     }
 }
