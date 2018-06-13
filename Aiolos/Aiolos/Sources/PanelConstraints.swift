@@ -16,6 +16,7 @@ final class PanelConstraints {
     private var isPanning: Bool = false
     private lazy var keyboardLayoutGuide: KeyboardLayoutGuide = self.makeKeyboardLayoutGuide()
     private var topConstraint: NSLayoutConstraint?
+    private var topConstraintMargin: CGFloat = 0.0
     private var widthConstraint: NSLayoutConstraint?
     private var positionConstraints: [NSLayoutConstraint] = []
     private(set) var heightConstraint: NSLayoutConstraint?
@@ -75,6 +76,7 @@ final class PanelConstraints {
             ]
         }
 
+        self.topConstraintMargin = topConstraint.constant
         self.panel.animator.animateIfNeeded {
             NSLayoutConstraint.deactivate(self.positionConstraints)
             self.topConstraint = topConstraint
@@ -105,7 +107,7 @@ internal extension PanelConstraints {
         // this fixes this discrepancy by setting the heightConstraint's constant to the actual current height of the panel, when a drag starts
         self.heightConstraint?.constant = currentSize.height
         // we don't want to limit the height by the safeAreaInsets during dragging
-        self.topConstraint?.isActive = false
+        self.setTopConstraintIsRelaxed(true)
     }
 
     func updateForPan(with yOffset: CGFloat) {
@@ -114,7 +116,7 @@ internal extension PanelConstraints {
     }
 
     func updateForPanEnd() {
-        self.topConstraint?.isActive = true
+        self.setTopConstraintIsRelaxed(false)
         self.isPanning = false
     }
 
@@ -129,7 +131,7 @@ internal extension PanelConstraints {
     }
 
     func updateForPanCancelled(with targetSize: CGSize) {
-        self.topConstraint?.isActive = true
+        self.setTopConstraintIsRelaxed(false)
         self.isPanning = false
         self.updateSizeConstraints(for: targetSize)
     }
@@ -169,6 +171,16 @@ private extension PanelConstraints {
         let trailing = positionLogic[.trailing] == .respectSafeArea ? view.safeAreaLayoutGuide.trailingAnchor : view.trailingAnchor
 
         return (top, leading, bottom, trailing)
+    }
+
+    func setTopConstraintIsRelaxed(_ relaxed: Bool) {
+        guard let topConstraint = self.topConstraint else { return }
+
+        if relaxed {
+            topConstraint.constant = -50.0 // arbitrary number to let panel be dragged beyond the top
+        } else {
+            topConstraint.constant = self.topConstraintMargin
+        }
     }
 }
 

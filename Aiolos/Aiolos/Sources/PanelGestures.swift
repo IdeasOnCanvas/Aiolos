@@ -170,7 +170,9 @@ private extension PanelGestures {
             let currentHeight = self.currentPanelHeight
 
             // slow down resizing if the current height exceeds certain limits
-            if (currentHeight < minHeight && translation.y > 0.0) || (currentHeight > maxHeight && translation.y < 0.0) {
+            let isNearingEdge = (currentHeight < minHeight && translation.y > 0.0) || (currentHeight > maxHeight && translation.y < 0.0)
+            let isShrinkingOnScrollView = pan.startMode != .onFixedArea && translation.y > 0.0
+            if isNearingEdge || isShrinkingOnScrollView {
                 return translation.y / 2.5
             } else {
                 return translation.y
@@ -362,13 +364,13 @@ private extension PanelGestures {
         let location = gestureRecognizer.location(in: contentViewController.view)
         guard let hitView = contentViewController.view.hitTest(location, with: nil) else { return nil }
 
-        return hitView.superview(ofClass: UIScrollView.self, satisfying: { $0.scrollsVertically })
+        return hitView.findFirstSuperview(ofClass: UIScrollView.self, where: { $0.scrollsVertically })
     }
 }
 
 private extension UIView {
 
-    func superview<T>(ofClass viewClass: T.Type, satisfying predicate: (T) -> Bool) -> T? where T: UIView {
+    func findFirstSuperview<T>(ofClass viewClass: T.Type, where predicate: (T) -> Bool) -> T? where T: UIView {
         var view: UIView? = self
         while view != nil {
             if let typedView = view as? T, predicate(typedView) {
