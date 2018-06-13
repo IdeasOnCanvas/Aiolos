@@ -173,7 +173,7 @@ private extension PanelGestures {
             let isNearingEdge = (currentHeight < minHeight && translation.y > 0.0) || (currentHeight > maxHeight && translation.y < 0.0)
             let isShrinkingOnScrollView = pan.startMode != .onFixedArea && translation.y > 0.0
             if isNearingEdge || isShrinkingOnScrollView {
-                return translation.y / 2.5
+                return translation.y / 3.0
             } else {
                 return translation.y
             }
@@ -355,7 +355,10 @@ private extension PanelGestures {
         guard self.panel.configuration.gestureResizingMode == .includingContent else { return false }
 
         guard let enclosingScrollView = self.verticallyScrollableView(of: contentViewController, interactingWith: gestureRecognizer) else { return true }
-        guard (enclosingScrollView is UITextView) == false else { return false } // TODO: Fix this?
+        // don't allow resizing gesture if textView is currently text editing
+        if let textView = enclosingScrollView as? UITextView, textView.isFirstResponder {
+            return false
+        }
 
         return enclosingScrollView.isScrolledToTop
     }
