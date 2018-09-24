@@ -336,6 +336,6 @@ private extension Panel {
         guard elementsHidden != contentView.accessibilityElementsHidden else { return }
 
         contentView.accessibilityElementsHidden = elementsHidden
-        UIAccessibility.post(notification: UIAccessibility.Notification.screenChanged, argument: nil)
+        UIAccessibility.post(notification: .screenChanged, argument: nil)
     }
 }
