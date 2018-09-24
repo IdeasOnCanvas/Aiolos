@@ -396,7 +396,8 @@ private extension UIScrollView {
     var scrollsVertically: Bool {
         guard self.isScrollEnabled && self.isUserInteractionEnabled else { return false }
 
-        return self.alwaysBounceVertical || self.contentSize.height > self.bounds.height
+        let visibleHeight = self.bounds.height - self.adjustedContentInset.top - self.adjustedContentInset.bottom
+        return self.alwaysBounceVertical || self.contentSize.height > visibleHeight
     }
 }
 
