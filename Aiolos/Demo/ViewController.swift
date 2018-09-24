@@ -58,7 +58,7 @@ final class ViewController: UIViewController {
         }, completion: nil)
     }
 
-    override func preferredScreenEdgesDeferringSystemGestures() -> UIRectEdge {
+    override var preferredScreenEdgesDeferringSystemGestures: UIRectEdge {
         return [.bottom]
     }
 }
@@ -128,7 +128,7 @@ private extension ViewController {
         contentNavigationController.navigationBar.isTranslucent = false
         contentNavigationController.setToolbarHidden(false, animated: false)
         contentNavigationController.toolbar.barTintColor = .darkGray
-        contentNavigationController.view.bringSubview(toFront: contentNavigationController.navigationBar)
+        contentNavigationController.view.bringSubviewToFront(contentNavigationController.navigationBar)
 
         panelController.sizeDelegate = self
         panelController.animationDelegate = self

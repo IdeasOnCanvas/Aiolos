@@ -33,8 +33,8 @@ final class KeyboardLayoutGuide {
             parentView.trailingAnchor.constraint(equalTo: self.topGuide.trailingAnchor),
             self.bottomConstraint])
 
-        notificationCenter.addObserver(self, selector: #selector(keyboardWillChangeFrame), name: .UIKeyboardWillChangeFrame, object: nil)
-        notificationCenter.addObserver(self, selector: #selector(keyboardWillHide), name: .UIKeyboardWillHide, object: nil)
+        notificationCenter.addObserver(self, selector: #selector(keyboardWillChangeFrame), name: UIResponder.keyboardWillChangeFrameNotification, object: nil)
+        notificationCenter.addObserver(self, selector: #selector(keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
     }
 
     deinit {
@@ -86,7 +86,7 @@ private extension KeyboardLayoutGuide {
 private struct KeyboardInfo {
 
     let endFrame: CGRect
-    let animationOptions: UIViewAnimationOptions
+    let animationOptions: UIView.AnimationOptions
     let animationDuration: TimeInterval
     let isLocal: Bool
 
@@ -101,20 +101,20 @@ private struct KeyboardInfo {
 
     init?(userInfo: [AnyHashable: Any]?) {
         guard let userInfo = userInfo else { return nil }
-        guard let endFrame = userInfo[UIKeyboardFrameEndUserInfoKey] as? CGRect else { return nil }
+        guard let endFrame = userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect else { return nil }
 
         self.endFrame = endFrame
-        self.isLocal = (userInfo[UIKeyboardIsLocalUserInfoKey] as? NSNumber)?.boolValue ?? true
+        self.isLocal = (userInfo[UIResponder.keyboardIsLocalUserInfoKey] as? NSNumber)?.boolValue ?? true
 
         // UIViewAnimationOption is shifted by 16 bit from UIViewAnimationCurve, which we get here:
         // http://stackoverflow.com/questions/18870447/how-to-use-the-default-ios7-uianimation-curve
-        if let animationCurve = userInfo[UIKeyboardAnimationCurveUserInfoKey] as? UInt {
-            self.animationOptions = UIViewAnimationOptions(rawValue: animationCurve << 16)
+        if let animationCurve = userInfo[UIResponder.keyboardAnimationCurveUserInfoKey] as? UInt {
+            self.animationOptions = UIView.AnimationOptions(rawValue: animationCurve << 16)
         } else {
             self.animationOptions = .curveEaseInOut
         }
 
-        if let animationDuration = userInfo[UIKeyboardAnimationDurationUserInfoKey] as? Double {
+        if let animationDuration = userInfo[UIResponder.keyboardAnimationDurationUserInfoKey] as? Double {
             self.animationDuration = animationDuration
         } else {
             self.animationDuration = 0.25

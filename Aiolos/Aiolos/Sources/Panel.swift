@@ -115,7 +115,7 @@ public extension Panel {
         self.contentViewController?.viewWillTransition(to: size, with: coordinator)
     }
 
-    override func overrideTraitCollection(forChildViewController childViewController: UIViewController) -> UITraitCollection? {
+    override func overrideTraitCollection(forChild childViewController: UIViewController) -> UITraitCollection? {
         let horizontalTraits = UITraitCollection(horizontalSizeClass: .compact)
         let verticalTraits = UITraitCollection(verticalSizeClass: .compact)
 
@@ -136,9 +136,9 @@ public extension Panel {
 
         let contentViewController = self.contentViewController
         contentViewController?.beginAppearanceTransition(true, animated: transition.isAnimated)
-        parent.addChildViewController(self)
+        parent.addChild(self)
         parent.view.addSubview(self.view)
-        self.didMove(toParentViewController: parent)
+        self.didMove(toParent: parent)
 
         let size = self.size(for: self.configuration.mode)
         self.animator.transitionToParent(with: size, transition: transition) {
@@ -155,11 +155,11 @@ public extension Panel {
         }
 
         self.contentViewController?.beginAppearanceTransition(false, animated: transition.isAnimated)
-        self.willMove(toParentViewController: nil)
+        self.willMove(toParent: nil)
         self.animator.removeFromParent(transition: transition) {
             self.contentViewController?.endAppearanceTransition()
             self.view.removeFromSuperview()
-            self.removeFromParentViewController()
+            self.removeFromParent()
             completion?()
         }
     }
@@ -281,18 +281,18 @@ private extension Panel {
         // remove old contentViewController
         if let oldContentViewController = oldContentViewController {
             if callAppearanceMethods { oldContentViewController.beginAppearanceTransition(false, animated: false) }
-            oldContentViewController.willMove(toParentViewController: nil)
+            oldContentViewController.willMove(toParent: nil)
             oldContentViewController.view.removeFromSuperview()
-            oldContentViewController.removeFromParentViewController()
+            oldContentViewController.removeFromParent()
             if callAppearanceMethods { oldContentViewController.endAppearanceTransition() }
         }
 
         // add new contentViewController
         if let newContentViewController = newContentViewController {
             if callAppearanceMethods { newContentViewController.beginAppearanceTransition(true, animated: false) }
-            self.addChildViewController(newContentViewController)
+            self.addChild(newContentViewController)
             self.panelView.contentView.addSubview(newContentViewController.view)
-            newContentViewController.didMove(toParentViewController: self)
+            newContentViewController.didMove(toParent: self)
             if callAppearanceMethods { newContentViewController.endAppearanceTransition() }
         }
     }
@@ -336,15 +336,6 @@ private extension Panel {
         guard elementsHidden != contentView.accessibilityElementsHidden else { return }
 
         contentView.accessibilityElementsHidden = elementsHidden
-        UIAccessibilityPostNotification(UIAccessibilityScreenChangedNotification, nil)
-    }
-}
-
-// MARK: - NSDirectionalEdgeInsets
-
-extension NSDirectionalEdgeInsets: Equatable {
-
-    public static func == (lhs: NSDirectionalEdgeInsets, rhs: NSDirectionalEdgeInsets) -> Bool {
-        return lhs.top == rhs.top && lhs.leading == rhs.leading && lhs.bottom == rhs.bottom && lhs.trailing == rhs.trailing
+        UIAccessibility.post(notification: UIAccessibility.Notification.screenChanged, argument: nil)
     }
 }

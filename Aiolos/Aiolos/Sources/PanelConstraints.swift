@@ -98,7 +98,7 @@ internal extension PanelConstraints {
             insets = positionLogic.applyingInsets(of: parentView, to: insets, edge: edge)
         }
 
-        let safeArea = UIEdgeInsetsInsetRect(parentView.bounds, UIEdgeInsets(directionalEdgeInsets: insets, isRTL: parentView.effectiveUserInterfaceLayoutDirection == .rightToLeft))
+        let safeArea = parentView.bounds.inset(by: UIEdgeInsets(directionalEdgeInsets: insets, isRTL: parentView.effectiveUserInterfaceLayoutDirection == .rightToLeft))
         return self.panel.view.frame.maxY - safeArea.minY
     }
 

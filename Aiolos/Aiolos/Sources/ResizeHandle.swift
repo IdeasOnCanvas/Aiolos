@@ -97,7 +97,7 @@ private extension ResizeHandle {
         layer.backgroundColor = UIColor.clear.cgColor
         layer.fillColor = UIColor.clear.cgColor
         layer.lineWidth = 5.0
-        layer.lineCap = kCALineCapRound
+        layer.lineCap = CAShapeLayerLineCap.round
         return layer
     }
 
@@ -127,7 +127,7 @@ private extension ResizeHandle {
         let animationKey = "pathAnimation"
         let animation = CABasicAnimation(keyPath: #keyPath(CAShapeLayer.path))
         animation.duration = 0.3
-        animation.timingFunction = CAMediaTimingFunction(name: kCAMediaTimingFunctionEaseInEaseOut)
+        animation.timingFunction = CAMediaTimingFunction(name: CAMediaTimingFunctionName.easeInEaseOut)
 
         layer.removeAnimation(forKey: animationKey)
         layer.add(animation, forKey: animationKey)

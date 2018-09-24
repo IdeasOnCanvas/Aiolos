@@ -28,7 +28,7 @@ final class ShadowView: UIView {
 
     override func point(inside point: CGPoint, with event: UIEvent?) -> Bool {
         let padding: CGFloat = 15.0
-        let extendedBounds = UIEdgeInsetsInsetRect(self.bounds, UIEdgeInsets(top: -padding, left: 0.0, bottom: 0.0, right: 0.0))
+        let extendedBounds = self.bounds.inset(by: UIEdgeInsets(top: -padding, left: 0.0, bottom: 0.0, right: 0.0))
 
         return extendedBounds.contains(point)
     }
