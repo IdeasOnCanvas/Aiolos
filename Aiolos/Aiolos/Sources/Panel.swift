@@ -239,7 +239,7 @@ private extension Panel {
     func makeResizeHandle() -> ResizeHandle {
         let handle = ResizeHandle(configuration: self.configuration)
         handle.accessibilityActivateAction = { [weak self] in
-            guard let `self` = self else { return false }
+            guard let self = self else { return false }
 
             return self.accessibilityDelegate?.panel(self, didActivateResizeHandle: self.resizeHandle) ?? false
         }
