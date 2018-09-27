@@ -331,6 +331,7 @@ private extension PanelGestures {
         self.panel.animator.animateWithTiming(timing, animations: {
             self.panel.constraints.updateForPanEndAnimation(to: height)
             self.panel.animator.notifyDelegateOfTransition(to: size)
+            self.panel.fixNavigationBarLayoutMargins()
         }, completion: {
             self.panel.constraints.updateSizeConstraints(for: size)
         })
