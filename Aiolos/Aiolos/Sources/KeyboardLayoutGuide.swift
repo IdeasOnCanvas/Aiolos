@@ -95,7 +95,7 @@ private struct KeyboardInfo {
         guard self.isLocal else { return false }
         guard self.endFrame.size != .zero else { return true }
 
-        let parentBounds = UIScreen.main.bounds
+        let parentBounds = UIApplication.shared.keyWindow?.bounds ?? UIScreen.main.bounds
         return self.endFrame.maxY < parentBounds.height
     }
 
