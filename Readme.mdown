@@ -1,4 +1,96 @@
 # Aiolos
-## The God of Winds
+## Yet another iOS Floating Panel
 
-Aiolos is a Swift UI framework, that mimics the floating panel seen in Maps.app in iOS 11.
+[![Carthage Compatible](https://img.shields.io/badge/Carthage-compatible-4BC51D.svg?style=flat)](https://github.com/Carthage/Carthage)
+![Platform iOS](https://img.shields.io/badge/Platform-iOS-blue.svg "Platform iOS")
+![Language Swift](https://img.shields.io/badge/Language-Swift%204.2-orange.svg "Swift 4.2")
+[![Twitter: @myell0w](https://img.shields.io/badge/Twitter-@myell0w-red.svg?style=flat)](https://twitter.com/myell0w)
+
+Aiolos is a Swift UI framework, that mimics the floating panel that was introduced in Maps.app in iOS 11.
+
+## Integration with Carthage
+
+Add this line to your Cartfile.
+```
+github "IdeasOnCanvas/Aiolos"
+```
+
+## Usage in Code
+
+There's a demo app, that demonstrates how the Panel can be set up with a different configuration for iPhones and iPads.
+
+```swift
+func makePanel(with contentViewController: UIViewController) -> Panel {
+    // create Panel with default configuration
+    let configuration = Panel.Configuration.default
+    let panelController = Panel(configuration: configuration)
+
+    // specify, which ViewController is displayed in the panel
+    panelController.contentViewController = contentViewController
+
+    // setup delegates that handle size configuration and animation callbacks
+    panelController.sizeDelegate = self
+    panelController.animationDelegate = self
+
+    // change the configuration to fit you needs
+    panelController.configuration.position = self.panelPosition(for: self.traitCollection)
+    panelController.configuration.margins = self.panelMargins(for: self.traitCollection)
+    panelController.configuration.appearance.separatorColor = .white
+
+    // we want a different look/behaviour on iPhone compared to iPad
+    if self.traitCollection.userInterfaceIdiom == .pad {
+        panelController.configuration.appearance.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner, .layerMinXMaxYCorner, .layerMaxXMaxYCorner]
+    } else {
+        panelController.configuration.supportedModes = [.minimal, .compact, .expanded, .fullHeight]
+        panelController.configuration.appearance.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
+    }
+
+    return panelController
+}
+```
+
+### Configuring the size
+
+```swift
+extension ViewController: PanelSizeDelegate {
+
+    func panel(_ panel: Panel, sizeForMode mode: Panel.Configuration.Mode) -> CGSize {
+        let width = self.panelWidth(for: self.traitCollection, position: panel.configuration.position)
+        switch mode {
+        case .minimal:
+            return CGSize(width: width, height: 0.0)
+        case .compact:
+            return CGSize(width: width, height: 64.0)
+        case .expanded:
+            let height: CGFloat = self.traitCollection.userInterfaceIdiom == .phone ? 270.0 : 320.0
+            return CGSize(width: width, height: height)
+        case .fullHeight:
+            return CGSize(width: width, height: 0.0)
+        }
+    }
+}
+```
+
+### Reacting to Panel animations
+
+```swift
+extension ViewController: PanelAnimationDelegate {
+
+    func panel(_ panel: Panel, willTransitionTo size: CGSize) {
+        print("Panel will transition to size \(size)")
+    }
+
+    func panel(_ panel: Panel, willTransitionFrom oldMode: Panel.Configuration.Mode?, to newMode: Panel.Configuration.Mode, with coordinator: PanelTransitionCoordinator) {
+        print("Panel will transition from \(oldMode) to \(newMode)")
+        // we can animate things along the way
+        coordinator.animateAlongsideTransition({
+            print("Animating alongside of panel transition")
+        }, completion: { animationPosition in
+            print("Completed panel transition to \(newMode)")
+        })
+    }
+}
+```
+
+## Credits
+AppReceiptValidator is brought to you by [IdeasOnCanvas GmbH](https://ideasoncanvas.com), the creator of [MindNode for iOS, macOS & watchOS](https://mindnode.com).
