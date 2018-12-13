@@ -10,9 +10,12 @@ import Aiolos
 import UIKit
 
 
+/// The RootViewController of the Demo
 final class ViewController: UIViewController {
 
     private lazy var panelController: Panel = self.makePanelController()
+
+    // MARK: - UIViewController
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -98,21 +101,18 @@ extension ViewController: PanelSizeDelegate {
 extension ViewController: PanelAnimationDelegate {
 
     func panel(_ panel: Panel, willTransitionTo size: CGSize) {
-//        print("Will transition to \(size), animated: \(coordinator.isAnimated)")
-//        coordinator.animateAlongsideTransition({
-//            print("Animating willTransitionToSize")
-//        }) { _ in
-//            print("Completed willTransitionToSize")
-//        }
+        print("Panel will transition to size \(size)")
     }
 
     func panel(_ panel: Panel, willTransitionFrom oldMode: Panel.Configuration.Mode?, to newMode: Panel.Configuration.Mode, with coordinator: PanelTransitionCoordinator) {
-        print("Will transition to mode \(newMode)")
+        print("Panel will transition from \(String(describing: oldMode)) to \(newMode)")
+
+        // we can animate things along the way
         coordinator.animateAlongsideTransition({
-            print("Animating willTransitionToMode")
-        }) { _ in
-            print("Completed willTransitionToMode")
-        }
+            print("Animating alongside of panel transition")
+        }, completion: { animationPosition in
+            print("Completed panel transition to \(newMode)")
+        })
     }
 }
 

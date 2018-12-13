@@ -10,9 +10,12 @@ import Foundation
 import UIKit
 
 
+/// The ViewController that is displayed inside of the Panel
 final class PanelContentViewController: UITableViewController {
 
     private let color: UIColor
+
+    // MARK: - Lifecycle
 
     init(color: UIColor) {
         self.color = color
@@ -24,6 +27,8 @@ final class PanelContentViewController: UITableViewController {
         fatalError("init(coder:) has not been implemented")
     }
 
+    // MARK: - UIViewController
+
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -31,45 +36,9 @@ final class PanelContentViewController: UITableViewController {
         self.tableView.register(UITableViewCell.self, forCellReuseIdentifier: "Cell")
         self.navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(handleAddPress))
     }
-
-//    override func viewWillAppear(_ animated: Bool) {
-//        super.viewWillAppear(animated)
-//
-//        print("Will appear \(animated)")
-//    }
-//
-//    override func viewDidAppear(_ animated: Bool) {
-//        super.viewDidAppear(animated)
-//
-//        print("Did appear \(animated)")
-//    }
-//
-//    override func viewWillDisappear(_ animated: Bool) {
-//        super.viewWillDisappear(animated)
-//
-//        print("Will disappear \(animated)")
-//    }
-//
-//    override func viewDidDisappear(_ animated: Bool) {
-//        super.viewDidDisappear(animated)
-//
-//        print("Did disappear \(animated)")
-//    }
-//
-//    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
-//        super.viewWillTransition(to: size, with: coordinator)
-//
-//        print("View will transition to \(size)")
-//    }
-//
-//    override func willTransition(to newCollection: UITraitCollection, with coordinator: UIViewControllerTransitionCoordinator) {
-//        super.willTransition(to: newCollection, with: coordinator)
-//
-//        print("Will transtion to \(newCollection)")
-//    }
 }
 
-// MARK: UITableViewDataSource
+// MARK: - UITableViewDataSource
 
 extension PanelContentViewController {
 
@@ -93,9 +62,9 @@ private extension PanelContentViewController {
 
     @objc
     func handleAddPress(_ sender: UIBarButtonItem) {
-        print("+ pressed")
         guard let panel = self.aiolosPanel else { return }
 
+        print("+ was pressed")
         if panel.configuration.mode == .compact {
             panel.configuration.mode = .expanded
         }
