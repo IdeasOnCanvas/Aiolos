@@ -1,5 +1,5 @@
 # Aiolos
-## Yet another iOS Floating Panel
+#### Yet another iOS Floating Panel
 
 [![Carthage Compatible](https://img.shields.io/badge/Carthage-compatible-4BC51D.svg?style=flat)](https://github.com/Carthage/Carthage)
 ![Platform iOS](https://img.shields.io/badge/Platform-iOS-blue.svg "Platform iOS")
@@ -7,6 +7,9 @@
 [![Twitter: @myell0w](https://img.shields.io/badge/Twitter-@myell0w-red.svg?style=flat)](https://twitter.com/myell0w)
 
 Aiolos is a Swift UI framework, that mimics the floating panel that was introduced in Maps.app in iOS 11.
+
+![MindNode for iPhone](Screenshots/iPhone.png)
+![MindNode for iPad](Screenshots/iPad.png)
 
 ## Integration with Carthage
 
@@ -93,4 +96,5 @@ extension ViewController: PanelAnimationDelegate {
 ```
 
 ## Credits
+
 AppReceiptValidator is brought to you by [IdeasOnCanvas GmbH](https://ideasoncanvas.com), the creator of [MindNode for iOS, macOS & watchOS](https://mindnode.com).
