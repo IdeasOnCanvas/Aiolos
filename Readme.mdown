@@ -8,8 +8,7 @@
 
 Aiolos is a Swift UI framework, that mimics the floating panel that was introduced in Maps.app in iOS 11.
 
-![MindNode for iPhone](Screenshots/iPhone.png)
-![MindNode for iPad](Screenshots/iPad.png)
+![MindNode for iPad and iPhone](Screenshot.png)
 
 ## Integration with Carthage
 
