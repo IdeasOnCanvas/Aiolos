@@ -26,6 +26,14 @@ public protocol PanelAnimationDelegate: AnyObject {
     func panel(_ panel: Panel, willTransitionFrom oldMode: Panel.Configuration.Mode?, to newMode: Panel.Configuration.Mode, with coordinator: PanelTransitionCoordinator)
 }
 
+// TODO: PanelPositionDelegate
+
+public protocol PanelPositionDelegate: AnyObject {
+    
+    /// Tells the delegate that the `panel` is moving to a specific position
+    func panel(_ panel: Panel, willMoveTo position: Panel.Configuration.Position)
+}
+
 public protocol PanelAccessibilityDelegate: AnyObject {
 
     /// Asks the delegate for the accessibility label of the resize handle
