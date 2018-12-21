@@ -14,8 +14,14 @@ final class PanelGestures: NSObject {
 
     private unowned let panel: Panel
     private var originalConfiguration: PanelGestures.Configuration?
-    private lazy var pan: PanGestureRecognizer = self.makePanGestureRecognizer()
+    private lazy var pan: PanGestureRecognizer = self.makeVerticalPanGestureRecognizer()
+    private lazy var horizontalPan: UIPanGestureRecognizer = self.makeHorizontalPanGestureRecognizer()
+    
+    // TODO: Delete once the implementation is finished
+    private weak var middleLine: UIView?
+    
     private var isEnabled: Bool {
+        // TODO: horizontalPan
         get { return self.pan.isEnabled }
         set { self.pan.isEnabled = newValue }
     }
@@ -23,6 +29,7 @@ final class PanelGestures: NSObject {
     // MARK: - Properties
 
     var isPanning: Bool {
+        // TODO: horizontalPan
         let states: Set<UIGestureRecognizer.State> = [.began, .changed]
         return states.contains(self.pan.state)
     }
@@ -36,15 +43,19 @@ final class PanelGestures: NSObject {
     // MARK: - PanelGestures
 
     func install() {
-        self.panel.view.addGestureRecognizer(self.pan)
+        // Limit the gesture to only trigger, when it is started on top of the resize handle
+        self.panel.resizeHandle.addGestureRecognizer(self.pan)
+        self.panel.resizeHandle.addGestureRecognizer(self.horizontalPan)
     }
 
     func configure(with configuration: Panel.Configuration) {
         self.cancel()
+        // TODO: horizontalPan
         self.isEnabled = configuration.gestureResizingMode != .disabled
     }
 
     func cancel() {
+        // TODO: horizontalPan
         self.pan.cancel()
     }
 }
@@ -59,6 +70,7 @@ extension PanelGestures: UIGestureRecognizerDelegate {
     }
 
     func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
+        // TODO: Make the panel move either way but not both at the same time
         return true
     }
 
@@ -91,8 +103,15 @@ private extension PanelGestures {
         }
     }
 
-    func makePanGestureRecognizer() -> PanGestureRecognizer {
+    func makeVerticalPanGestureRecognizer() -> PanGestureRecognizer {
         let pan = PanGestureRecognizer(target: self, action: #selector(handlePan))
+        pan.delegate = self
+        pan.cancelsTouchesInView = false
+        return pan
+    }
+    
+    func makeHorizontalPanGestureRecognizer() -> UIPanGestureRecognizer {
+        let pan = UIPanGestureRecognizer(target: self, action: #selector(handleHorizontalPan))
         pan.delegate = self
         pan.cancelsTouchesInView = false
         return pan
@@ -113,6 +132,100 @@ private extension PanelGestures {
             self.handlePanEnded(pan)
         case .cancelled:
             self.handlePanCancelled(pan)
+        default:
+            break
+        }
+    }
+    
+    @objc
+    func handleHorizontalPan(_ pan: UIPanGestureRecognizer) {
+        // TODO: Inform the delegate when moving to the new position
+        
+        let translation = pan.translation(in: self.panel.view)
+        let xOffset = translation.x
+        
+        // TODO: Is is alright to get the mid screen position this way?
+        let midScreen = self.panel.view.superview!.bounds.midX
+        
+        /// Calculate how large xOffset must be to reach the middle of the screen
+        let threshold = min(abs(midScreen - self.panel.view.frame.maxY), abs(midScreen - self.panel.view.frame.minY))
+        
+        switch pan.state {
+        case .began:
+            debugShowMiddleLine(at: midScreen)
+            
+            // TODO: Do this in .changed (see handlePanDragStart(_:))
+            panel.resizeHandle.isResizing = true
+            
+        case .changed:
+            self.panel.view.transform = CGAffineTransform.init(translationX: xOffset, y: 0)
+            
+            debugUpdateMiddleLine(withOffset: xOffset, threshold: threshold)
+
+        case .ended:
+            
+            // When is an edge of the panel over the middle of the screen -> activate the move to the other side.
+            // Take the position and velocity into account (calculate projection).
+            
+            let velocity = pan.velocity(in: self.panel.view)
+            
+            // TODO: animate to target position including damping
+            
+            // FIXME: Is 0 the right value here?
+            if velocity.x == 0 {
+            
+                if xOffset < -threshold {
+                    // pin the view to the leading edge
+                    self.panel.animator.animateIfNeeded {
+                        self.panel.view.transform = CGAffineTransform.identity
+                        self.panel.configuration.position = .leadingBottom
+                    }
+                    
+                } else if xOffset > threshold {
+                    
+                    self.panel.animator.animateIfNeeded {
+                        self.panel.view.transform = CGAffineTransform.identity
+                        self.panel.configuration.position = .trailingBottom
+                    }
+                    
+                } else {
+                    // reset transform
+                    self.panel.animator.animateIfNeeded {
+                        self.panel.view.transform = CGAffineTransform.identity
+                    }
+                }
+            } else {
+                let projectedOffset = project(velocity.x, onto: xOffset)
+                debugShowProjectedView(projectedOffset: projectedOffset)
+                
+                if projectedOffset < -threshold {
+                    // pin the view to the leading edge
+                    self.panel.animator.animateIfNeeded {
+                        self.panel.view.transform = CGAffineTransform.identity
+                        self.panel.configuration.position = .leadingBottom
+                    }
+                    
+                } else if projectedOffset > threshold {
+                    self.panel.animator.animateIfNeeded {
+                        self.panel.view.transform = CGAffineTransform.identity
+                        self.panel.configuration.position = .trailingBottom
+                    }
+                    
+                } else {
+                    // reset transform
+                    self.panel.animator.animateIfNeeded {
+                        self.panel.view.transform = CGAffineTransform.identity
+                    }
+                }
+            }
+            
+            middleLine?.removeFromSuperview()
+            
+            panel.resizeHandle.isResizing = false
+            
+            break
+        case .cancelled:
+            break
         default:
             break
         }
@@ -409,5 +522,66 @@ private extension UIGestureRecognizer {
 
         self.isEnabled = false
         self.isEnabled = true
+    }
+}
+
+// Inspired by: https://medium.com/ios-os-x-development/gestures-in-fluid-interfaces-on-intent-and-projection-36d158db7395
+public func project(_ velocity: CGFloat, onto position: CGFloat, decelerationRate: UIScrollView.DecelerationRate = .normal) -> CGFloat {
+    let factor = -1 / (1000 * log(decelerationRate.rawValue))
+    
+    return position + factor * velocity
+}
+
+// TODO: Delete the debug code below once the implementation is finished
+
+#if DEBUG
+private let isDebug = true
+#else
+private let isDebug = false
+#endif
+
+private extension PanelGestures {
+    
+    func debugShowMiddleLine(at xPosition: CGFloat) {
+        guard isDebug else { return }
+        
+        if self.middleLine == nil {
+            let verticalLine = UIView.init(frame: CGRect(x: xPosition, y: 0, width: 1, height: self.panel.parent!.view.bounds.height))
+            verticalLine.backgroundColor = .red
+            self.panel.parent!.view.addSubview(verticalLine)
+            self.panel.parent!.view.bringSubviewToFront(verticalLine)
+            self.middleLine = verticalLine
+        }
+    }
+    
+    func debugUpdateMiddleLine(withOffset xOffset: CGFloat, threshold: CGFloat) {
+        if xOffset < -threshold {
+            middleLine?.backgroundColor = .green
+        } else if xOffset > threshold {
+            middleLine?.backgroundColor = .green
+        } else {
+            middleLine?.backgroundColor = .red
+        }
+    }
+    
+    func debugShowProjectedView(projectedOffset: CGFloat) {
+        guard isDebug else { return }
+        
+        var projectedFrame = self.panel.view.frame
+        projectedFrame.origin.x += projectedOffset
+        let projectedPanel = UIView(frame: projectedFrame)
+        projectedPanel.backgroundColor = .clear
+        projectedPanel.layer.borderColor = UIColor.gray.cgColor
+        projectedPanel.layer.borderWidth = 1.0
+        self.panel.view.superview!.addSubview(projectedPanel)
+        self.panel.view.superview!.bringSubviewToFront(projectedPanel)
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+            UIView.animate(
+                withDuration: 0.5,
+                animations: { projectedPanel.alpha = 0.0 },
+                completion: { _ in projectedPanel.removeFromSuperview() }
+            )
+        }
     }
 }
