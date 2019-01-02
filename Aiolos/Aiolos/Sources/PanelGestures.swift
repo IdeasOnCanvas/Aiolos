@@ -43,8 +43,8 @@ final class PanelGestures: NSObject {
     // MARK: - PanelGestures
 
     func install() {
-        // Limit the gesture to only trigger, when it is started on top of the resize handle
-        self.panel.resizeHandle.addGestureRecognizer(self.pan)
+        self.panel.view.addGestureRecognizer(self.pan)
+        // Limit the horizontal gesture to only trigger, when it is started on top of the resize handle
         self.panel.resizeHandle.addGestureRecognizer(self.horizontalPan)
     }
 
