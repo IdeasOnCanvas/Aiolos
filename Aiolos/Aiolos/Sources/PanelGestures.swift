@@ -15,7 +15,7 @@ final class PanelGestures: NSObject {
     private unowned let panel: Panel
     private var originalConfiguration: PanelGestures.Configuration?
     private lazy var pan: PanGestureRecognizer = self.makeVerticalPanGestureRecognizer()
-    private lazy var horizontalPan: UIPanGestureRecognizer = self.makeHorizontalPanGestureRecognizer()
+    private lazy var horizontalPan: PanGestureRecognizer = self.makeHorizontalPanGestureRecognizer()
     
     // TODO: Delete once the implementation is finished
     private weak var middleLine: UIView?
@@ -70,7 +70,6 @@ extension PanelGestures: UIGestureRecognizerDelegate {
     }
 
     func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
-        // TODO: Make the panel move either way but not both at the same time
         return true
     }
 
@@ -105,13 +104,15 @@ private extension PanelGestures {
 
     func makeVerticalPanGestureRecognizer() -> PanGestureRecognizer {
         let pan = PanGestureRecognizer(target: self, action: #selector(handlePan))
+        pan.panDirection = .vertical
         pan.delegate = self
         pan.cancelsTouchesInView = false
         return pan
     }
     
-    func makeHorizontalPanGestureRecognizer() -> UIPanGestureRecognizer {
-        let pan = UIPanGestureRecognizer(target: self, action: #selector(handleHorizontalPan))
+    func makeHorizontalPanGestureRecognizer() -> PanGestureRecognizer {
+        let pan = PanGestureRecognizer(target: self, action: #selector(handleHorizontalPan))
+        pan.panDirection = .horizontal
         pan.delegate = self
         pan.cancelsTouchesInView = false
         return pan
@@ -138,7 +139,7 @@ private extension PanelGestures {
     }
     
     @objc
-    func handleHorizontalPan(_ pan: UIPanGestureRecognizer) {
+    func handleHorizontalPan(_ pan: PanGestureRecognizer) {
         // TODO: Inform the delegate when moving to the new position
         
         let translation = pan.translation(in: self.panel.view)
