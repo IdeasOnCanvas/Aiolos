@@ -142,20 +142,20 @@ private extension PanelGestures {
     func handleHorizontalPan(_ pan: PanGestureRecognizer) {
         // TODO: Inform the delegate when moving to the new position
         
-        let translation = pan.translation(in: self.panel.view)
+        let translation = pan.translation(in: self.panel.view.superview!)
         let xOffset = translation.x
-        
-        // TODO: Is is alright to get the mid screen position this way?
         let midScreen = self.panel.view.superview!.bounds.midX
         
-        /// Calculate how large xOffset must be to reach the middle of the screen
-        let threshold = min(abs(midScreen - self.panel.view.frame.maxY), abs(midScreen - self.panel.view.frame.minY))
+        /// Calculate how large xOffset must be to reach the middle of the screen from the closer edge
+        /// - NOTE: The view is being transformed, thus the frame changes while dragging, hence the correction with `xOffset`
+        let threshold = min(abs(midScreen - (self.panel.view.frame.maxX - xOffset)), abs(midScreen - (self.panel.view.frame.minX - xOffset)))
         
         switch pan.state {
         case .began:
             debugShowMiddleLine(at: midScreen)
             
             // TODO: Do this in .changed (see handlePanDragStart(_:))
+            // FIXME: The other gesture recognizer handler sets the value of the `isResizing` property in `cleanUp(pan:)`
             panel.resizeHandle.isResizing = true
             
         case .changed:
@@ -165,58 +165,34 @@ private extension PanelGestures {
 
         case .ended:
             
-            // When is an edge of the panel over the middle of the screen -> activate the move to the other side.
-            // Take the position and velocity into account (calculate projection).
+            // When an edge of the panel is over the middle of the screen -> activate the move to the other side.
+            // Velocity is taken into account to calculate projection -> allow flicking the panel.
             
             let velocity = pan.velocity(in: self.panel.view)
             
-            // TODO: animate to target position including damping
+            // TODO: Avoid the panel being dragged over the edge of the screen
+            // FIXME: Better animation of the momevent to the target position (same as the Slide Over mode on iPad)
+
+            let projectedOffset = project(velocity.x, onto: xOffset)
+            debugShowProjectedView(projectedOffset: projectedOffset)
             
-            // FIXME: Is 0 the right value here?
-            if velocity.x == 0 {
-            
-                if xOffset < -threshold {
-                    // pin the view to the leading edge
-                    self.panel.animator.animateIfNeeded {
-                        self.panel.view.transform = CGAffineTransform.identity
-                        self.panel.configuration.position = .leadingBottom
-                    }
-                    
-                } else if xOffset > threshold {
-                    
-                    self.panel.animator.animateIfNeeded {
-                        self.panel.view.transform = CGAffineTransform.identity
-                        self.panel.configuration.position = .trailingBottom
-                    }
-                    
-                } else {
-                    // reset transform
-                    self.panel.animator.animateIfNeeded {
-                        self.panel.view.transform = CGAffineTransform.identity
-                    }
+            if projectedOffset < -threshold {
+                // pin the view to the leading edge
+                self.panel.animator.animateIfNeeded {
+                    self.panel.view.transform = CGAffineTransform.identity
+                    self.panel.configuration.position = .leadingBottom
                 }
-            } else {
-                let projectedOffset = project(velocity.x, onto: xOffset)
-                debugShowProjectedView(projectedOffset: projectedOffset)
                 
-                if projectedOffset < -threshold {
-                    // pin the view to the leading edge
-                    self.panel.animator.animateIfNeeded {
-                        self.panel.view.transform = CGAffineTransform.identity
-                        self.panel.configuration.position = .leadingBottom
-                    }
-                    
-                } else if projectedOffset > threshold {
-                    self.panel.animator.animateIfNeeded {
-                        self.panel.view.transform = CGAffineTransform.identity
-                        self.panel.configuration.position = .trailingBottom
-                    }
-                    
-                } else {
-                    // reset transform
-                    self.panel.animator.animateIfNeeded {
-                        self.panel.view.transform = CGAffineTransform.identity
-                    }
+            } else if projectedOffset > threshold {
+                self.panel.animator.animateIfNeeded {
+                    self.panel.view.transform = CGAffineTransform.identity
+                    self.panel.configuration.position = .trailingBottom
+                }
+                
+            } else {
+                // reset transform
+                self.panel.animator.animateIfNeeded {
+                    self.panel.view.transform = CGAffineTransform.identity
                 }
             }
             
@@ -226,6 +202,7 @@ private extension PanelGestures {
             
             break
         case .cancelled:
+            // TODO: Cleanup
             break
         default:
             break
