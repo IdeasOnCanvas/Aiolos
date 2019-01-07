@@ -52,6 +52,12 @@ public extension Panel {
             case excludingContent
             case includingContent
         }
+        
+        // TODO: Review the naming and cases
+        public enum GesturePositioningMode: Int {
+            case disabled
+            case enabled
+        }
 
         public struct Appearance {
             public var visualEffect: UIVisualEffect?
@@ -73,6 +79,7 @@ public extension Panel {
         public var supportedModes: Set<Mode>
         public var gestureResizingMode: GestureResizingMode
         public var appearance: Appearance
+        public var gesturePositioningMode: GesturePositioningMode
     }
 }
 
@@ -96,7 +103,8 @@ public extension Panel.Configuration {
                                    mode: .compact,
                                    supportedModes: [.compact, .expanded, .fullHeight],
                                    gestureResizingMode: .includingContent,
-                                   appearance: appearance)
+                                   appearance: appearance,
+                                   gesturePositioningMode: .enabled)
     }
 }
 
