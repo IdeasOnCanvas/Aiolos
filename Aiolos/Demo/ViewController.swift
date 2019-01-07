@@ -96,6 +96,12 @@ extension ViewController: PanelSizeDelegate {
     }
 }
 
+// MARK: - PanelPositionDelegate
+
+extension ViewController: PanelPositionDelegate {
+    
+}
+
 // MARK: - PanelAnimationDelegate
 
 extension ViewController: PanelAnimationDelegate {
@@ -114,20 +120,23 @@ extension ViewController: PanelAnimationDelegate {
             print("Completed panel transition to \(newMode)")
         })
     }
-}
-
-// MARK: - PanelPositionDelegate
-
-extension ViewController: PanelPositionDelegate {
     
     func panel(_ panel: Panel, willMoveTo frame: CGRect) {
         print("Panel will move to frame \(frame)")
     }
     
-    func panel(_ panel: Panel, willMoveFrom oldPosition: Panel.Configuration.Position, to newPosition: Panel.Configuration.Position) {
+    func panel(_ panel: Panel, willMoveFrom oldPosition: Panel.Configuration.Position, to newPosition: Panel.Configuration.Position, with coordinator: PanelTransitionCoordinator) {
         print("Panel will transition from \(oldPosition) to \(newPosition)")
+        
+        // we can animate things along the way
+        coordinator.animateAlongsideTransition({
+            print("Animating alongside of panel movement")
+        }, completion: { animationPosition in
+            print("Completed panel movement to \(newPosition)")
+        })
     }
 }
+
 
 // MARK: - Private
 

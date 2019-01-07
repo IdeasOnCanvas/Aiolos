@@ -17,6 +17,11 @@ public protocol PanelSizeDelegate: AnyObject {
     func panel(_ panel: Panel, sizeForMode mode: Panel.Configuration.Mode) -> CGSize
 }
 
+public protocol PanelPositionDelegate: AnyObject {
+    
+    // TODO: Let the delegate to decide what to do when panel is dragged to a certain offset (either swift side or hide)
+}
+
 public protocol PanelAnimationDelegate: AnyObject {
 
     /// Tells the delegate that the `panel` is transitioning to a specific size
@@ -24,19 +29,12 @@ public protocol PanelAnimationDelegate: AnyObject {
 
     /// Tells the delegate that the `panel` is transitioning to a specific mode
     func panel(_ panel: Panel, willTransitionFrom oldMode: Panel.Configuration.Mode?, to newMode: Panel.Configuration.Mode, with coordinator: PanelTransitionCoordinator)
-}
-
-public protocol PanelPositionDelegate: AnyObject {
-
-    // TODO: Let the delegate to decide what to do when panel is dragged to a certain offset (either swift side or hide)
-    
-    // TODO: Provide `PanelTransitionCoordinator` as a param in `panel(:willMoveFrom:to)` method?
     
     /// Tells the delegate that the `panel` is moving to a specific frame
     func panel(_ panel: Panel, willMoveTo frame: CGRect)
     
     /// Tells the delegate that the `panel` is moving to a specific position
-    func panel(_ panel: Panel, willMoveFrom oldPosition: Panel.Configuration.Position, to newPosition: Panel.Configuration.Position)
+    func panel(_ panel: Panel, willMoveFrom oldPosition: Panel.Configuration.Position, to newPosition: Panel.Configuration.Position, with coordinator: PanelTransitionCoordinator)
 }
 
 public protocol PanelAccessibilityDelegate: AnyObject {

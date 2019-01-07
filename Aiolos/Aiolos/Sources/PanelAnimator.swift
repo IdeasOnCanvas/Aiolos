@@ -83,17 +83,18 @@ final class PanelAnimator {
     }
     
     func notifyDelegateOfMove(to frame: CGRect) {
-        guard let positionDelegate = self.panel.positionDelegate else { return }
+        guard let animationDelegate = self.panel.animationDelegate else { return }
         guard self.panel.isVisible else { return }
     
-        positionDelegate.panel(self.panel, willMoveTo: frame)
+        animationDelegate.panel(self.panel, willMoveTo: frame)
     }
     
     func notifyDelegateOfMove(from oldPosition: Panel.Configuration.Position, to newPosition: Panel.Configuration.Position) {
-        guard let positionDelegate = self.panel.positionDelegate else { return }
+        guard let animationDelegate = self.panel.animationDelegate else { return }
         guard self.panel.isVisible else { return }
         
-        positionDelegate.panel(self.panel, willMoveFrom: oldPosition, to: newPosition)
+        let transitionCoordinator = PanelTransitionCoordinator(animator: self)
+        animationDelegate.panel(self.panel, willMoveFrom: oldPosition, to: newPosition, with: transitionCoordinator)
     }
 }
 
