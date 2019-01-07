@@ -232,13 +232,20 @@ private extension PanelGestures {
         // TODO: Debug
         self.debugShowProjectedView(projectedOffset: projectedOffset)
         
-        if projectedOffset < -threshold {
+        // TODO: Support move to .bottom for iPad?
+        let supportedPositions = self.panel.configuration.supportedPositions
+        
+        // moving towards the leading edge of the screen
+        if projectedOffset < -threshold && supportedPositions.contains(.leadingBottom) {
             return .leadingBottom
-        } else if projectedOffset > threshold {
-            return .trailingBottom
-        } else {
-            return self.panel.configuration.position // Original position
         }
+        
+        // moving towards the trailing edge of the screen
+        if projectedOffset > threshold && supportedPositions.contains(.trailingBottom) {
+            return .trailingBottom
+        }
+        
+        return self.panel.configuration.position // Original position
     }
     
     func handleHorizontalPanCancelled(_ pan: PanGestureRecognizer) {

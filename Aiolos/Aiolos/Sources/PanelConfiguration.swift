@@ -74,6 +74,7 @@ public extension Panel {
 
         public var position: Position
         public var positionLogic: [Edge: PositionLogic]
+        public var supportedPositions: Set<Position>
         public var margins: NSDirectionalEdgeInsets
         public var mode: Mode
         public var supportedModes: Set<Mode>
@@ -99,6 +100,7 @@ public extension Panel.Configuration {
 
         return Panel.Configuration(position: .bottom,
                                    positionLogic: PositionLogic.respectAllSafeAreas,
+                                   supportedPositions: [.bottom, .leadingBottom, .trailingBottom],
                                    margins: NSDirectionalEdgeInsets(top: 10.0, leading: 10.0, bottom: 0.0, trailing: 10.0),
                                    mode: .compact,
                                    supportedModes: [.compact, .expanded, .fullHeight],
@@ -131,6 +133,26 @@ extension Panel.Configuration {
                     validated.mode = fallbackMode
                 } else {
                     validated.mode = validated.supportedModes.first!
+                }
+            }
+        }
+        
+        if validated.supportedPositions.isEmpty {
+            // can't have an empty `supportedPositions` array
+            validated.supportedPositions.insert(validated.position)
+        } else {
+            // position must be included in `supportedPositions`
+            if validated.supportedPositions.contains(validated.position) == false {
+                let fallbackPositions: [Position: Position] = [
+                    .leadingBottom: .bottom,
+                    .trailingBottom: .bottom,
+                    .bottom: .leadingBottom,
+                ]
+                
+                if let fallbackPosition = fallbackPositions[validated.position], validated.supportedPositions.contains(fallbackPosition) {
+                    validated.position = fallbackPosition
+                } else {
+                    validated.position = validated.supportedPositions.first!
                 }
             }
         }
