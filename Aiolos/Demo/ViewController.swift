@@ -138,9 +138,11 @@ private extension ViewController {
         panelController.configuration.appearance.separatorColor = .white
 
         if self.traitCollection.userInterfaceIdiom == .pad {
+            panelController.configuration.supportedPositions = [.leadingBottom, .trailingBottom]
             panelController.configuration.appearance.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner, .layerMinXMaxYCorner, .layerMaxXMaxYCorner]
         } else {
             panelController.configuration.supportedModes = [.minimal, .compact, .expanded, .fullHeight]
+            panelController.configuration.supportedPositions = [.bottom]
             panelController.configuration.appearance.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
         }
 
