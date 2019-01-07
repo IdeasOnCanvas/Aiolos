@@ -116,6 +116,19 @@ extension ViewController: PanelAnimationDelegate {
     }
 }
 
+// MARK: - PanelPositionDelegate
+
+extension ViewController: PanelPositionDelegate {
+    
+    func panel(_ panel: Panel, willMoveTo frame: CGRect) {
+        print("Panel will move to frame \(frame)")
+    }
+    
+    func panel(_ panel: Panel, willMoveFrom oldPosition: Panel.Configuration.Position, to newPosition: Panel.Configuration.Position) {
+        print("Panel will transition from \(oldPosition) to \(newPosition)")
+    }
+}
+
 // MARK: - Private
 
 private extension ViewController {
@@ -132,6 +145,7 @@ private extension ViewController {
 
         panelController.sizeDelegate = self
         panelController.animationDelegate = self
+        panelController.positionDelegate = self
         panelController.contentViewController = contentNavigationController
         panelController.configuration.position = self.panelPosition(for: self.traitCollection)
         panelController.configuration.margins = self.panelMargins(for: self.traitCollection)
