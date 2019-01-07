@@ -171,17 +171,14 @@ private extension PanelGestures {
     }
     
     func handleHorizontalPanChanged(_ pan: PanGestureRecognizer) {
-        
         guard let superview = self.panel.view.superview else { return }
         
-        let translation = pan.translation(in: superview)
-        
         func dragOffset(for translation: CGPoint) -> CGFloat {
-            // TODO: Avoid the panel being dragged over the edge of the screen
-            // TODO: Real implementation
+            // TODO: Avoid the panel being dragged over the edge of the screen (if not allowed)
             return translation.x
         }
 
+        let translation = pan.translation(in: superview)
         let xOffset = dragOffset(for: translation)
         guard xOffset != 0.0 else { return }
         
@@ -235,6 +232,7 @@ private extension PanelGestures {
         // TODO: Support move to .bottom for iPad?
         let supportedPositions = self.panel.configuration.supportedPositions
         
+        // FIXME: Support right-to-left languages (leading and trailing is swapped)
         // moving towards the leading edge of the screen
         if projectedOffset < -threshold && supportedPositions.contains(.leadingBottom) {
             return .leadingBottom
