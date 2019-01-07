@@ -81,6 +81,20 @@ final class PanelAnimator {
             contentViewController.panel(self.panel, willTransitionFrom: oldMode, to: newMode, with: transitionCoordinator)
         }
     }
+    
+    func notifyDelegateOfMove(to frame: CGRect) {
+        guard let positionDelegate = self.panel.positionDelegate else { return }
+        guard self.panel.isVisible else { return }
+    
+        positionDelegate.panel(self.panel, willMoveTo: frame)
+    }
+    
+    func notifyDelegateOfMove(from oldPosition: Panel.Configuration.Position, to newPosition: Panel.Configuration.Position) {
+        guard let positionDelegate = self.panel.positionDelegate else { return }
+        guard self.panel.isVisible else { return }
+        
+        positionDelegate.panel(self.panel, willMoveFrom: oldPosition, to: newPosition)
+    }
 }
 
 // MARK: - Transitions

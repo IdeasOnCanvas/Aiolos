@@ -26,12 +26,15 @@ public protocol PanelAnimationDelegate: AnyObject {
     func panel(_ panel: Panel, willTransitionFrom oldMode: Panel.Configuration.Mode?, to newMode: Panel.Configuration.Mode, with coordinator: PanelTransitionCoordinator)
 }
 
-// TODO: PanelPositionDelegate
-
 public protocol PanelPositionDelegate: AnyObject {
+
+    // TODO: Let the delegate to decide what to do when panel is dragged to a certain offset (either swift side or hide)
+    
+    /// Tells the delegate that the `panel` is moving to a specific frame
+    func panel(_ panel: Panel, willMoveTo frame: CGRect)
     
     /// Tells the delegate that the `panel` is moving to a specific position
-    func panel(_ panel: Panel, willMoveTo position: Panel.Configuration.Position)
+    func panel(_ panel: Panel, willMoveFrom oldPosition: Panel.Configuration.Position, to newPosition: Panel.Configuration.Position)
 }
 
 public protocol PanelAccessibilityDelegate: AnyObject {
