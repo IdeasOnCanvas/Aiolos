@@ -17,11 +17,6 @@ public protocol PanelSizeDelegate: AnyObject {
     func panel(_ panel: Panel, sizeForMode mode: Panel.Configuration.Mode) -> CGSize
 }
 
-public protocol PanelPositionDelegate: AnyObject {
-    
-    // TODO: Let the delegate to decide what to do when panel is dragged to a certain offset (either swift side or hide)
-}
-
 public protocol PanelAnimationDelegate: AnyObject {
 
     /// Tells the delegate that the `panel` is transitioning to a specific size

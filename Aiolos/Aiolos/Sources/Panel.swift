@@ -34,7 +34,6 @@ public final class Panel: UIViewController {
     @objc public var isPanning: Bool { return self.gestures.isPanning }
     public weak var sizeDelegate: PanelSizeDelegate?
     public weak var animationDelegate: PanelAnimationDelegate?
-    public weak var positionDelegate: PanelPositionDelegate?
     public weak var accessibilityDelegate: PanelAccessibilityDelegate? {
         didSet {
             guard self.accessibilityDelegate !== oldValue else { return }

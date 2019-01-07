@@ -96,12 +96,6 @@ extension ViewController: PanelSizeDelegate {
     }
 }
 
-// MARK: - PanelPositionDelegate
-
-extension ViewController: PanelPositionDelegate {
-    
-}
-
 // MARK: - PanelAnimationDelegate
 
 extension ViewController: PanelAnimationDelegate {
@@ -164,7 +158,6 @@ private extension ViewController {
 
         panelController.sizeDelegate = self
         panelController.animationDelegate = self
-        panelController.positionDelegate = self
         panelController.contentViewController = contentNavigationController
         panelController.configuration.position = self.panelPosition(for: self.traitCollection)
         panelController.configuration.margins = self.panelMargins(for: self.traitCollection)
