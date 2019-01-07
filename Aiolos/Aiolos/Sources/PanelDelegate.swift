@@ -30,6 +30,8 @@ public protocol PanelPositionDelegate: AnyObject {
 
     // TODO: Let the delegate to decide what to do when panel is dragged to a certain offset (either swift side or hide)
     
+    // TODO: Provide `PanelTransitionCoordinator` as a param in `panel(:willMoveFrom:to)` method?
+    
     /// Tells the delegate that the `panel` is moving to a specific frame
     func panel(_ panel: Panel, willMoveTo frame: CGRect)
     
