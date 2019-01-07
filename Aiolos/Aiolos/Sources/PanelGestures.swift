@@ -14,24 +14,37 @@ final class PanelGestures: NSObject {
 
     private unowned let panel: Panel
     private var originalConfiguration: PanelGestures.Configuration?
-    private lazy var pan: PanGestureRecognizer = self.makeVerticalPanGestureRecognizer()
+    
+    private lazy var verticalPan: PanGestureRecognizer = self.makeVerticalPanGestureRecognizer()
     private lazy var horizontalPan: PanGestureRecognizer = self.makeHorizontalPanGestureRecognizer()
     
     // TODO: Delete once the implementation is finished
     private weak var middleLine: UIView?
     
-    private var isEnabled: Bool {
-        // TODO: horizontalPan
-        get { return self.pan.isEnabled }
-        set { self.pan.isEnabled = newValue }
+    private var isVerticalPanEnabled: Bool {
+        get { return self.verticalPan.isEnabled }
+        set { self.verticalPan.isEnabled = newValue }
+    }
+    
+    private var isHorizontalPanEnabled: Bool {
+        get { return self.horizontalPan.isEnabled }
+        set { self.horizontalPan.isEnabled = newValue }
     }
 
+    private var isPanningVertically: Bool {
+        let states: Set<UIGestureRecognizer.State> = [.began, .changed]
+        return states.contains(self.verticalPan.state)
+    }
+    
+    private var isPanningHorizontally: Bool {
+        let states: Set<UIGestureRecognizer.State> = [.began, .changed]
+        return states.contains(self.horizontalPan.state)
+    }
+    
     // MARK: - Properties
 
     var isPanning: Bool {
-        // TODO: horizontalPan
-        let states: Set<UIGestureRecognizer.State> = [.began, .changed]
-        return states.contains(self.pan.state)
+        return isPanningHorizontally || isPanningVertically
     }
 
     // MARK: - Lifecycle
@@ -43,20 +56,20 @@ final class PanelGestures: NSObject {
     // MARK: - PanelGestures
 
     func install() {
-        self.panel.view.addGestureRecognizer(self.pan)
+        self.panel.view.addGestureRecognizer(self.verticalPan)
         // Limit the horizontal gesture to only trigger, when it is started on top of the resize handle
         self.panel.resizeHandle.addGestureRecognizer(self.horizontalPan)
     }
 
     func configure(with configuration: Panel.Configuration) {
         self.cancel()
-        // TODO: horizontalPan
-        self.isEnabled = configuration.gestureResizingMode != .disabled
+        self.isVerticalPanEnabled = configuration.gestureResizingMode != .disabled
+        self.isHorizontalPanEnabled = configuration.gesturePositioningMode != .disabled
     }
 
     func cancel() {
-        // TODO: horizontalPan
-        self.pan.cancel()
+        self.horizontalPan.cancel()
+        self.verticalPan.cancel()
     }
 }
 
@@ -118,9 +131,137 @@ private extension PanelGestures {
         return pan
     }
 
+    func cancelVerticalPan() {
+        self.verticalPan.cancel()
+    }
+    
+    func cancelHorizontalPan() {
+        self.horizontalPan.cancel()
+    }
+    
     var currentPanelHeight: CGFloat {
         return self.panel.constraints.heightConstraint!.constant
     }
+    
+    // MARK: - Horizontal pan
+    
+    @objc
+    func handleHorizontalPan(_ pan: PanGestureRecognizer) {
+        switch pan.state {
+        case .began:
+            self.handleHorizontalPanStarted(pan)
+        case .changed:
+            self.handleHorizontalPanChanged(pan)
+        case .ended:
+            self.handleHorizontalPanEnded(pan)
+        case .cancelled:
+            self.handleHorizontalPanCancelled(pan)
+        default:
+            break
+        }
+    }
+    
+    func handleHorizontalPanStarted(_ pan: PanGestureRecognizer) {
+        self.updateResizeHandle()
+        
+        // TODO: Debug
+        guard let superview = self.panel.view.superview else { return }
+        let midScreen = superview.bounds.midX
+        self.debugShowMiddleLine(at: midScreen)
+    }
+    
+    func handleHorizontalPanChanged(_ pan: PanGestureRecognizer) {
+        
+        guard let superview = self.panel.view.superview else { return }
+        
+        let translation = pan.translation(in: superview)
+        
+        func dragOffset(for translation: CGPoint) -> CGFloat {
+            // TODO: Avoid the panel being dragged over the edge of the screen
+            // TODO: Real implementation
+            return translation.x
+        }
+
+        let xOffset = dragOffset(for: translation)
+        guard xOffset != 0.0 else { return }
+        
+        self.panel.animator.performWithoutAnimation { self.panel.view.transform = CGAffineTransform(translationX: xOffset, y: 0) }
+        self.panel.animator.notifyDelegateOfMove(to: self.panel.view.frame)
+        
+        // TODO: Debug
+        let midScreen = superview.bounds.midX
+        /// Calculate how large xOffset must be to reach the middle of the screen from the closer edge
+        /// - NOTE: The view is being transformed, thus the frame changes while dragging, hence the correction
+        let originalFrame = self.panel.view.frame.applying(self.panel.view.transform.inverted())
+        let threshold = min(abs(midScreen - originalFrame.maxX), abs(midScreen - originalFrame.minX))
+        debugUpdateMiddleLine(withOffset: xOffset, threshold: threshold)
+    }
+    
+    func handleHorizontalPanEnded(_ pan: PanGestureRecognizer) {
+        guard let parentView = self.panel.parent?.view else { return }
+        
+        let originalPosition = self.panel.configuration.position
+        let targetPosition = self.targetPosition(for: pan, parentView: parentView)
+        let projectedOffset = self.projectedOffset(for: pan)
+        
+        self.panel.animator.notifyDelegateOfMove(from: originalPosition, to: targetPosition)
+        self.animate(to: targetPosition, projectedOffset: projectedOffset)
+        self.cleanUpAfterHorizontalPan(pan)
+    }
+    
+    func projectedOffset(for pan: PanGestureRecognizer) -> CGFloat {
+        let velocity = pan.velocity(in: self.panel.view)
+        let translation = pan.translation(in: self.panel.view)
+        
+        return project(velocity.x, onto: translation.x)
+    }
+    
+    func targetPosition(for pan: PanGestureRecognizer, parentView: UIView) -> Panel.Configuration.Position {
+        
+        // When an edge of the panel is over the middle of the screen -> activate the move to the other side.
+        // Velocity is taken into account to calculate projection -> allow flicking the panel.
+        // FIXME: Better animation of the momevent to the target position (same as the Slide Over mode on iPad)
+        
+        let projectedOffset = self.projectedOffset(for: pan)
+        let originalFrame = self.panel.view.frame.applying(self.panel.view.transform.inverted())
+        let midScreen = parentView.bounds.midX
+        /// Calculate how large xOffset must be to reach the middle of the screen from the closer edge
+        /// - NOTE: The view is being transformed, thus the frame changes while dragging, hence the correction
+        let threshold = min(abs(midScreen - originalFrame.maxX), abs(midScreen - originalFrame.minX))
+        
+        // TODO: Debug
+        self.debugShowProjectedView(projectedOffset: projectedOffset)
+        
+        if projectedOffset < -threshold {
+            return .leadingBottom
+        } else if projectedOffset > threshold {
+            return .trailingBottom
+        } else {
+            return self.panel.configuration.position // Original position
+        }
+    }
+    
+    func handleHorizontalPanCancelled(_ pan: PanGestureRecognizer) {
+        
+        self.panel.animator.animateIfNeeded {
+            self.panel.view.transform = .identity
+        }
+        
+        cleanUpAfterHorizontalPan(pan)
+    }
+    
+    func cleanUpAfterHorizontalPan(_ pan: PanGestureRecognizer) {
+        self.updateResizeHandle()
+        
+        // TODO: Debug
+        middleLine?.removeFromSuperview()
+    }
+    
+    func updateResizeHandle() {
+        self.panel.resizeHandle.isResizing = self.isPanning || self.isPanningHorizontally
+    }
+    
+    // MARK: - Vertical pan
 
     @objc
     func handlePan(_ pan: PanGestureRecognizer) {
@@ -138,77 +279,6 @@ private extension PanelGestures {
         }
     }
     
-    @objc
-    func handleHorizontalPan(_ pan: PanGestureRecognizer) {
-        // TODO: Inform the delegate when moving to the new position
-        
-        let translation = pan.translation(in: self.panel.view.superview!)
-        let xOffset = translation.x
-        let midScreen = self.panel.view.superview!.bounds.midX
-        
-        /// Calculate how large xOffset must be to reach the middle of the screen from the closer edge
-        /// - NOTE: The view is being transformed, thus the frame changes while dragging, hence the correction with `xOffset`
-        let threshold = min(abs(midScreen - (self.panel.view.frame.maxX - xOffset)), abs(midScreen - (self.panel.view.frame.minX - xOffset)))
-        
-        switch pan.state {
-        case .began:
-            debugShowMiddleLine(at: midScreen)
-            
-            // TODO: Do this in .changed (see handlePanDragStart(_:))
-            // FIXME: The other gesture recognizer handler sets the value of the `isResizing` property in `cleanUp(pan:)`
-            panel.resizeHandle.isResizing = true
-            
-        case .changed:
-            self.panel.view.transform = CGAffineTransform.init(translationX: xOffset, y: 0)
-            
-            debugUpdateMiddleLine(withOffset: xOffset, threshold: threshold)
-
-        case .ended:
-            
-            // When an edge of the panel is over the middle of the screen -> activate the move to the other side.
-            // Velocity is taken into account to calculate projection -> allow flicking the panel.
-            
-            let velocity = pan.velocity(in: self.panel.view)
-            
-            // TODO: Avoid the panel being dragged over the edge of the screen
-            // FIXME: Better animation of the momevent to the target position (same as the Slide Over mode on iPad)
-
-            let projectedOffset = project(velocity.x, onto: xOffset)
-            debugShowProjectedView(projectedOffset: projectedOffset)
-            
-            if projectedOffset < -threshold {
-                // pin the view to the leading edge
-                self.panel.animator.animateIfNeeded {
-                    self.panel.view.transform = CGAffineTransform.identity
-                    self.panel.configuration.position = .leadingBottom
-                }
-                
-            } else if projectedOffset > threshold {
-                self.panel.animator.animateIfNeeded {
-                    self.panel.view.transform = CGAffineTransform.identity
-                    self.panel.configuration.position = .trailingBottom
-                }
-                
-            } else {
-                // reset transform
-                self.panel.animator.animateIfNeeded {
-                    self.panel.view.transform = CGAffineTransform.identity
-                }
-            }
-            
-            middleLine?.removeFromSuperview()
-            
-            panel.resizeHandle.isResizing = false
-            
-            break
-        case .cancelled:
-            // TODO: Cleanup
-            break
-        default:
-            break
-        }
-    }
-
     func handlePanStarted(_ pan: PanGestureRecognizer) {
         let configuration = PanelGestures.Configuration(mode: self.panel.configuration.mode,
                                                         animateChanges: self.panel.animator.animateChanges)
@@ -231,14 +301,14 @@ private extension PanelGestures {
         }
 
         pan.cancelsTouchesInView = true
-        self.panel.resizeHandle.isResizing = true
+        self.updateResizeHandle()
 
         let velocity = pan.velocity(in: self.panel.view)
 
         if case .onVerticallyScrollableArea(let scrollView) = pan.startMode {
             if velocity.y < 0.0 {
                 // if the gesture scrolls the content, cancel the resizing gesture itself
-                self.cancel()
+                self.cancelVerticalPan()
                 return false
             } else if velocity.y > 0.0 {
                 // if the gesture would shrink the panel, cancel all gestures on the competing scrollView
@@ -379,7 +449,7 @@ private extension PanelGestures {
 
         guard let originalConfiguration = self.originalConfiguration else { return }
 
-        self.panel.resizeHandle.isResizing = false
+        self.updateResizeHandle()
         self.panel.animator.animateChanges = originalConfiguration.animateChanges
         self.originalConfiguration = nil
     }
@@ -391,7 +461,15 @@ private extension PanelGestures {
             return self.panel.size(for: mode).height
         }
     }
-
+    
+    func animate(to targetPosition: Panel.Configuration.Position, projectedOffset: CGFloat) {
+        // TODO: Take projected offset into account and "overshoot" the animation
+        self.panel.animator.animateIfNeeded {
+            self.panel.view.transform = .identity
+            self.panel.configuration.position = targetPosition
+        }
+    }
+    
     func initialVelocity(for pan: PanGestureRecognizer, targetMode: Panel.Configuration.Mode) -> CGFloat {
         let velocity = pan.velocity(in: self.panel.view).y
         let currentHeight = self.currentPanelHeight
@@ -504,9 +582,8 @@ private extension UIGestureRecognizer {
 }
 
 // Inspired by: https://medium.com/ios-os-x-development/gestures-in-fluid-interfaces-on-intent-and-projection-36d158db7395
-public func project(_ velocity: CGFloat, onto position: CGFloat, decelerationRate: UIScrollView.DecelerationRate = .normal) -> CGFloat {
+private func project(_ velocity: CGFloat, onto position: CGFloat, decelerationRate: UIScrollView.DecelerationRate = .normal) -> CGFloat {
     let factor = -1 / (1000 * log(decelerationRate.rawValue))
-    
     return position + factor * velocity
 }
 
