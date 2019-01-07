@@ -123,6 +123,16 @@ extension ViewController: PanelAnimationDelegate {
     
     func panel(_ panel: Panel, willMoveTo frame: CGRect) {
         print("Panel will move to frame \(frame)")
+        
+        // FIXME: Removing the panel when the gesture hasn't yet finished does not make nice UX
+        let rightEdgeThreshold = self.view.bounds.maxX + frame.width/3
+        let leftEdgeThreshold = self.view.bounds.minX - frame.width/3
+        
+        if frame.maxX > rightEdgeThreshold {
+            panel.removeFromParent(transition: .slide(direction: .horizontal))
+        } else if frame.minX < leftEdgeThreshold {
+            panel.removeFromParent(transition: .slide(direction: .horizontal))
+        }
     }
     
     func panel(_ panel: Panel, willMoveFrom oldPosition: Panel.Configuration.Position, to newPosition: Panel.Configuration.Position, with coordinator: PanelTransitionCoordinator) {
@@ -194,9 +204,9 @@ private extension ViewController {
     @objc
     func handleToggleVisibilityPress() {
         if self.panelController.isVisible {
-            self.panelController.removeFromParent(transition: .slide(direction: .vertical))
+            self.panelController.removeFromParent(transition: .slide(direction: .horizontal))
         } else {
-            self.panelController.add(to: self, transition: .slide(direction: .vertical))
+            self.panelController.add(to: self, transition: .slide(direction: .horizontal))
         }
     }
 
