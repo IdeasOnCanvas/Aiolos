@@ -219,7 +219,10 @@ private extension PanelGestures {
         // Velocity is taken into account to calculate projection -> allow flicking the panel.
         // FIXME: Better animation of the momevent to the target position (same as the Slide Over mode on iPad)
         
+        let supportedPositions = self.panel.configuration.supportedPositions
+        let originalPosition = self.panel.configuration.position
         let projectedOffset = self.projectedOffset(for: pan)
+        let delta = abs(projectedOffset)
         let originalFrame = self.panel.view.frame.applying(self.panel.view.transform.inverted())
         let midScreen = parentView.bounds.midX
         /// Calculate how large xOffset must be to reach the middle of the screen from the closer edge
@@ -230,20 +233,22 @@ private extension PanelGestures {
         self.debugShowProjectedView(projectedOffset: projectedOffset)
         
         // TODO: Support move to .bottom for iPad?
-        let supportedPositions = self.panel.configuration.supportedPositions
+        let isRTL = UIView.userInterfaceLayoutDirection(for: parentView.semanticContentAttribute) == .rightToLeft
+        let normalizedProjectedOffset = (isRTL ? -1 : 1) * projectedOffset
+        let isMovingTowardsLeadingEdge = normalizedProjectedOffset < 0
+        let isMovingTowardsTrailingEdge = normalizedProjectedOffset > 0
         
-        // FIXME: Support right-to-left languages (leading and trailing is swapped)
-        // moving towards the leading edge of the screen
-        if projectedOffset < -threshold && supportedPositions.contains(.leadingBottom) {
+        guard delta > threshold else { return originalPosition }
+        
+        if isMovingTowardsLeadingEdge && supportedPositions.contains(.leadingBottom) {
             return .leadingBottom
         }
         
-        // moving towards the trailing edge of the screen
-        if projectedOffset > threshold && supportedPositions.contains(.trailingBottom) {
+        if isMovingTowardsTrailingEdge && supportedPositions.contains(.trailingBottom) {
             return .trailingBottom
         }
         
-        return self.panel.configuration.position // Original position
+        return originalPosition
     }
     
     func handleHorizontalPanCancelled(_ pan: PanGestureRecognizer) {
