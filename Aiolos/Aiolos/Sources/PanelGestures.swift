@@ -550,7 +550,7 @@ private extension PanelGestures {
         let pan = PanGestureRecognizer(target: self.horizontalHandler, action: #selector(HorizontalHandler.handlePan))
         pan.panDirection = .horizontal
         pan.delegate = self
-        pan.cancelsTouchesInView = false
+        pan.cancelsTouchesInView = true
         return pan
     }
 
