@@ -212,7 +212,6 @@ private extension PanelGestures {
         }
         
         func handlePanCancelled(_ pan: PanGestureRecognizer) {
-            
             self.panel.animator.animateIfNeeded {
                 self.panel.view.transform = .identity
             }
