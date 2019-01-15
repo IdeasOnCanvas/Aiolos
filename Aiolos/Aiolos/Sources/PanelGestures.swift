@@ -95,7 +95,7 @@ extension PanelGestures: UIGestureRecognizerDelegate {
 
 private extension PanelGestures {
 
-    final class HorizontalHandler: NSObject {
+    final class HorizontalHandler {
         
         private unowned let gestures: PanelGestures
         private var panel: Panel { return gestures.panel }
@@ -168,7 +168,7 @@ private extension PanelGestures {
         }
     }
     
-    final class VerticalHandler: NSObject {
+    final class VerticalHandler {
         
         private unowned let gestures: PanelGestures
         private var panel: Panel { return gestures.panel }
