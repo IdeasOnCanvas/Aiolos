@@ -161,7 +161,7 @@ private extension PanelGestures {
                 self.panel.view.transform = .identity
             }
             
-            cleanUpAfterHorizontalPan(pan)
+            self.cleanUpAfterHorizontalPan(pan)
         }
         
         func cleanUpAfterHorizontalPan(_ pan: PanGestureRecognizer) {
