@@ -488,10 +488,6 @@ private extension PanelGestures {
         self.verticalPan.cancel()
     }
     
-    func cancelHorizontalPan() {
-        self.horizontalPan.cancel()
-    }
-    
     func updateResizeHandle() {
         self.panel.resizeHandle.isResizing = self.isPanning
     }
