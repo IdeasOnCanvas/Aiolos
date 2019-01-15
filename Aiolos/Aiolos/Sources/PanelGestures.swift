@@ -99,7 +99,6 @@ private extension PanelGestures {
         
         private unowned let gestures: PanelGestures
         private var panel: Panel { return gestures.panel }
-        private weak var middleLine: UIView? // TODO: Delete once the implementation is finished
         
         init(gestures: PanelGestures) {
             self.gestures = gestures
@@ -123,11 +122,6 @@ private extension PanelGestures {
         
         func handlePanStarted(_ pan: PanGestureRecognizer) {
             self.gestures.updateResizeHandle()
-            
-            // TODO: Debug
-            guard let superview = self.panel.view.superview else { return }
-            let midScreen = superview.bounds.midX
-            self.debugShowMiddleLine(at: midScreen)
         }
         
         func handlePanChanged(_ pan: PanGestureRecognizer) {
@@ -144,14 +138,6 @@ private extension PanelGestures {
             
             self.panel.animator.performWithoutAnimation { self.panel.view.transform = CGAffineTransform(translationX: xOffset, y: 0) }
             self.panel.animator.notifyDelegateOfWillMove(to: self.panel.view.frame)
-            
-            // TODO: Debug
-            let midScreen = superview.bounds.midX
-            /// Calculate how large xOffset must be to reach the middle of the screen from the closer edge
-            /// - NOTE: The view is being transformed, thus the frame changes while dragging, hence the correction
-            let originalFrame = self.panel.view.frame.applying(self.panel.view.transform.inverted())
-            let threshold = min(abs(midScreen - originalFrame.maxX), abs(midScreen - originalFrame.minX))
-            self.debugUpdateMiddleLine(withOffset: xOffset, threshold: threshold)
         }
         
         func handlePanEnded(_ pan: PanGestureRecognizer) {
@@ -177,9 +163,6 @@ private extension PanelGestures {
         
         func cleanUpAfterHorizontalPan(_ pan: PanGestureRecognizer) {
             self.gestures.updateResizeHandle()
-            
-            // TODO: Debug
-            self.middleLine?.removeFromSuperview()
         }
     }
     
@@ -558,58 +541,4 @@ private extension UIGestureRecognizer {
 private func project(_ velocity: CGFloat, onto position: CGFloat, decelerationRate: UIScrollView.DecelerationRate = .normal) -> CGFloat {
     let factor = -1 / (1000 * log(decelerationRate.rawValue))
     return position + factor * velocity
-}
-
-// TODO: Delete the debug code below once the implementation is finished
-
-#if DEBUG
-private let isDebug = true
-#else
-private let isDebug = false
-#endif
-
-private extension PanelGestures.HorizontalHandler {
-    
-    func debugShowMiddleLine(at xPosition: CGFloat) {
-        guard isDebug else { return }
-        
-        if self.middleLine == nil {
-            let verticalLine = UIView.init(frame: CGRect(x: xPosition, y: 0, width: 1, height: self.panel.parent!.view.bounds.height))
-            verticalLine.backgroundColor = .red
-            self.panel.parent!.view.addSubview(verticalLine)
-            self.panel.parent!.view.bringSubviewToFront(verticalLine)
-            self.middleLine = verticalLine
-        }
-    }
-    
-    func debugUpdateMiddleLine(withOffset xOffset: CGFloat, threshold: CGFloat) {
-        if xOffset < -threshold {
-            middleLine?.backgroundColor = .green
-        } else if xOffset > threshold {
-            middleLine?.backgroundColor = .green
-        } else {
-            middleLine?.backgroundColor = .red
-        }
-    }
-    
-    func debugShowProjectedView(projectedOffset: CGFloat) {
-        guard isDebug else { return }
-        
-        var projectedFrame = self.panel.view.frame
-        projectedFrame.origin.x += projectedOffset
-        let projectedPanel = UIView(frame: projectedFrame)
-        projectedPanel.backgroundColor = .clear
-        projectedPanel.layer.borderColor = UIColor.gray.cgColor
-        projectedPanel.layer.borderWidth = 1.0
-        self.panel.view.superview!.addSubview(projectedPanel)
-        self.panel.view.superview!.bringSubviewToFront(projectedPanel)
-        
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-            UIView.animate(
-                withDuration: 0.5,
-                animations: { projectedPanel.alpha = 0.0 },
-                completion: { _ in projectedPanel.removeFromSuperview() }
-            )
-        }
-    }
 }
