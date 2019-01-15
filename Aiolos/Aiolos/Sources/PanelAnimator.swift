@@ -89,13 +89,6 @@ final class PanelAnimator {
         return animationDelegate.panel(self.panel, shouldMoveTo: frame)
     }
     
-    func notifyDelegateOfWillMove(to frame: CGRect) {
-        guard let animationDelegate = self.panel.animationDelegate else { return }
-        guard self.panel.isVisible else { return }
-    
-        animationDelegate.panel(self.panel, willMoveTo: frame)
-    }
-    
     func notifyDelegateOfDidMove(from origin: CGRect, to destination: CGRect, pan: PanGestureRecognizer) {
         guard let animationDelegate = self.panel.animationDelegate else { return }
         guard self.panel.isVisible else { return }

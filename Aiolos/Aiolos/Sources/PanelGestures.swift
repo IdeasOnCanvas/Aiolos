@@ -140,7 +140,6 @@ private extension PanelGestures {
             guard xOffset != 0.0 else { return }
             
             self.panel.animator.performWithoutAnimation { self.panel.view.transform = CGAffineTransform(translationX: xOffset, y: 0) }
-            self.panel.animator.notifyDelegateOfWillMove(to: self.panel.view.frame)
         }
         
         func handlePanEnded(_ pan: PanGestureRecognizer) {
