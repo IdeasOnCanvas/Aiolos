@@ -115,6 +115,10 @@ extension ViewController: PanelAnimationDelegate {
         })
     }
     
+    func panel(_ panel: Panel, shouldMoveTo frame: CGRect) -> Bool {
+        return true
+    }
+    
     func panel(_ panel: Panel, willMoveTo frame: CGRect) {
         print("Panel will move to frame \(frame)")
     }

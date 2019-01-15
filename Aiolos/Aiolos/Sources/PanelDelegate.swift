@@ -25,6 +25,9 @@ public protocol PanelAnimationDelegate: AnyObject {
     /// Tells the delegate that the `panel` is transitioning to a specific mode
     func panel(_ panel: Panel, willTransitionFrom oldMode: Panel.Configuration.Mode?, to newMode: Panel.Configuration.Mode, with coordinator: PanelTransitionCoordinator)
     
+    /// Asks the delegate if the `panel` can move to a specific frame
+    func panel(_ panel: Panel, shouldMoveTo frame: CGRect) -> Bool
+    
     /// Tells the delegate that the `panel` is moving to a specific frame
     func panel(_ panel: Panel, willMoveTo frame: CGRect)
     

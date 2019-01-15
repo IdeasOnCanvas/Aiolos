@@ -127,13 +127,16 @@ private extension PanelGestures {
         func handlePanChanged(_ pan: PanGestureRecognizer) {
             guard let superview = self.panel.view.superview else { return }
             
-            func dragOffset(for translation: CGPoint) -> CGFloat {
-                // TODO: Avoid the panel being dragged over the edge of the screen (if not allowed - ask the delegate)
-                return translation.x
+            func dragOffset(for translation: CGPoint, moveAllowed: Bool) -> CGFloat {
+                let dragCoefficient: CGFloat = 1/5 // TODO: revise
+                return moveAllowed ? translation.x : translation.x * dragCoefficient
             }
             
             let translation = pan.translation(in: superview)
-            let xOffset = dragOffset(for: translation)
+            let transformation = CGAffineTransform(translationX: translation.x, y: 0)
+            let targetFrame = self.panel.view.frame.applying(transformation)
+            let moveAllowed = self.panel.animator.askDelegateOfMove(to: targetFrame)
+            let xOffset = dragOffset(for: translation, moveAllowed: moveAllowed)
             guard xOffset != 0.0 else { return }
             
             self.panel.animator.performWithoutAnimation { self.panel.view.transform = CGAffineTransform(translationX: xOffset, y: 0) }
