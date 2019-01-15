@@ -100,7 +100,7 @@ final class PanelAnimator {
         guard let animationDelegate = self.panel.animationDelegate else { return }
         guard self.panel.isVisible else { return }
         
-        let transitionContext = PanelTransitionCoordinator.HorizontalTransitionContext.init(panel: self.panel, pan: pan, originalFrame: origin)
+        let transitionContext = PanelTransitionCoordinator.HorizontalTransitionContext(panel: self.panel, pan: pan, originalFrame: origin)
         let transitionCoordinator = PanelTransitionCoordinator(animator: self, context: transitionContext)
         animationDelegate.panel(self.panel, didMoveFrom: origin, to: destination, with: transitionCoordinator)
     }
