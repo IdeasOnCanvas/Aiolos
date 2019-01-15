@@ -117,15 +117,28 @@ extension ViewController: PanelAnimationDelegate {
     
     func panel(_ panel: Panel, willMoveTo frame: CGRect) {
         print("Panel will move to frame \(frame)")
+    }
+    
+    func panel(_ panel: Panel, didMoveFrom origin: CGRect, to destination: CGRect, with coordinator: PanelTransitionCoordinator) {
+        guard let context = coordinator.context else { return }
+
+        print("Panel did move to frame \(destination)")
         
-        // FIXME: Removing the panel when the gesture hasn't yet finished does not make nice UX
-        let rightEdgeThreshold = self.view.bounds.maxX + frame.width/3
-        let leftEdgeThreshold = self.view.bounds.minX - frame.width/3
-        
-        if frame.maxX > rightEdgeThreshold {
-            panel.removeFromParent(transition: .slide(direction: .horizontal))
-        } else if frame.minX < leftEdgeThreshold {
-            panel.removeFromParent(transition: .slide(direction: .horizontal))
+        let panelShouldHide = context.isMovingPastLeadingEdge(in: self.view) || context.isMovingPastTrailingEdge(in: self.view)
+        if panelShouldHide {
+            coordinator.animateAlongsideTransition({
+                panel.removeFromParent(transition: .slide(direction: .horizontal))
+            }, completion: { animationPosition in
+                print("Completed panel transition to hidden")
+            })
+        } else {
+            let targetPosition = context.targetPosition(in: self.view)
+            coordinator.animateAlongsideTransition({
+                print("Animating alongside of panel transition to target position: \(targetPosition)")
+                panel.configuration.position = targetPosition
+            }) { animationPosition in
+                print("Completed panel transition to hidden")
+            }
         }
     }
     

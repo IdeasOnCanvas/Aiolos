@@ -134,7 +134,7 @@ private extension PanelGestures {
             guard let superview = self.panel.view.superview else { return }
             
             func dragOffset(for translation: CGPoint) -> CGFloat {
-                // TODO: Avoid the panel being dragged over the edge of the screen (if not allowed)
+                // TODO: Avoid the panel being dragged over the edge of the screen (if not allowed - ask the delegate)
                 return translation.x
             }
             
@@ -143,7 +143,7 @@ private extension PanelGestures {
             guard xOffset != 0.0 else { return }
             
             self.panel.animator.performWithoutAnimation { self.panel.view.transform = CGAffineTransform(translationX: xOffset, y: 0) }
-            self.panel.animator.notifyDelegateOfMove(to: self.panel.view.frame)
+            self.panel.animator.notifyDelegateOfWillMove(to: self.panel.view.frame)
             
             // TODO: Debug
             let midScreen = superview.bounds.midX
@@ -155,60 +155,16 @@ private extension PanelGestures {
         }
         
         func handlePanEnded(_ pan: PanGestureRecognizer) {
-            guard let parentView = self.panel.parent?.view else { return }
-            
-            let originalPosition = self.panel.configuration.position
-            let targetPosition = self.targetPosition(for: pan, parentView: parentView)
-            let projectedOffset = self.projectedOffset(for: pan)
-            
-            self.panel.animator.notifyDelegateOfMove(from: originalPosition, to: targetPosition)
-            self.animate(to: targetPosition, projectedOffset: projectedOffset)
-            self.cleanUpAfterHorizontalPan(pan)
-        }
-        
-        func projectedOffset(for pan: PanGestureRecognizer) -> CGFloat {
-            let velocity = pan.velocity(in: self.panel.view)
-            let translation = pan.translation(in: self.panel.view)
-            
-            return project(velocity.x, onto: translation.x)
-        }
-        
-        func targetPosition(for pan: PanGestureRecognizer, parentView: UIView) -> Panel.Configuration.Position {
-            
-            // When an edge of the panel is over the middle of the screen -> activate the move to the other side.
-            // Velocity is taken into account to calculate projection -> allow flicking the panel.
-            // FIXME: Better animation of the momevent to the target position (same as the Slide Over mode on iPad)
-            
-            let supportedPositions = self.panel.configuration.supportedPositions
-            let originalPosition = self.panel.configuration.position
-            let projectedOffset = self.projectedOffset(for: pan)
-            let delta = abs(projectedOffset)
+            // The view is being transformed, thus the frame changes while dragging, hence the correction
             let originalFrame = self.panel.view.frame.applying(self.panel.view.transform.inverted())
-            let midScreen = parentView.bounds.midX
-            /// Calculate how large xOffset must be to reach the middle of the screen from the closer edge
-            /// - NOTE: The view is being transformed, thus the frame changes while dragging, hence the correction
-            let threshold = min(abs(midScreen - originalFrame.maxX), abs(midScreen - originalFrame.minX))
             
-            // TODO: Debug
-            self.debugShowProjectedView(projectedOffset: projectedOffset)
+            self.panel.animator.notifyDelegateOfDidMove(from: originalFrame, to: self.panel.view.frame, pan: pan)
             
-            // TODO: Support move to .bottom for iPad?
-            let isRTL = UIView.userInterfaceLayoutDirection(for: parentView.semanticContentAttribute) == .rightToLeft
-            let normalizedProjectedOffset = (isRTL ? -1 : 1) * projectedOffset
-            let isMovingTowardsLeadingEdge = normalizedProjectedOffset < 0
-            let isMovingTowardsTrailingEdge = normalizedProjectedOffset > 0
-            
-            guard delta > threshold else { return originalPosition }
-            
-            if isMovingTowardsLeadingEdge && supportedPositions.contains(.leadingBottom) {
-                return .leadingBottom
+            self.panel.animator.animateIfNeeded {
+                self.panel.view.transform = .identity
             }
             
-            if isMovingTowardsTrailingEdge && supportedPositions.contains(.trailingBottom) {
-                return .trailingBottom
-            }
-            
-            return originalPosition
+            self.cleanUpAfterHorizontalPan(pan)
         }
         
         func handlePanCancelled(_ pan: PanGestureRecognizer) {
@@ -224,14 +180,6 @@ private extension PanelGestures {
             
             // TODO: Debug
             self.middleLine?.removeFromSuperview()
-        }
-        
-        func animate(to targetPosition: Panel.Configuration.Position, projectedOffset: CGFloat) {
-            // TODO: Take projected offset into account and "overshoot" the animation
-            self.panel.animator.animateIfNeeded {
-                self.panel.view.transform = .identity
-                self.panel.configuration.position = targetPosition
-            }
         }
     }
     

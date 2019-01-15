@@ -18,11 +18,13 @@ public final class PanelTransitionCoordinator {
     // MARK: - Properties
 
     public var isAnimated: Bool { return self.animator.animateChanges }
-
+    public let context: HorizontalTransitionContext?
+    
     // MARK: - Lifecycle
 
-    init(animator: PanelAnimator) {
+    init(animator: PanelAnimator, context: HorizontalTransitionContext? = nil) {
         self.animator = animator
+        self.context = context
     }
 
     // MARK: - PanelTransitionCoordinator
@@ -38,4 +40,108 @@ extension PanelTransitionCoordinator {
         let animations: () -> Void
         let completion: ((UIViewAnimatingPosition) -> Void)?
     }
+}
+
+// MARK: - HorizontalTransitionContext
+
+public extension PanelTransitionCoordinator {
+    
+    final class HorizontalTransitionContext {
+        
+        private unowned let panel: Panel
+        private let pan: PanGestureRecognizer
+        private let originalFrame: CGRect
+        
+        // MARK: - Lifecycle
+        
+        init(panel: Panel, pan: PanGestureRecognizer, originalFrame: CGRect) {
+            self.panel = panel
+            self.pan = pan
+            self.originalFrame = originalFrame
+        }
+        
+        // MARK: - HorizontalTransitionContext
+        
+        public func projectedDelta(in view: UIView) -> CGFloat {
+            let projectedOffset = self.projectedOffset(in: view)
+            let delta = abs(projectedOffset)
+            return delta
+        }
+        
+        public func horizontalThreshold(in view: UIView) -> CGFloat {
+            let midScreen = view.bounds.minX
+            return min(abs(midScreen - self.originalFrame.maxX), abs(midScreen - self.originalFrame.minX))
+        }
+        
+        public func rightEdgeThreshold(in view: UIView) -> CGFloat {
+            return view.bounds.maxX + self.originalFrame.width/3
+        }
+        
+        public func leftEdgeThreshold(in view: UIView) -> CGFloat {
+            return view.bounds.minX - self.originalFrame.width/3
+        }
+        
+        public func projectedOffset(in view: UIView) -> CGFloat {
+            let velocity = self.pan.velocity(in: view)
+            let translation = self.pan.translation(in: view)
+            
+            return project(velocity.x, onto: translation.x)
+        }
+        
+        public func isMovingTowardsLeadingEdge(in view: UIView) -> Bool {
+            let projectedOffset = self.projectedOffset(in: view)
+            let isRTL = UIView.userInterfaceLayoutDirection(for: view.semanticContentAttribute) == .rightToLeft
+            let normalizedProjectedOffset = (isRTL ? -1 : 1) * projectedOffset
+            
+            return normalizedProjectedOffset < 0
+        }
+        
+        public func isMovingTowardsTrailingEdge(in view: UIView) -> Bool {
+            let projectedOffset = self.projectedOffset(in: view)
+            let isRTL = UIView.userInterfaceLayoutDirection(for: view.semanticContentAttribute) == .rightToLeft
+            let normalizedProjectedOffset = (isRTL ? -1 : 1) * projectedOffset
+            
+            return normalizedProjectedOffset > 0
+        }
+        
+        public func targetPosition(in view: UIView) -> Panel.Configuration.Position {
+            let supportedPositions = panel.configuration.supportedPositions
+            let originalPosition = panel.configuration.position
+            
+            if isMovingTowardsLeadingEdge(in: view) && supportedPositions.contains(.leadingBottom) {
+                return .leadingBottom
+            }
+            
+            if isMovingTowardsTrailingEdge(in: view) && supportedPositions.contains(.trailingBottom) {
+                return .trailingBottom
+            }
+            
+            return originalPosition
+        }
+        
+        public func isMovingPastLeadingEdge(in view: UIView) -> Bool {
+            guard self.panel.configuration.position == .leadingBottom else { return false }
+            return self.destinationFrame.minX < leftEdgeThreshold(in: view)
+        }
+        
+        public func isMovingPastTrailingEdge(in view: UIView) -> Bool {
+            guard self.panel.configuration.position == .trailingBottom else { return false }
+            return self.destinationFrame.maxX > rightEdgeThreshold(in: view)
+        }
+    }
+}
+
+// MARK: - Private
+
+private extension PanelTransitionCoordinator.HorizontalTransitionContext {
+    
+    var destinationFrame: CGRect {
+        return self.panel.view.frame
+    }
+}
+
+// Inspired by: https://medium.com/ios-os-x-development/gestures-in-fluid-interfaces-on-intent-and-projection-36d158db7395
+private func project(_ velocity: CGFloat, onto position: CGFloat, decelerationRate: UIScrollView.DecelerationRate = .normal) -> CGFloat {
+    let factor = -1 / (1000 * log(decelerationRate.rawValue))
+    return position + factor * velocity
 }

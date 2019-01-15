@@ -82,14 +82,23 @@ final class PanelAnimator {
         }
     }
     
-    func notifyDelegateOfMove(to frame: CGRect) {
+    func notifyDelegateOfWillMove(to frame: CGRect) {
         guard let animationDelegate = self.panel.animationDelegate else { return }
         guard self.panel.isVisible else { return }
     
         animationDelegate.panel(self.panel, willMoveTo: frame)
     }
     
-    func notifyDelegateOfMove(from oldPosition: Panel.Configuration.Position, to newPosition: Panel.Configuration.Position) {
+    func notifyDelegateOfDidMove(from origin: CGRect, to destination: CGRect, pan: PanGestureRecognizer) {
+        guard let animationDelegate = self.panel.animationDelegate else { return }
+        guard self.panel.isVisible else { return }
+        
+        let transitionContext = PanelTransitionCoordinator.HorizontalTransitionContext.init(panel: self.panel, pan: pan, originalFrame: origin)
+        let transitionCoordinator = PanelTransitionCoordinator(animator: self, context: transitionContext)
+        animationDelegate.panel(self.panel, didMoveFrom: origin, to: destination, with: transitionCoordinator)
+    }
+    
+    func notifyDelegateOfWillMove(from oldPosition: Panel.Configuration.Position, to newPosition: Panel.Configuration.Position) {
         guard let animationDelegate = self.panel.animationDelegate else { return }
         guard self.panel.isVisible else { return }
         
