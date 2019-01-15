@@ -536,9 +536,3 @@ private extension UIGestureRecognizer {
         self.isEnabled = true
     }
 }
-
-// Inspired by: https://medium.com/ios-os-x-development/gestures-in-fluid-interfaces-on-intent-and-projection-36d158db7395
-private func project(_ velocity: CGFloat, onto position: CGFloat, decelerationRate: UIScrollView.DecelerationRate = .normal) -> CGFloat {
-    let factor = -1 / (1000 * log(decelerationRate.rawValue))
-    return position + factor * velocity
-}
