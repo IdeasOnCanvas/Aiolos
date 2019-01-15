@@ -30,9 +30,6 @@ public protocol PanelAnimationDelegate: AnyObject {
     
     /// Tells the delegate that the `panel` did move to a specific frame
     func panel(_ panel: Panel, didMoveFrom origin: CGRect, to destination: CGRect, with coordinator: PanelTransitionCoordinator)
-    
-    /// Tells the delegate that the `panel` is moving to a specific position
-    func panel(_ panel: Panel, willMoveFrom oldPosition: Panel.Configuration.Position, to newPosition: Panel.Configuration.Position, with coordinator: PanelTransitionCoordinator)
 }
 
 public protocol PanelAccessibilityDelegate: AnyObject {

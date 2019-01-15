@@ -97,14 +97,6 @@ final class PanelAnimator {
         let transitionCoordinator = PanelTransitionCoordinator(animator: self, context: transitionContext)
         animationDelegate.panel(self.panel, didMoveFrom: origin, to: destination, with: transitionCoordinator)
     }
-    
-    func notifyDelegateOfWillMove(from oldPosition: Panel.Configuration.Position, to newPosition: Panel.Configuration.Position) {
-        guard let animationDelegate = self.panel.animationDelegate else { return }
-        guard self.panel.isVisible else { return }
-        
-        let transitionCoordinator = PanelTransitionCoordinator(animator: self)
-        animationDelegate.panel(self.panel, willMoveFrom: oldPosition, to: newPosition, with: transitionCoordinator)
-    }
 }
 
 // MARK: - Transitions

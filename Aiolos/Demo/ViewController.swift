@@ -141,17 +141,6 @@ extension ViewController: PanelAnimationDelegate {
             }
         }
     }
-    
-    func panel(_ panel: Panel, willMoveFrom oldPosition: Panel.Configuration.Position, to newPosition: Panel.Configuration.Position, with coordinator: PanelTransitionCoordinator) {
-        print("Panel will transition from \(oldPosition) to \(newPosition)")
-        
-        // we can animate things along the way
-        coordinator.animateAlongsideTransition({
-            print("Animating alongside of panel movement")
-        }, completion: { animationPosition in
-            print("Completed panel movement to \(newPosition)")
-        })
-    }
 }
 
 
