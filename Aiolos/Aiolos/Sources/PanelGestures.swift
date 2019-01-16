@@ -125,14 +125,14 @@ private extension PanelGestures {
         }
         
         func handlePanChanged(_ pan: PanGestureRecognizer) {
-            guard let superview = self.panel.view.superview else { return }
+            guard let parentView = self.panel.parent?.view else { return }
             
             func dragOffset(for translation: CGPoint, moveAllowed: Bool) -> CGFloat {
                 let dragCoefficient: CGFloat = 1/5 // TODO: revise
                 return moveAllowed ? translation.x : translation.x * dragCoefficient
             }
             
-            let translation = pan.translation(in: superview)
+            let translation = pan.translation(in: parentView)
             let transformation = CGAffineTransform(translationX: translation.x, y: 0)
             let targetFrame = self.panel.view.frame.applying(transformation)
             let moveAllowed = self.panel.animator.askDelegateOfMove(to: targetFrame)
@@ -143,11 +143,13 @@ private extension PanelGestures {
         }
         
         func handlePanEnded(_ pan: PanGestureRecognizer) {
+            guard let parentView = self.panel.parent?.view else { return }
+            
             // The view is being transformed, thus the frame changes while dragging, hence the correction
             let originalFrame = self.panel.view.frame.applying(self.panel.view.transform.inverted())
-            let offset = pan.translation(in: self.panel.view).x
-            let velocity = pan.velocity(in: self.panel.view).x
-            let context = PanelTransitionCoordinator.HorizontalTransitionContext(panel: self.panel, originalFrame: originalFrame, offset: offset, velocity: velocity)
+            let offset = pan.translation(in: parentView).x
+            let velocity = pan.velocity(in: parentView).x
+            let context = PanelTransitionCoordinator.HorizontalTransitionContext(panel: self.panel, parentView: parentView, originalFrame: originalFrame, offset: offset, velocity: velocity)
             self.panel.animator.notifyDelegateOfDidMove(from: originalFrame, to: self.panel.view.frame, context: context)
             
             self.panel.animator.animateIfNeeded {

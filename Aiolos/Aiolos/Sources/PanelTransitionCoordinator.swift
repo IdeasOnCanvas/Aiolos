@@ -65,14 +65,16 @@ public extension PanelTransitionCoordinator {
     final class HorizontalTransitionContext {
         
         private unowned let panel: Panel
+        private unowned let parentView: UIView
         private let originalFrame: CGRect
         private let offset: CGFloat
         private let velocity: CGFloat
         
         // MARK: - Lifecycle
         
-        init(panel: Panel, originalFrame: CGRect, offset: CGFloat, velocity: CGFloat) {
+        init(panel: Panel, parentView: UIView, originalFrame: CGRect, offset: CGFloat, velocity: CGFloat) {
             self.panel = panel
+            self.parentView = parentView
             self.originalFrame = originalFrame
             self.offset = offset
             self.velocity = velocity
@@ -83,29 +85,28 @@ public extension PanelTransitionCoordinator {
         public func targetPosition(in view: UIView) -> Panel.Configuration.Position {
             let supportedPositions = self.panel.configuration.supportedPositions
             let originalPosition = self.panel.configuration.position
-            let threshold = self.horizontalThreshold(in: view)
             
-            guard self.projectedDelta > threshold else { return originalPosition }
+            guard self.projectedDelta > self.horizontalThreshold else { return originalPosition }
             
-            if self.isMovingTowardsLeadingEdge(in: view) && supportedPositions.contains(.leadingBottom) {
+            if self.isMovingTowardsLeadingEdge && supportedPositions.contains(.leadingBottom) {
                 return .leadingBottom
             }
             
-            if self.isMovingTowardsTrailingEdge(in: view) && supportedPositions.contains(.trailingBottom) {
+            if self.isMovingTowardsTrailingEdge && supportedPositions.contains(.trailingBottom) {
                 return .trailingBottom
             }
             
             return originalPosition
         }
         
-        public func isMovingPastLeadingEdge(in view: UIView) -> Bool {
+        public var isMovingPastLeadingEdge: Bool {
             guard self.panel.configuration.position == .leadingBottom else { return false }
-            return self.destinationFrame.minX < self.leftEdgeThreshold(in: view)
+            return self.destinationFrame.minX < self.leftEdgeThreshold
         }
         
-        public func isMovingPastTrailingEdge(in view: UIView) -> Bool {
+        public var isMovingPastTrailingEdge: Bool {
             guard self.panel.configuration.position == .trailingBottom else { return false }
-            return self.destinationFrame.maxX > self.rightEdgeThreshold(in: view)
+            return self.destinationFrame.maxX > self.rightEdgeThreshold
         }
     }
 }
@@ -128,29 +129,29 @@ private extension PanelTransitionCoordinator.HorizontalTransitionContext {
         return delta
     }
     
-    func isMovingTowardsLeadingEdge(in view: UIView) -> Bool {
-        let normalizedProjectedOffset = (view.isRTL ? -1 : 1) * self.projectedOffset
+    var isMovingTowardsLeadingEdge: Bool {
+        let normalizedProjectedOffset = (self.parentView.isRTL ? -1 : 1) * self.projectedOffset
         
         return normalizedProjectedOffset < 0
     }
     
-    func isMovingTowardsTrailingEdge(in view: UIView) -> Bool {
-        let normalizedProjectedOffset = (view.isRTL ? -1 : 1) * self.projectedOffset
+    var isMovingTowardsTrailingEdge: Bool {
+        let normalizedProjectedOffset = (self.parentView.isRTL ? -1 : 1) * self.projectedOffset
         
         return normalizedProjectedOffset > 0
     }
     
-    func horizontalThreshold(in view: UIView) -> CGFloat {
-        let midScreen = view.bounds.midX
+    var horizontalThreshold: CGFloat {
+        let midScreen = self.parentView.bounds.midX
         return min(abs(midScreen - self.originalFrame.maxX), abs(midScreen - self.originalFrame.minX))
     }
     
-    func rightEdgeThreshold(in view: UIView) -> CGFloat {
-        return view.bounds.maxX + self.originalFrame.width/3
+    var rightEdgeThreshold: CGFloat {
+        return self.parentView.bounds.maxX + self.originalFrame.width/3
     }
     
-    func leftEdgeThreshold(in view: UIView) -> CGFloat {
-        return view.bounds.minX - self.originalFrame.width/3
+    var leftEdgeThreshold: CGFloat {
+        return self.parentView.bounds.minX - self.originalFrame.width/3
     }
 }
 

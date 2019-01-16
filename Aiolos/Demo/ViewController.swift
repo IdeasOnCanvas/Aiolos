@@ -124,7 +124,7 @@ extension ViewController: PanelAnimationDelegate {
 
         print("Panel did move to frame \(destination)")
         
-        let panelShouldHide = context.isMovingPastLeadingEdge(in: self.view) || context.isMovingPastTrailingEdge(in: self.view)
+        let panelShouldHide = context.isMovingPastLeadingEdge || context.isMovingPastTrailingEdge
         if panelShouldHide {
             coordinator.animateAlongsideTransition({
                 panel.removeFromParent(transition: .slide(direction: .horizontal))
