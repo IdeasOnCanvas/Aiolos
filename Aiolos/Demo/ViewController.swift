@@ -120,7 +120,7 @@ extension ViewController: PanelAnimationDelegate {
     }
     
     func panel(_ panel: Panel, didMoveFrom origin: CGRect, to destination: CGRect, with coordinator: PanelTransitionCoordinator) {
-        guard let context = coordinator.context else { return }
+        guard let context = coordinator.direction.context else { return }
 
         print("Panel did move to frame \(destination)")
         

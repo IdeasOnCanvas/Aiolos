@@ -75,7 +75,7 @@ final class PanelAnimator {
         guard let animationDelegate = self.panel.animationDelegate else { return }
         guard self.panel.isVisible else { return }
 
-        let transitionCoordinator = PanelTransitionCoordinator(animator: self)
+        let transitionCoordinator = PanelTransitionCoordinator(animator: self, direction: .vertical)
         animationDelegate.panel(self.panel, willTransitionFrom: oldMode, to: newMode, with: transitionCoordinator)
         if let contentViewController = self.panel.contentViewController as? PanelAnimationDelegate {
             contentViewController.panel(self.panel, willTransitionFrom: oldMode, to: newMode, with: transitionCoordinator)
@@ -94,7 +94,7 @@ final class PanelAnimator {
         guard self.panel.isVisible else { return }
         
         let transitionContext = PanelTransitionCoordinator.HorizontalTransitionContext(panel: self.panel, pan: pan, originalFrame: origin)
-        let transitionCoordinator = PanelTransitionCoordinator(animator: self, context: transitionContext)
+        let transitionCoordinator = PanelTransitionCoordinator(animator: self, direction: .horizontal(context: transitionContext))
         animationDelegate.panel(self.panel, didMoveFrom: origin, to: destination, with: transitionCoordinator)
     }
 }
