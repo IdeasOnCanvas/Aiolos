@@ -65,27 +65,33 @@ public extension PanelTransitionCoordinator {
     final class HorizontalTransitionContext {
         
         private unowned let panel: Panel
-        private let pan: PanGestureRecognizer
         private let originalFrame: CGRect
+        private let offset: CGFloat
+        private let velocity: CGFloat
         
         // MARK: - Lifecycle
         
-        init(panel: Panel, pan: PanGestureRecognizer, originalFrame: CGRect) {
+        init(panel: Panel, originalFrame: CGRect, offset: CGFloat, velocity: CGFloat) {
             self.panel = panel
-            self.pan = pan
             self.originalFrame = originalFrame
+            self.offset = offset
+            self.velocity = velocity
         }
         
         // MARK: - HorizontalTransitionContext
         
-        public func projectedDelta(in view: UIView) -> CGFloat {
-            let projectedOffset = self.projectedOffset(in: view)
+        public var projectedOffset: CGFloat {
+            return project(velocity, onto: offset)
+        }
+        
+        public var projectedDelta: CGFloat {
+            let projectedOffset = self.projectedOffset
             let delta = abs(projectedOffset)
             return delta
         }
         
         public func horizontalThreshold(in view: UIView) -> CGFloat {
-            let midScreen = view.bounds.minX
+            let midScreen = view.bounds.midX
             return min(abs(midScreen - self.originalFrame.maxX), abs(midScreen - self.originalFrame.minX))
         }
         
@@ -97,23 +103,14 @@ public extension PanelTransitionCoordinator {
             return view.bounds.minX - self.originalFrame.width/3
         }
         
-        public func projectedOffset(in view: UIView) -> CGFloat {
-            let velocity = self.pan.velocity(in: view)
-            let translation = self.pan.translation(in: view)
-            
-            return project(velocity.x, onto: translation.x)
-        }
-        
         public func isMovingTowardsLeadingEdge(in view: UIView) -> Bool {
-            let projectedOffset = self.projectedOffset(in: view)
-            let normalizedProjectedOffset = (view.isRTL ? -1 : 1) * projectedOffset
+            let normalizedProjectedOffset = (view.isRTL ? -1 : 1) * self.projectedOffset
             
             return normalizedProjectedOffset < 0
         }
         
         public func isMovingTowardsTrailingEdge(in view: UIView) -> Bool {
-            let projectedOffset = self.projectedOffset(in: view)
-            let normalizedProjectedOffset = (view.isRTL ? -1 : 1) * projectedOffset
+            let normalizedProjectedOffset = (view.isRTL ? -1 : 1) * self.projectedOffset
             
             return normalizedProjectedOffset > 0
         }

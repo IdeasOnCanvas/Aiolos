@@ -145,8 +145,10 @@ private extension PanelGestures {
         func handlePanEnded(_ pan: PanGestureRecognizer) {
             // The view is being transformed, thus the frame changes while dragging, hence the correction
             let originalFrame = self.panel.view.frame.applying(self.panel.view.transform.inverted())
-            
-            self.panel.animator.notifyDelegateOfDidMove(from: originalFrame, to: self.panel.view.frame, pan: pan)
+            let offset = pan.translation(in: self.panel.view).x
+            let velocity = pan.velocity(in: self.panel.view).x
+            let context = PanelTransitionCoordinator.HorizontalTransitionContext(panel: self.panel, originalFrame: originalFrame, offset: offset, velocity: velocity)
+            self.panel.animator.notifyDelegateOfDidMove(from: originalFrame, to: self.panel.view.frame, context: context)
             
             self.panel.animator.animateIfNeeded {
                 self.panel.view.transform = .identity
