@@ -80,50 +80,18 @@ public extension PanelTransitionCoordinator {
         
         // MARK: - HorizontalTransitionContext
         
-        public var projectedOffset: CGFloat {
-            return project(velocity, onto: offset)
-        }
-        
-        public var projectedDelta: CGFloat {
-            let projectedOffset = self.projectedOffset
-            let delta = abs(projectedOffset)
-            return delta
-        }
-        
-        public func horizontalThreshold(in view: UIView) -> CGFloat {
-            let midScreen = view.bounds.midX
-            return min(abs(midScreen - self.originalFrame.maxX), abs(midScreen - self.originalFrame.minX))
-        }
-        
-        public func rightEdgeThreshold(in view: UIView) -> CGFloat {
-            return view.bounds.maxX + self.originalFrame.width/3
-        }
-        
-        public func leftEdgeThreshold(in view: UIView) -> CGFloat {
-            return view.bounds.minX - self.originalFrame.width/3
-        }
-        
-        public func isMovingTowardsLeadingEdge(in view: UIView) -> Bool {
-            let normalizedProjectedOffset = (view.isRTL ? -1 : 1) * self.projectedOffset
-            
-            return normalizedProjectedOffset < 0
-        }
-        
-        public func isMovingTowardsTrailingEdge(in view: UIView) -> Bool {
-            let normalizedProjectedOffset = (view.isRTL ? -1 : 1) * self.projectedOffset
-            
-            return normalizedProjectedOffset > 0
-        }
-        
         public func targetPosition(in view: UIView) -> Panel.Configuration.Position {
-            let supportedPositions = panel.configuration.supportedPositions
-            let originalPosition = panel.configuration.position
+            let supportedPositions = self.panel.configuration.supportedPositions
+            let originalPosition = self.panel.configuration.position
+            let threshold = self.horizontalThreshold(in: view)
             
-            if isMovingTowardsLeadingEdge(in: view) && supportedPositions.contains(.leadingBottom) {
+            guard self.projectedDelta > threshold else { return originalPosition }
+            
+            if self.isMovingTowardsLeadingEdge(in: view) && supportedPositions.contains(.leadingBottom) {
                 return .leadingBottom
             }
             
-            if isMovingTowardsTrailingEdge(in: view) && supportedPositions.contains(.trailingBottom) {
+            if self.isMovingTowardsTrailingEdge(in: view) && supportedPositions.contains(.trailingBottom) {
                 return .trailingBottom
             }
             
@@ -132,12 +100,12 @@ public extension PanelTransitionCoordinator {
         
         public func isMovingPastLeadingEdge(in view: UIView) -> Bool {
             guard self.panel.configuration.position == .leadingBottom else { return false }
-            return self.destinationFrame.minX < leftEdgeThreshold(in: view)
+            return self.destinationFrame.minX < self.leftEdgeThreshold(in: view)
         }
         
         public func isMovingPastTrailingEdge(in view: UIView) -> Bool {
             guard self.panel.configuration.position == .trailingBottom else { return false }
-            return self.destinationFrame.maxX > rightEdgeThreshold(in: view)
+            return self.destinationFrame.maxX > self.rightEdgeThreshold(in: view)
         }
     }
 }
@@ -148,6 +116,41 @@ private extension PanelTransitionCoordinator.HorizontalTransitionContext {
     
     var destinationFrame: CGRect {
         return self.panel.view.frame
+    }
+    
+    var projectedOffset: CGFloat {
+        return project(velocity, onto: offset)
+    }
+    
+    var projectedDelta: CGFloat {
+        let projectedOffset = self.projectedOffset
+        let delta = abs(projectedOffset)
+        return delta
+    }
+    
+    func isMovingTowardsLeadingEdge(in view: UIView) -> Bool {
+        let normalizedProjectedOffset = (view.isRTL ? -1 : 1) * self.projectedOffset
+        
+        return normalizedProjectedOffset < 0
+    }
+    
+    func isMovingTowardsTrailingEdge(in view: UIView) -> Bool {
+        let normalizedProjectedOffset = (view.isRTL ? -1 : 1) * self.projectedOffset
+        
+        return normalizedProjectedOffset > 0
+    }
+    
+    func horizontalThreshold(in view: UIView) -> CGFloat {
+        let midScreen = view.bounds.midX
+        return min(abs(midScreen - self.originalFrame.maxX), abs(midScreen - self.originalFrame.minX))
+    }
+    
+    func rightEdgeThreshold(in view: UIView) -> CGFloat {
+        return view.bounds.maxX + self.originalFrame.width/3
+    }
+    
+    func leftEdgeThreshold(in view: UIView) -> CGFloat {
+        return view.bounds.minX - self.originalFrame.width/3
     }
 }
 
