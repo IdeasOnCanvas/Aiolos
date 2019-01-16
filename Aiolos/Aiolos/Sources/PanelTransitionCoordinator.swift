@@ -90,16 +90,14 @@ public extension PanelTransitionCoordinator {
         
         public func isMovingTowardsLeadingEdge(in view: UIView) -> Bool {
             let projectedOffset = self.projectedOffset(in: view)
-            let isRTL = UIView.userInterfaceLayoutDirection(for: view.semanticContentAttribute) == .rightToLeft
-            let normalizedProjectedOffset = (isRTL ? -1 : 1) * projectedOffset
+            let normalizedProjectedOffset = (view.isRTL ? -1 : 1) * projectedOffset
             
             return normalizedProjectedOffset < 0
         }
         
         public func isMovingTowardsTrailingEdge(in view: UIView) -> Bool {
             let projectedOffset = self.projectedOffset(in: view)
-            let isRTL = UIView.userInterfaceLayoutDirection(for: view.semanticContentAttribute) == .rightToLeft
-            let normalizedProjectedOffset = (isRTL ? -1 : 1) * projectedOffset
+            let normalizedProjectedOffset = (view.isRTL ? -1 : 1) * projectedOffset
             
             return normalizedProjectedOffset > 0
         }
@@ -137,6 +135,12 @@ private extension PanelTransitionCoordinator.HorizontalTransitionContext {
     
     var destinationFrame: CGRect {
         return self.panel.view.frame
+    }
+}
+
+private extension UIView {
+    var isRTL: Bool {
+        return self.effectiveUserInterfaceLayoutDirection == .rightToLeft
     }
 }
 
