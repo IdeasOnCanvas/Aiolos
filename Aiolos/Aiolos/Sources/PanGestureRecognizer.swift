@@ -18,11 +18,6 @@ public final class PanGestureRecognizer: UIGestureRecognizer {
         case onFixedArea
         case onVerticallyScrollableArea(competingScrollView: UIScrollView)
     }
-    
-    enum Direction {
-        case horizontal
-        case vertical
-    }
 
     private lazy var panForVelocity: UIPanGestureRecognizer = self.makeVelocityPan()
     private var initialPoint: CGPoint?
@@ -33,7 +28,6 @@ public final class PanGestureRecognizer: UIGestureRecognizer {
 
     private(set) var didPan: Bool = false
     var startMode: StartMode = .onFixedArea
-    var panDirection: Direction = .vertical
 }
 
 // MARK: - UIGestureRecognizer+Subclass
@@ -78,7 +72,7 @@ public extension PanGestureRecognizer {
             self.didPan = true
 
             // if we recognized a pan, make sure it can be considered a directional pan
-            guard Direction(self.totalTranslation.direction()) == self.panDirection else {
+            guard self.totalTranslation.direction() == .vertical else {
                 self.state = .cancelled
                 return
             }
@@ -163,17 +157,6 @@ private extension PanGestureRecognizer {
         let endPointInView = window.convert(endPoint, to: view)
 
         return CGPoint(x: endPointInView.x - startPointInView.x, y: endPointInView.y - startPointInView.y)
-    }
-}
-
-private extension PanGestureRecognizer.Direction {
-    init(_ direction: CGPoint.Direction) {
-        switch direction {
-        case .horizontal:
-            self = .horizontal
-        case .vertical:
-            self = .vertical
-        }
     }
 }
 

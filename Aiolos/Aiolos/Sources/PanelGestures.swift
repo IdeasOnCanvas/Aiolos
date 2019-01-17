@@ -15,7 +15,7 @@ final class PanelGestures: NSObject {
     private unowned let panel: Panel
     
     private lazy var verticalPan: PanGestureRecognizer = self.makeVerticalPanGestureRecognizer()
-    private lazy var horizontalPan: PanGestureRecognizer = self.makeHorizontalPanGestureRecognizer()
+    private lazy var horizontalPan: UIPanGestureRecognizer = self.makeHorizontalPanGestureRecognizer()
     private lazy var verticalHandler: VerticalHandler = VerticalHandler(gestures: self)
     private lazy var horizontalHandler: HorizontalHandler = HorizontalHandler(gestures: self)
     
@@ -74,10 +74,14 @@ final class PanelGestures: NSObject {
 extension PanelGestures: UIGestureRecognizerDelegate {
 
     func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
-        guard let contentViewController = self.panel.contentViewController else { return true }
-
-        return self.verticalHandler.gestureRecognizer(gestureRecognizer, isWithinContentAreaOf: contentViewController) == false ||
-            self.verticalHandler.gestureRecognizer(gestureRecognizer, isAllowedToStartByContentOf: contentViewController)
+        switch gestureRecognizer {
+        case self.horizontalPan:
+            return self.horizontalHandler.shouldStartPan(self.horizontalPan)
+        case self.verticalPan:
+            return self.verticalHandler.shouldStartPan(self.verticalPan)
+        default:
+            return true
+        }
     }
 
     func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
@@ -104,8 +108,15 @@ private extension PanelGestures {
             self.gestures = gestures
         }
         
+        func shouldStartPan(_ pan: UIPanGestureRecognizer) -> Bool {
+            // TODO: Wouldn't it be better to extract it into its own type `PanDirectionGestureRecognizer`?
+            // https://github.com/artsy/eigen/blob/master/Artsy/Categories/PanDirectionGestureRecognizer.swift
+            let velocity = pan.velocity(in: self.panel.view)
+            return abs(velocity.x) > abs(velocity.y)
+        }
+        
         @objc
-        func handlePan(_ pan: PanGestureRecognizer) {
+        func handlePan(_ pan: UIPanGestureRecognizer) {
             switch pan.state {
             case .began:
                 self.handlePanStarted(pan)
@@ -120,11 +131,11 @@ private extension PanelGestures {
             }
         }
         
-        func handlePanStarted(_ pan: PanGestureRecognizer) {
+        func handlePanStarted(_ pan: UIPanGestureRecognizer) {
             self.gestures.updateResizeHandle()
         }
         
-        func handlePanChanged(_ pan: PanGestureRecognizer) {
+        func handlePanChanged(_ pan: UIPanGestureRecognizer) {
             guard let parentView = self.panel.parent?.view else { return }
             
             func dragOffset(for translation: CGPoint, moveAllowed: Bool) -> CGFloat {
@@ -142,7 +153,7 @@ private extension PanelGestures {
             self.panel.animator.performWithoutAnimation { self.panel.view.transform = CGAffineTransform(translationX: xOffset, y: 0) }
         }
         
-        func handlePanEnded(_ pan: PanGestureRecognizer) {
+        func handlePanEnded(_ pan: UIPanGestureRecognizer) {
             guard let parentView = self.panel.parent?.view else { return }
             
             // The view is being transformed, thus the frame changes while dragging, hence the correction
@@ -159,7 +170,7 @@ private extension PanelGestures {
             self.cleanUpAfterHorizontalPan(pan)
         }
         
-        func handlePanCancelled(_ pan: PanGestureRecognizer) {
+        func handlePanCancelled(_ pan: UIPanGestureRecognizer) {
             self.panel.animator.animateIfNeeded {
                 self.panel.view.transform = .identity
             }
@@ -167,7 +178,7 @@ private extension PanelGestures {
             self.cleanUpAfterHorizontalPan(pan)
         }
         
-        func cleanUpAfterHorizontalPan(_ pan: PanGestureRecognizer) {
+        func cleanUpAfterHorizontalPan(_ pan: UIPanGestureRecognizer) {
             self.gestures.updateResizeHandle()
         }
     }
@@ -180,6 +191,13 @@ private extension PanelGestures {
         
         init(gestures: PanelGestures) {
             self.gestures = gestures
+        }
+        
+        func shouldStartPan(_ pan: PanGestureRecognizer) -> Bool {
+            guard let contentViewController = self.panel.contentViewController else { return true }
+            
+            return self.gestureRecognizer(pan, isWithinContentAreaOf: contentViewController) == false ||
+                self.gestureRecognizer(pan, isAllowedToStartByContentOf: contentViewController)
         }
         
         @objc
@@ -476,15 +494,13 @@ private extension PanelGestures {
 
     func makeVerticalPanGestureRecognizer() -> PanGestureRecognizer {
         let pan = PanGestureRecognizer(target: self.verticalHandler, action: #selector(VerticalHandler.handlePan))
-        pan.panDirection = .vertical
         pan.delegate = self
         pan.cancelsTouchesInView = false
         return pan
     }
     
-    func makeHorizontalPanGestureRecognizer() -> PanGestureRecognizer {
-        let pan = PanGestureRecognizer(target: self.horizontalHandler, action: #selector(HorizontalHandler.handlePan))
-        pan.panDirection = .horizontal
+    func makeHorizontalPanGestureRecognizer() -> UIPanGestureRecognizer {
+        let pan = UIPanGestureRecognizer(target: self.horizontalHandler, action: #selector(HorizontalHandler.handlePan))
         pan.delegate = self
         pan.cancelsTouchesInView = true
         return pan
