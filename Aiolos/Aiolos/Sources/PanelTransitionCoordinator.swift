@@ -142,8 +142,14 @@ private extension PanelTransitionCoordinator.HorizontalTransitionContext {
     }
     
     var horizontalThreshold: CGFloat {
+        // An approximation of how the Slide Over mode on iPad switches the panel to the other side:
+        // - First edge of the panel is over the middle of the screen (landscape mode)
+        // - The panel is moved at least 1/2 of it width (portrait mode)
         let midScreen = self.parentView.bounds.midX
-        return min(abs(midScreen - self.originalFrame.maxX), abs(midScreen - self.originalFrame.minX))
+        let midScreenDistance = min(abs(midScreen - self.originalFrame.maxX), abs(midScreen - self.originalFrame.minX))
+        let minValue = self.originalFrame.width/2
+        let maxValue = self.parentView.bounds.width/2
+        return min(max(midScreenDistance, minValue), maxValue)
     }
     
     var rightEdgeThreshold: CGFloat {
