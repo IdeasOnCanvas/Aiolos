@@ -132,10 +132,9 @@ extension ViewController: PanelAnimationDelegate {
                 print("Completed panel transition to hidden")
             })
         } else {
-            let targetPosition = context.targetPosition(in: self.view)
             coordinator.animateAlongsideTransition({
-                print("Animating alongside of panel transition to target position: \(targetPosition)")
-                panel.configuration.position = targetPosition
+                print("Animating alongside of panel transition to target position: \(context.targetPosition)")
+                panel.configuration.position = context.targetPosition
             }) { animationPosition in
                 print("Completed panel transition to hidden")
             }

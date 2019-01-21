@@ -82,7 +82,7 @@ public extension PanelTransitionCoordinator {
         
         // MARK: - HorizontalTransitionContext
         
-        public func targetPosition(in view: UIView) -> Panel.Configuration.Position {
+        public var targetPosition: Panel.Configuration.Position {
             let supportedPositions = self.panel.configuration.supportedPositions
             let originalPosition = self.panel.configuration.position
             
