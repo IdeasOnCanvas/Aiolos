@@ -148,10 +148,13 @@ private extension PanelGestures {
             let velocity = pan.velocity(in: parentView).x
             let context = PanelTransitionCoordinator.HorizontalTransitionContext(panel: self.panel, parentView: parentView, originalFrame: originalFrame, offset: offset, velocity: velocity)
             self.panel.animator.notifyDelegateOfMove(from: originalFrame, to: self.panel.view.frame, context: context)
-            
-            self.panel.animator.animateIfNeeded {
+
+            // TODO: compute initial velocity
+            let initialVelocity: CGFloat = 0.0
+            let timing = Animation.overdamped.makeTiming(with: initialVelocity)
+            self.panel.animator.animateWithTiming(timing, animations: {
                 self.panel.view.transform = .identity
-            }
+            })
             
             self.cleanUp(pan: pan)
         }
