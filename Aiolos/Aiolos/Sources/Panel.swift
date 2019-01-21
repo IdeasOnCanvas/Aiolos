@@ -31,7 +31,6 @@ public final class Panel: UIViewController {
 
     @objc private(set) public lazy var panelView: PanelView = self.makePanelView()
     @objc public var isVisible: Bool { return self.parent != nil && self.animator.isTransitioningFromParent == false }
-    @objc public var isPanning: Bool { return self.gestures.isPanning }
     public weak var sizeDelegate: PanelSizeDelegate?
     public weak var animationDelegate: PanelAnimationDelegate?
     public weak var accessibilityDelegate: PanelAccessibilityDelegate? {

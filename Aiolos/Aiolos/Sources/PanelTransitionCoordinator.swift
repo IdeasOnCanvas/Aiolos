@@ -39,7 +39,10 @@ public final class PanelTransitionCoordinator {
     }
 }
 
+// MARK: - PanelTransitionCoordinator.Direction
+
 extension PanelTransitionCoordinator.Direction {
+
     public var context: PanelTransitionCoordinator.HorizontalTransitionContext? {
         switch self {
         case .horizontal(let context):
@@ -50,6 +53,8 @@ extension PanelTransitionCoordinator.Direction {
     }
 }
 
+// MARK: - PanelTransitionCoordinator.Animation
+
 extension PanelTransitionCoordinator {
 
     struct Animation {
@@ -58,7 +63,7 @@ extension PanelTransitionCoordinator {
     }
 }
 
-// MARK: - HorizontalTransitionContext
+// MARK: - PanelTransitionCoordinator.HorizontalTransitionContext
 
 public extension PanelTransitionCoordinator {
     
@@ -70,7 +75,7 @@ public extension PanelTransitionCoordinator {
         private let offset: CGFloat
         private let velocity: CGFloat
         
-        // MARK: - Lifecycle
+        // MARK: Lifecycle
         
         init(panel: Panel, parentView: UIView, originalFrame: CGRect, offset: CGFloat, velocity: CGFloat) {
             self.panel = panel
@@ -80,7 +85,7 @@ public extension PanelTransitionCoordinator {
             self.velocity = velocity
         }
         
-        // MARK: - HorizontalTransitionContext
+        // MARK: HorizontalTransitionContext
         
         public var targetPosition: Panel.Configuration.Position {
             let supportedPositions = self.panel.configuration.supportedPositions
@@ -101,22 +106,28 @@ public extension PanelTransitionCoordinator {
         
         public var isMovingPastLeadingEdge: Bool {
             guard self.panel.configuration.position == .leadingBottom else { return false }
+
             if self.parentView.isRTL {
                 guard offset > 0 else { return false }
+
                 return self.leadingEdge + projectedOffset > self.leadingEdgeThreshold
             } else {
                 guard offset < 0 else { return false }
+
                 return self.leadingEdge + projectedOffset < self.leadingEdgeThreshold
             }
         }
         
         public var isMovingPastTrailingEdge: Bool {
             guard self.panel.configuration.position == .trailingBottom else { return false }
+
             if self.parentView.isRTL {
                 guard offset < 0 else { return false }
+
                 return self.trailingEdge + projectedOffset < self.trailingEdgeThreshold
             } else {
                 guard offset > 0 else { return false }
+
                 return self.trailingEdge + projectedOffset > self.trailingEdgeThreshold
             }
         }
@@ -128,6 +139,12 @@ public extension PanelTransitionCoordinator {
 private extension PanelTransitionCoordinator.HorizontalTransitionContext {
     
     var projectedOffset: CGFloat {
+        // Inspired by: https://medium.com/ios-os-x-development/gestures-in-fluid-interfaces-on-intent-and-projection-36d158db7395
+        func project(_ velocity: CGFloat, onto position: CGFloat, decelerationRate: UIScrollView.DecelerationRate = .normal) -> CGFloat {
+            let factor = -1.0 / (1000.0 * log(decelerationRate.rawValue))
+            return position + factor * velocity
+        }
+
         return project(velocity, onto: offset)
     }
     
@@ -149,21 +166,22 @@ private extension PanelTransitionCoordinator.HorizontalTransitionContext {
         // - The panel is moved at least 1/2 of it width (portrait mode)
         let midScreen = self.parentView.bounds.midX
         let midScreenDistance = min(abs(midScreen - self.originalFrame.maxX), abs(midScreen - self.originalFrame.minX))
-        let minValue = self.originalFrame.width/2
-        let maxValue = self.parentView.bounds.width/2
+        let minValue = self.originalFrame.width / 2.0
+        let maxValue = self.parentView.bounds.width / 2.0
+
         return min(max(midScreenDistance, minValue), maxValue)
     }
     
     var trailingEdgeThreshold: CGFloat {
         let trailingEdge = (self.parentView.isRTL ? self.parentView.bounds.minX : self.parentView.bounds.maxX)
         let directionMultiplier: CGFloat = self.parentView.isRTL ? -1 : 1
-        return trailingEdge + (directionMultiplier * self.originalFrame.width/3)
+        return trailingEdge + (directionMultiplier * self.originalFrame.width / 3.0)
     }
     
     var leadingEdgeThreshold: CGFloat {
         let leadingEdge = (self.parentView.isRTL ? self.parentView.bounds.maxX : self.parentView.bounds.minX)
         let directionMultiplier: CGFloat = self.parentView.isRTL ? -1 : 1
-        return leadingEdge - (directionMultiplier * self.originalFrame.width/3)
+        return leadingEdge - (directionMultiplier * self.originalFrame.width / 3.0)
     }
     
     var trailingEdge: CGFloat {
@@ -176,13 +194,8 @@ private extension PanelTransitionCoordinator.HorizontalTransitionContext {
 }
 
 private extension UIView {
+
     var isRTL: Bool {
         return self.effectiveUserInterfaceLayoutDirection == .rightToLeft
     }
-}
-
-// Inspired by: https://medium.com/ios-os-x-development/gestures-in-fluid-interfaces-on-intent-and-projection-36d158db7395
-private func project(_ velocity: CGFloat, onto position: CGFloat, decelerationRate: UIScrollView.DecelerationRate = .normal) -> CGFloat {
-    let factor = -1 / (1000 * log(decelerationRate.rawValue))
-    return position + factor * velocity
 }
