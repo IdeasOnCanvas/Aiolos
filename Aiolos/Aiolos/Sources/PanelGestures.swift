@@ -149,8 +149,7 @@ private extension PanelGestures {
             let context = PanelTransitionCoordinator.HorizontalTransitionContext(panel: self.panel, parentView: parentView, originalFrame: originalFrame, offset: offset, velocity: velocity)
             self.panel.animator.notifyDelegateOfMove(from: originalFrame, to: self.panel.view.frame, context: context)
 
-            // TODO: compute initial velocity
-            let initialVelocity: CGFloat = 0.0
+            let initialVelocity = self.initialVelocity(with: context)
             let timing = Animation.overdamped.makeTiming(with: initialVelocity)
             self.panel.animator.animateWithTiming(timing, animations: {
                 self.panel.view.transform = .identity
@@ -169,6 +168,22 @@ private extension PanelGestures {
         
         private func cleanUp(pan: UIPanGestureRecognizer) {
             self.gestures.updateResizeHandle()
+        }
+        
+        private func initialVelocity(with context: PanelTransitionCoordinator.HorizontalTransitionContext) -> CGFloat {
+            // FIXME: We assume that the delegate will move the panel to the other side based on the 'context.targetPosition' property
+            let originalPosition = self.panel.configuration.position
+            let targetPosition = context.targetPosition
+            
+            let distance: CGFloat
+            if originalPosition != targetPosition {
+                // Let's assume that the panel is moving across the bounds of the parent view
+                distance = context.parentView.bounds.width - abs(context.offset)
+            } else {
+                distance = context.offset
+            }
+            
+            return abs(context.velocity / distance)
         }
     }
 }
