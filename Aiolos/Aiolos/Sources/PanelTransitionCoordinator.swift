@@ -86,7 +86,7 @@ public extension PanelTransitionCoordinator {
             let supportedPositions = self.panel.configuration.supportedPositions
             let originalPosition = self.panel.configuration.position
             
-            guard self.projectedDelta > self.horizontalThreshold else { return originalPosition }
+            guard abs(self.projectedOffset) > self.horizontalThreshold else { return originalPosition }
             
             if self.isMovingTowardsLeadingEdge && supportedPositions.contains(.leadingBottom) {
                 return .leadingBottom
@@ -101,12 +101,12 @@ public extension PanelTransitionCoordinator {
         
         public var isMovingPastLeadingEdge: Bool {
             guard self.panel.configuration.position == .leadingBottom else { return false }
-            return self.destinationFrame.minX < self.leftEdgeThreshold
+            return self.originalFrame.minX + projectedOffset < self.leftEdgeThreshold
         }
         
         public var isMovingPastTrailingEdge: Bool {
             guard self.panel.configuration.position == .trailingBottom else { return false }
-            return self.destinationFrame.maxX > self.rightEdgeThreshold
+            return self.originalFrame.maxX + projectedOffset > self.rightEdgeThreshold
         }
     }
 }
@@ -115,18 +115,8 @@ public extension PanelTransitionCoordinator {
 
 private extension PanelTransitionCoordinator.HorizontalTransitionContext {
     
-    var destinationFrame: CGRect {
-        return self.panel.view.frame
-    }
-    
     var projectedOffset: CGFloat {
         return project(velocity, onto: offset)
-    }
-    
-    var projectedDelta: CGFloat {
-        let projectedOffset = self.projectedOffset
-        let delta = abs(projectedOffset)
-        return delta
     }
     
     var isMovingTowardsLeadingEdge: Bool {
