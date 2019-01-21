@@ -101,12 +101,24 @@ public extension PanelTransitionCoordinator {
         
         public var isMovingPastLeadingEdge: Bool {
             guard self.panel.configuration.position == .leadingBottom else { return false }
-            return self.originalFrame.minX + projectedOffset < self.leftEdgeThreshold
+            if self.parentView.isRTL {
+                guard offset > 0 else { return false }
+                return self.leadingEdge + projectedOffset > self.leadingEdgeThreshold
+            } else {
+                guard offset < 0 else { return false }
+                return self.leadingEdge + projectedOffset < self.leadingEdgeThreshold
+            }
         }
         
         public var isMovingPastTrailingEdge: Bool {
             guard self.panel.configuration.position == .trailingBottom else { return false }
-            return self.originalFrame.maxX + projectedOffset > self.rightEdgeThreshold
+            if self.parentView.isRTL {
+                guard offset < 0 else { return false }
+                return self.trailingEdge + projectedOffset < self.trailingEdgeThreshold
+            } else {
+                guard offset > 0 else { return false }
+                return self.trailingEdge + projectedOffset > self.trailingEdgeThreshold
+            }
         }
     }
 }
@@ -142,12 +154,24 @@ private extension PanelTransitionCoordinator.HorizontalTransitionContext {
         return min(max(midScreenDistance, minValue), maxValue)
     }
     
-    var rightEdgeThreshold: CGFloat {
-        return self.parentView.bounds.maxX + self.originalFrame.width/3
+    var trailingEdgeThreshold: CGFloat {
+        let trailingEdge = (self.parentView.isRTL ? self.parentView.bounds.minX : self.parentView.bounds.maxX)
+        let directionMultiplier: CGFloat = self.parentView.isRTL ? -1 : 1
+        return trailingEdge + (directionMultiplier * self.originalFrame.width/3)
     }
     
-    var leftEdgeThreshold: CGFloat {
-        return self.parentView.bounds.minX - self.originalFrame.width/3
+    var leadingEdgeThreshold: CGFloat {
+        let leadingEdge = (self.parentView.isRTL ? self.parentView.bounds.maxX : self.parentView.bounds.minX)
+        let directionMultiplier: CGFloat = self.parentView.isRTL ? -1 : 1
+        return leadingEdge - (directionMultiplier * self.originalFrame.width/3)
+    }
+    
+    var trailingEdge: CGFloat {
+        return self.parentView.isRTL ? self.originalFrame.minX : self.originalFrame.maxX
+    }
+    
+    var leadingEdge: CGFloat {
+        return self.parentView.isRTL ? self.originalFrame.maxX : self.originalFrame.minX
     }
 }
 
