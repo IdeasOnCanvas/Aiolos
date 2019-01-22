@@ -71,7 +71,7 @@ public extension PanGestureRecognizer {
         if self.totalTranslation.hypotenuse() > Constants.minTranslation && self.didPan == false {
             self.didPan = true
 
-            // if we recognized a pan, make sure it can be considered a directional pan
+            // if we recognized a pan, make sure it can be considered a vertical pan
             guard self.totalTranslation.direction() == .vertical else {
                 self.state = .cancelled
                 return

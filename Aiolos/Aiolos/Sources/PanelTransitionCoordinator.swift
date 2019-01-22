@@ -145,7 +145,7 @@ private extension PanelTransitionCoordinator.HorizontalTransitionContext {
             return position + factor * velocity
         }
 
-        return project(velocity, onto: offset)
+        return project(self.velocity, onto: self.offset)
     }
     
     var isMovingTowardsLeadingEdge: Bool {
