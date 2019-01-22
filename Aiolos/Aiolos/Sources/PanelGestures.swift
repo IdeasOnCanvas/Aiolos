@@ -132,7 +132,7 @@ private extension PanelGestures {
             let translation = pan.translation(in: parentView)
             let transformation = CGAffineTransform(translationX: translation.x, y: 0)
             let targetFrame = self.panel.view.frame.applying(transformation)
-            let moveAllowed = self.panel.animator.notifyDelegateAboutMove(to: targetFrame)
+            let moveAllowed = self.panel.animator.askDelegateAboutMove(to: targetFrame)
             let xOffset = dragOffset(for: translation, moveAllowed: moveAllowed)
             guard xOffset != 0.0 else { return }
             

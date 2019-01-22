@@ -82,7 +82,7 @@ final class PanelAnimator {
         }
     }
     
-    func notifyDelegateAboutMove(to frame: CGRect) -> Bool {
+    func askDelegateAboutMove(to frame: CGRect) -> Bool {
         guard let animationDelegate = self.panel.animationDelegate else { return false }
         guard self.panel.isVisible else { return false }
         
