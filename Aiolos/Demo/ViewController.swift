@@ -119,10 +119,10 @@ extension ViewController: PanelAnimationDelegate {
         return true
     }
     
-    func panel(_ panel: Panel, didMoveFrom origin: CGRect, to destination: CGRect, with coordinator: PanelTransitionCoordinator) {
+    func panel(_ panel: Panel, didMoveFrom oldFrame: CGRect, to newFrame: CGRect, with coordinator: PanelTransitionCoordinator) {
         guard let context = coordinator.direction.context else { return }
 
-        print("Panel did move to frame \(destination)")
+        print("Panel did move to frame \(newFrame)")
         
         let panelShouldHide = context.isMovingPastLeadingEdge || context.isMovingPastTrailingEdge
         if panelShouldHide {

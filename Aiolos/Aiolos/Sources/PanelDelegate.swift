@@ -29,7 +29,7 @@ public protocol PanelAnimationDelegate: AnyObject {
     func panel(_ panel: Panel, shouldMoveTo frame: CGRect) -> Bool
     
     /// Tells the delegate that the `panel` did move to a specific frame
-    func panel(_ panel: Panel, didMoveFrom origin: CGRect, to destination: CGRect, with coordinator: PanelTransitionCoordinator)
+    func panel(_ panel: Panel, didMoveFrom oldFrame: CGRect, to newFrame: CGRect, with coordinator: PanelTransitionCoordinator)
 }
 
 public protocol PanelAccessibilityDelegate: AnyObject {
