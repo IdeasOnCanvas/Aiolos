@@ -70,8 +70,11 @@ public extension PanelTransitionCoordinator {
     final class HorizontalTransitionContext {
         
         private unowned let panel: Panel
-        unowned let parentView: UIView
         private let originalFrame: CGRect
+        
+        // MARK: Properties
+        
+        unowned let parentView: UIView
         let offset: CGFloat
         let velocity: CGFloat
         
