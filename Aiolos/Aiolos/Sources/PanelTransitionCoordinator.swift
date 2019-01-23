@@ -111,13 +111,13 @@ public extension PanelTransitionCoordinator {
             guard self.panel.configuration.position == .leadingBottom else { return false }
 
             if self.parentView.isRTL {
-                guard offset > 0 else { return false }
+                guard self.offset > 0 else { return false }
 
-                return self.leadingEdge + projectedOffset > self.leadingEdgeThreshold
+                return self.leadingEdge + self.projectedOffset > self.leadingEdgeThreshold
             } else {
-                guard offset < 0 else { return false }
+                guard self.offset < 0 else { return false }
 
-                return self.leadingEdge + projectedOffset < self.leadingEdgeThreshold
+                return self.leadingEdge + self.projectedOffset < self.leadingEdgeThreshold
             }
         }
         
@@ -125,13 +125,13 @@ public extension PanelTransitionCoordinator {
             guard self.panel.configuration.position == .trailingBottom else { return false }
 
             if self.parentView.isRTL {
-                guard offset < 0 else { return false }
+                guard self.offset < 0 else { return false }
 
-                return self.trailingEdge + projectedOffset < self.trailingEdgeThreshold
+                return self.trailingEdge + self.projectedOffset < self.trailingEdgeThreshold
             } else {
-                guard offset > 0 else { return false }
+                guard self.offset > 0 else { return false }
 
-                return self.trailingEdge + projectedOffset > self.trailingEdgeThreshold
+                return self.trailingEdge + self.projectedOffset > self.trailingEdgeThreshold
             }
         }
     }
