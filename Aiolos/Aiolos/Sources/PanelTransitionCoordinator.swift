@@ -152,15 +152,17 @@ private extension PanelTransitionCoordinator.HorizontalTransitionContext {
     }
     
     var isMovingTowardsLeadingEdge: Bool {
-        let normalizedProjectedOffset = (self.parentView.isRTL ? -1 : 1) * self.projectedOffset
+        let normalizedOffset = (self.parentView.isRTL ? -1 : 1) * self.offset
+        let normalizedVelocity = (self.parentView.isRTL ? -1 : 1) * self.velocity
         
-        return normalizedProjectedOffset < 0
+        return normalizedOffset < 0 && normalizedVelocity < 0
     }
     
     var isMovingTowardsTrailingEdge: Bool {
-        let normalizedProjectedOffset = (self.parentView.isRTL ? -1 : 1) * self.projectedOffset
+        let normalizedOffset = (self.parentView.isRTL ? -1 : 1) * self.offset
+        let normalizedVelocity = (self.parentView.isRTL ? -1 : 1) * self.velocity
         
-        return normalizedProjectedOffset > 0
+        return normalizedOffset > 0 && normalizedVelocity > 0
     }
     
     var horizontalThreshold: CGFloat {
