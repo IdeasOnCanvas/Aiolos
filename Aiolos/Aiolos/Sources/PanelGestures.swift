@@ -62,6 +62,10 @@ extension PanelGestures: UIGestureRecognizerDelegate {
     func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
         switch gestureRecognizer {
         case self.horizontalPan:
+            // The vertical PanGestureRecognizer starts without any delay so we need to ensure
+            // it hasn't changed before allowing the horizontal gesture recognizer to start.
+            guard self.verticalPan.state != .changed else { return false }
+            
             return self.horizontalHandler.shouldStartPan(self.horizontalPan)
         case self.verticalPan:
             return self.verticalHandler.shouldStartPan(self.verticalPan)
