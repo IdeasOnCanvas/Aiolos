@@ -104,7 +104,7 @@ private extension PanelGestures {
         
         func shouldStartPan(_ pan: UIPanGestureRecognizer) -> Bool {
             let velocity = pan.velocity(in: self.panel.view)
-            let isPanningHorizontally = abs(velocity.x) > 3 * abs(velocity.y)
+            let isPanningHorizontally = abs(velocity.x) > 1.5 * abs(velocity.y)
             guard isPanningHorizontally else { return false }
             guard let contentViewController = self.panel.contentViewController else { return true }
 

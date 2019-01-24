@@ -180,13 +180,13 @@ private extension PanelTransitionCoordinator.HorizontalTransitionContext {
     var trailingEdgeThreshold: CGFloat {
         let trailingEdge = (self.parentView.isRTL ? self.parentView.bounds.minX : self.parentView.bounds.maxX)
         let directionMultiplier: CGFloat = self.parentView.isRTL ? -1 : 1
-        return trailingEdge + (directionMultiplier * self.originalFrame.width / 3.0)
+        return trailingEdge + directionMultiplier * self.originalFrame.width
     }
     
     var leadingEdgeThreshold: CGFloat {
         let leadingEdge = (self.parentView.isRTL ? self.parentView.bounds.maxX : self.parentView.bounds.minX)
         let directionMultiplier: CGFloat = self.parentView.isRTL ? -1 : 1
-        return leadingEdge - (directionMultiplier * self.originalFrame.width / 3.0)
+        return leadingEdge - directionMultiplier * self.originalFrame.width
     }
     
     var trailingEdge: CGFloat {
