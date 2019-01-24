@@ -39,8 +39,7 @@ final class PanelGestures: NSObject {
 
     func install() {
         self.panel.view.addGestureRecognizer(self.verticalPan)
-        // Limit the horizontal gesture to only trigger, when it is started on top of the resize handle
-        self.panel.resizeHandle.addGestureRecognizer(self.horizontalPan)
+        self.panel.view.addGestureRecognizer(self.horizontalPan)
     }
 
     func configure(with configuration: Panel.Configuration) {
@@ -62,10 +61,6 @@ extension PanelGestures: UIGestureRecognizerDelegate {
     func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
         switch gestureRecognizer {
         case self.horizontalPan:
-            // The vertical PanGestureRecognizer starts without any delay so we need to ensure
-            // it hasn't changed before allowing the horizontal gesture recognizer to start.
-            guard self.verticalPan.state != .changed else { return false }
-            
             return self.horizontalHandler.shouldStartPan(self.horizontalPan)
         case self.verticalPan:
             return self.verticalHandler.shouldStartPan(self.verticalPan)
@@ -81,7 +76,14 @@ extension PanelGestures: UIGestureRecognizerDelegate {
     func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRequireFailureOf otherGestureRecognizer: UIGestureRecognizer) -> Bool {
         // fail for built-in drag gesture recognizers 🤷‍♂️
         let className = String(describing: type(of: otherGestureRecognizer))
-        return className.contains("UIDrag")
+        if className.contains("UIDrag") { return true }
+
+        // horizontal and vertical pan should not happen together
+        if gestureRecognizer == self.horizontalPan {
+            return otherGestureRecognizer == self.verticalPan
+        }
+
+        return false
     }
 }
 
@@ -102,7 +104,11 @@ private extension PanelGestures {
         
         func shouldStartPan(_ pan: UIPanGestureRecognizer) -> Bool {
             let velocity = pan.velocity(in: self.panel.view)
-            return abs(velocity.x) > abs(velocity.y)
+            let isPanningHorizontally = abs(velocity.x) > 3 * abs(velocity.y)
+            guard isPanningHorizontally else { return false }
+            guard let contentViewController = self.panel.contentViewController else { return true }
+
+            return self.gestures.gestureRecognizer(pan, isWithinContentAreaOf: contentViewController) == false
         }
         
         @objc
@@ -209,8 +215,7 @@ private extension PanelGestures {
         func shouldStartPan(_ pan: PanGestureRecognizer) -> Bool {
             guard let contentViewController = self.panel.contentViewController else { return true }
             
-            return self.gestureRecognizer(pan, isWithinContentAreaOf: contentViewController) == false ||
-                self.gestureRecognizer(pan, isAllowedToStartByContentOf: contentViewController)
+            return self.gestures.gestureRecognizer(pan, isWithinContentAreaOf: contentViewController) == false || self.gestures.gestureRecognizer(pan, isAllowedToStartByContentOf: contentViewController)
         }
         
         @objc
@@ -235,7 +240,7 @@ private extension PanelGestures {
             self.originalConfiguration = configuration
             
             if let contentViewController = self.panel.contentViewController {
-                if self.gestureRecognizer(pan, isWithinContentAreaOf: contentViewController), let scrollView = self.verticallyScrollableView(of: contentViewController, interactingWith: pan) {
+                if self.gestures.gestureRecognizer(pan, isWithinContentAreaOf: contentViewController), let scrollView = self.gestures.verticallyScrollableView(of: contentViewController, interactingWith: pan) {
                     pan.startMode = .onVerticallyScrollableArea(competingScrollView: scrollView)
                 } else {
                     pan.startMode = .onFixedArea
@@ -257,7 +262,7 @@ private extension PanelGestures {
             if case .onVerticallyScrollableArea(let scrollView) = pan.startMode {
                 if velocity.y < 0.0 {
                     // if the gesture scrolls the content, cancel the resizing gesture itself
-                    self.gestures.cancelVerticalPan()
+                    self.gestures.verticalPan.cancel()
                     return false
                 } else if velocity.y > 0.0 {
                     // if the gesture would shrink the panel, cancel all gestures on the competing scrollView
@@ -277,7 +282,7 @@ private extension PanelGestures {
                 let fudgeFactor: CGFloat = 60.0
                 let minHeight = self.height(for: .compact) + fudgeFactor
                 let maxHeight = self.panel.constraints.maxHeight - fudgeFactor
-                let currentHeight = self.currentPanelHeight
+                let currentHeight = self.panel.currentHeight
                 
                 // slow down resizing if the current height exceeds certain limits
                 let isNearingEdge = (currentHeight < minHeight && translation.y > 0.0) || (currentHeight > maxHeight && translation.y < 0.0)
@@ -299,7 +304,7 @@ private extension PanelGestures {
             }
             
             self.panel.animator.performWithoutAnimation { self.panel.constraints.updateForPan(with: yOffset) }
-            self.panel.animator.notifyDelegateOfTransition(to: CGSize(width: self.panel.view.frame.width, height: self.currentPanelHeight))
+            self.panel.animator.notifyDelegateOfTransition(to: CGSize(width: self.panel.view.frame.width, height: self.panel.currentHeight))
         }
         
         private func handlePanEnded(_ pan: PanGestureRecognizer) {
@@ -321,7 +326,7 @@ private extension PanelGestures {
         private func handlePanCancelled(_ pan: PanGestureRecognizer) {
             guard let originalMode = self.originalConfiguration?.mode else { return }
             
-            let currentHeight = self.currentPanelHeight
+            let currentHeight = self.panel.currentHeight
             self.cleanUp(pan: pan)
             
             let size = self.panel.size(for: originalMode)
@@ -342,7 +347,7 @@ private extension PanelGestures {
             let velocity = pan.velocity(in: self.panel.view).y
             let heightCompact = self.height(for: .compact)
             let heightExpanded = self.height(for: .expanded)
-            let currentHeight = self.currentPanelHeight
+            let currentHeight = self.panel.currentHeight
             
             let isMovingUpwards = velocity < -minVelocity
             let isMovingDownwards = velocity > minVelocity
@@ -413,7 +418,7 @@ private extension PanelGestures {
         
         private func initialVelocity(for pan: PanGestureRecognizer, targetMode: Panel.Configuration.Mode) -> CGFloat {
             let velocity = pan.velocity(in: self.panel.view).y
-            let currentHeight = self.currentPanelHeight
+            let currentHeight = self.panel.currentHeight
             let targetHeight = self.height(for: targetMode)
             
             let distance = targetHeight - currentHeight
@@ -445,44 +450,6 @@ private extension PanelGestures {
             }, completion: {
                 self.panel.constraints.updateSizeConstraints(for: size)
             })
-        }
-        
-        // allow pan gestures to be triggered within non-safe area on top (UINavigationBar)
-        private func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, isWithinContentAreaOf contentViewController: UIViewController) -> Bool {
-            let offset: CGFloat = 10.0
-            let safeAreaTop: CGFloat
-            if let navigationController = contentViewController as? UINavigationController {
-                safeAreaTop = navigationController.navigationBar.frame.maxY + offset
-            } else {
-                safeAreaTop = offset
-            }
-            
-            let location = gestureRecognizer.location(in: self.panel.panelView)
-            return location.y >= safeAreaTop
-        }
-        
-        // allow pan gesture to be triggered when a) there's no scrollView or b) the scrollView can't be scrolled downwards
-        private func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, isAllowedToStartByContentOf contentViewController: UIViewController) -> Bool {
-            guard self.panel.configuration.gestureResizingMode == .includingContent else { return false }
-            
-            guard let enclosingScrollView = self.verticallyScrollableView(of: contentViewController, interactingWith: gestureRecognizer) else { return true }
-            // don't allow resizing gesture if textView is currently text editing
-            if let textView = enclosingScrollView as? UITextView, textView.isFirstResponder {
-                return false
-            }
-            
-            return enclosingScrollView.isScrolledToTop
-        }
-        
-        private func verticallyScrollableView(of contentViewController: UIViewController, interactingWith gestureRecognizer: UIGestureRecognizer) -> UIScrollView? {
-            let location = gestureRecognizer.location(in: contentViewController.view)
-            guard let hitView = contentViewController.view.hitTest(location, with: nil) else { return nil }
-            
-            return hitView.findFirstSuperview(ofClass: UIScrollView.self, where: { $0.scrollsVertically })
-        }
-        
-        private var currentPanelHeight: CGFloat {
-            return self.panel.constraints.heightConstraint!.constant
         }
     }
 }
@@ -520,10 +487,6 @@ private extension PanelGestures {
         pan.cancelsTouchesInView = true
         return pan
     }
-
-    func cancelVerticalPan() {
-        self.verticalPan.cancel()
-    }
     
     func updateResizeHandle() {
         var isPanning: Bool {
@@ -535,6 +498,40 @@ private extension PanelGestures {
         }
 
         self.panel.resizeHandle.isResizing = isPanning
+    }
+
+    // allow pan gestures to be triggered within non-safe area on top (UINavigationBar)
+    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, isWithinContentAreaOf contentViewController: UIViewController) -> Bool {
+        let offset: CGFloat = 10.0
+        let safeAreaTop: CGFloat
+        if let navigationController = contentViewController as? UINavigationController {
+            safeAreaTop = navigationController.navigationBar.frame.maxY + offset
+        } else {
+            safeAreaTop = offset
+        }
+
+        let location = gestureRecognizer.location(in: self.panel.panelView)
+        return location.y >= safeAreaTop
+    }
+
+    // allow pan gesture to be triggered when a) there's no scrollView or b) the scrollView can't be scrolled downwards
+    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, isAllowedToStartByContentOf contentViewController: UIViewController) -> Bool {
+        guard self.panel.configuration.gestureResizingMode == .includingContent else { return false }
+
+        guard let enclosingScrollView = self.verticallyScrollableView(of: contentViewController, interactingWith: gestureRecognizer) else { return true }
+        // don't allow resizing gesture if textView is currently text editing
+        if let textView = enclosingScrollView as? UITextView, textView.isFirstResponder {
+            return false
+        }
+
+        return enclosingScrollView.isScrolledToTop
+    }
+
+    func verticallyScrollableView(of contentViewController: UIViewController, interactingWith gestureRecognizer: UIGestureRecognizer) -> UIScrollView? {
+        let location = gestureRecognizer.location(in: contentViewController.view)
+        guard let hitView = contentViewController.view.hitTest(location, with: nil) else { return nil }
+
+        return hitView.findFirstSuperview(ofClass: UIScrollView.self, where: { $0.scrollsVertically })
     }
 }
 
@@ -575,5 +572,12 @@ private extension UIGestureRecognizer {
 
         self.isEnabled = false
         self.isEnabled = true
+    }
+}
+
+private extension Panel {
+
+    var currentHeight: CGFloat {
+        return self.constraints.heightConstraint!.constant
     }
 }
