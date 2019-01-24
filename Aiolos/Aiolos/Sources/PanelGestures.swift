@@ -187,8 +187,8 @@ private extension PanelGestures {
             
             let distance: CGFloat
             if originalPosition != targetPosition {
-                // Let's assume that the panel is moving across the bounds of the parent view
-                distance = context.parentView.bounds.width - abs(context.offset)
+                // Let's assume that the panel is moving across the parent view's safe area
+                distance = context.parentView.bounds.width - context.parentView.safeAreaInsets.left - context.parentView.safeAreaInsets.right - panel.view.bounds.width - abs(context.offset)
             } else {
                 distance = context.offset
             }
