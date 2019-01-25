@@ -158,9 +158,7 @@ private extension PanelGestures {
             let velocity = pan.velocity(in: parentView).x
             let context = PanelTransitionCoordinator.HorizontalTransitionContext(panel: self.panel, parentView: parentView, originalFrame: originalFrame, offset: offset, velocity: velocity)
             
-            // TODO: Ask the delegate what to do
-//            let instruction = self.panel.animator.notifyDelegateOfMove(from: originalFrame, to: self.panel.view.frame, context: context)
-            let instruction: PanelTransitionCoordinator.Instruction = .none
+            let instruction = self.panel.animator.askDelegateOfMove(from: originalFrame, to: self.panel.view.frame, context: context)
             
             switch instruction {
             case .none:

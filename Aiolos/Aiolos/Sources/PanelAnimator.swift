@@ -89,12 +89,12 @@ final class PanelAnimator {
         return animationDelegate.panel(self.panel, shouldMoveTo: frame)
     }
     
-    func notifyDelegateOfMove(from oldFrame: CGRect, to newFrame: CGRect, context: PanelTransitionCoordinator.HorizontalTransitionContext) {
-        guard let animationDelegate = self.panel.animationDelegate else { return }
-        guard self.panel.isVisible else { return }
+    func askDelegateOfMove(from oldFrame: CGRect, to newFrame: CGRect, context: PanelTransitionCoordinator.HorizontalTransitionContext) -> PanelTransitionCoordinator.Instruction {
+        guard let animationDelegate = self.panel.animationDelegate else { return .none }
+        guard self.panel.isVisible else { return .none }
         
         let transitionCoordinator = PanelTransitionCoordinator(animator: self, direction: .horizontal(context: context))
-        animationDelegate.panel(self.panel, didMoveFrom: oldFrame, to: newFrame, with: transitionCoordinator)
+        return animationDelegate.panel(self.panel, didMoveFrom: oldFrame, to: newFrame, with: transitionCoordinator)
     }
 }
 
