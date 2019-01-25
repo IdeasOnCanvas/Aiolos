@@ -214,9 +214,8 @@ private extension PanelGestures {
         private func offset(for position: Panel.Configuration.Position) -> CGFloat {
             let originalPosition = self.panel.configuration.position
             guard originalPosition != position else { return 0 }
-            guard let parentView = self.panel.parent?.view else { return 0 }
             
-            let isRTL = parentView.effectiveUserInterfaceLayoutDirection == .rightToLeft
+            let isRTL = self.panel.view.effectiveUserInterfaceLayoutDirection == .rightToLeft
             let distance = self.panel.constraints.effectiveBounds.width - self.panel.view.frame.width
             switch position {
             case .leadingBottom:
