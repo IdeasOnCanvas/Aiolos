@@ -90,16 +90,26 @@ final class PanelConstraints {
 
 internal extension PanelConstraints {
 
-    var maxHeight: CGFloat {
-        guard let parentView = self.panel.parent?.view else { return 0.0 }
-
+    var safeArea: CGRect {
+        guard let parentView = self.panel.parent?.view else { return .zero }
+        
         var insets: NSDirectionalEdgeInsets = .zero
         for (edge, positionLogic) in self.panel.configuration.positionLogic {
             insets = positionLogic.applyingInsets(of: parentView, to: insets, edge: edge)
         }
+        
+        return parentView.bounds.inset(by: UIEdgeInsets(directionalEdgeInsets: insets, isRTL: parentView.effectiveUserInterfaceLayoutDirection == .rightToLeft))
+    }
 
-        let safeArea = parentView.bounds.inset(by: UIEdgeInsets(directionalEdgeInsets: insets, isRTL: parentView.effectiveUserInterfaceLayoutDirection == .rightToLeft))
-        return self.panel.view.frame.maxY - safeArea.minY
+    var effectiveBounds: CGRect {
+        guard let parentView = self.panel.parent?.view else { return .zero }
+        
+        let insets = self.panel.configuration.margins
+        return self.safeArea.inset(by: UIEdgeInsets(directionalEdgeInsets: insets, isRTL: parentView.effectiveUserInterfaceLayoutDirection == .rightToLeft))
+    }
+
+    var maxHeight: CGFloat {
+        return self.panel.view.frame.maxY - self.safeArea.minY
     }
 
     func updateForPanStart(with currentSize: CGSize) {

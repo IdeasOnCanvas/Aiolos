@@ -18,6 +18,12 @@ public final class PanelTransitionCoordinator {
         case vertical
     }
     
+    public enum Instruction {
+        case updatePosition(_ newPosition: Panel.Configuration.Position)
+        case hide
+        case none
+    }
+    
     private unowned let animator: PanelAnimator
 
     // MARK: - Properties
