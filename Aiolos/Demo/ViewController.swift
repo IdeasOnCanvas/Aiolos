@@ -34,7 +34,7 @@ final class ViewController: UIViewController {
             safeAreaView.trailingAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.trailingAnchor, constant: -8.0)
         ])
 
-        let textField = UITextField(frame: CGRect(x: 10.0, y: 74.0, width: 150.0, height: 44.0))
+        let textField = UITextField(frame: CGRect(x: 50.0, y: 110.0, width: 150.0, height: 44.0))
         textField.layer.borderWidth = 1.0
         textField.delegate = self
         self.view.addSubview(textField)
@@ -50,13 +50,9 @@ final class ViewController: UIViewController {
     override func willTransition(to newCollection: UITraitCollection, with coordinator: UIViewControllerTransitionCoordinator) {
         super.willTransition(to: newCollection, with: coordinator)
 
-        var configuration = self.panelController.configuration
-        configuration.position = self.panelPosition(for: newCollection)
-        configuration.margins = self.panelMargins(for: newCollection)
-
         coordinator.animate(alongsideTransition: { _ in
             self.panelController.performWithoutAnimation {
-                self.panelController.configuration = configuration
+                self.panelController.configuration = self.configuration(for: newCollection)
             }
         }, completion: nil)
     }
@@ -81,7 +77,13 @@ extension ViewController: UITextFieldDelegate {
 extension ViewController: PanelSizeDelegate {
 
     func panel(_ panel: Panel, sizeForMode mode: Panel.Configuration.Mode) -> CGSize {
-        let width = self.panelWidth(for: self.traitCollection, position: panel.configuration.position)
+        func panelWidth(for position: Panel.Configuration.Position) -> CGFloat {
+            if position == .bottom { return 0.0 }
+
+            return self.traitCollection.userInterfaceIdiom == .pad ? 320.0 : 270.0
+        }
+
+        let width = panelWidth(for: panel.configuration.position)
         switch mode {
         case .minimal:
             return CGSize(width: width, height: 0.0)
@@ -139,8 +141,7 @@ extension ViewController: PanelAnimationDelegate {
 private extension ViewController {
 
     func makePanelController() -> Panel {
-        let configuration = Panel.Configuration.default
-        let panelController = Panel(configuration: configuration)
+        let panelController = Panel(configuration: self.configuration(for: self.traitCollection))
         let contentNavigationController = UINavigationController(rootViewController: PanelContentViewController(color: UIColor.red.withAlphaComponent(0.4)))
         contentNavigationController.navigationBar.barTintColor = .white
         contentNavigationController.navigationBar.isTranslucent = false
@@ -151,47 +152,55 @@ private extension ViewController {
         panelController.sizeDelegate = self
         panelController.animationDelegate = self
         panelController.contentViewController = contentNavigationController
-        panelController.configuration.position = self.panelPosition(for: self.traitCollection)
-        panelController.configuration.margins = self.panelMargins(for: self.traitCollection)
-        panelController.configuration.appearance.separatorColor = .white
-
-        if self.traitCollection.userInterfaceIdiom == .pad {
-            panelController.configuration.supportedPositions = [.leadingBottom, .trailingBottom]
-            panelController.configuration.appearance.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner, .layerMinXMaxYCorner, .layerMaxXMaxYCorner]
-        } else {
-            panelController.configuration.supportedModes = [.minimal, .compact, .expanded, .fullHeight]
-            panelController.configuration.supportedPositions = [.bottom]
-            panelController.configuration.appearance.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
-        }
 
         return panelController
     }
 
-    func panelWidth(for traitCollection: UITraitCollection, position: Panel.Configuration.Position) -> CGFloat {
-        if position == .bottom { return 0.0 }
+    func configuration(for traitCollection: UITraitCollection) -> Panel.Configuration {
+        var configuration = Panel.Configuration.default
 
-        return traitCollection.userInterfaceIdiom == .pad ? 320.0 : 270.0
-    }
+        var panelPosition: Panel.Configuration.Position {
+            if traitCollection.userInterfaceIdiom == .pad { return .trailingBottom }
 
-    func panelPosition(for traitCollection: UITraitCollection) -> Panel.Configuration.Position {
-        if traitCollection.userInterfaceIdiom == .pad { return .trailingBottom }
+            return traitCollection.verticalSizeClass == .compact ? .leadingBottom : .bottom
+        }
 
-        return traitCollection.verticalSizeClass == .compact ? .leadingBottom : .bottom
-    }
+        var panelMargins: NSDirectionalEdgeInsets {
+            if traitCollection.userInterfaceIdiom == .pad  || traitCollection.hasNotch { return NSDirectionalEdgeInsets(top: 20.0, leading: 20.0, bottom: 20.0, trailing: 20.0) }
 
-    func panelMargins(for traitCollection: UITraitCollection) -> NSDirectionalEdgeInsets {
-        if traitCollection.userInterfaceIdiom == .pad { return NSDirectionalEdgeInsets(top: 20.0, leading: 20.0, bottom: 20.0, trailing: 20.0) }
+            let horizontalMargin: CGFloat = traitCollection.verticalSizeClass == .compact ? 20.0 : 0.0
+            return NSDirectionalEdgeInsets(top: 20.0, leading: horizontalMargin, bottom: 0.0, trailing: horizontalMargin)
+        }
 
-        let horizontalMargin: CGFloat = traitCollection.verticalSizeClass == .compact ? 20.0 : 0.0
-        return NSDirectionalEdgeInsets(top: 20.0, leading: horizontalMargin, bottom: 0.0, trailing: horizontalMargin)
+        configuration.appearance.separatorColor = .white
+        configuration.position = panelPosition
+        configuration.margins = panelMargins
+
+        if self.traitCollection.userInterfaceIdiom == .pad {
+            configuration.supportedPositions = [.leadingBottom, .trailingBottom]
+            configuration.appearance.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner, .layerMinXMaxYCorner, .layerMaxXMaxYCorner]
+        } else {
+            configuration.supportedModes = [.minimal, .compact, .expanded, .fullHeight]
+            configuration.supportedPositions = [configuration.position]
+
+            if traitCollection.hasNotch {
+                configuration.appearance.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner, .layerMinXMaxYCorner, .layerMaxXMaxYCorner]
+            } else {
+                configuration.appearance.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
+            }
+        }
+
+        return configuration
     }
 
     @objc
     func handleToggleVisibilityPress() {
+        let transition: Panel.Transition = self.traitCollection.userInterfaceIdiom == .pad ? .slide(direction: .horizontal) : .slide(direction: .vertical)
+
         if self.panelController.isVisible {
-            self.panelController.removeFromParent(transition: .slide(direction: .horizontal))
+            self.panelController.removeFromParent(transition: transition)
         } else {
-            self.panelController.add(to: self, transition: .slide(direction: .horizontal))
+            self.panelController.add(to: self, transition: transition)
         }
     }
 
@@ -203,5 +212,12 @@ private extension ViewController {
         guard let nextMode = nextModeMapping[self.panelController.configuration.mode] else { return }
 
         self.panelController.configuration.mode = nextMode
+    }
+}
+
+private extension UITraitCollection {
+
+    var hasNotch: Bool {
+        return UIApplication.shared.keyWindow!.safeAreaInsets.bottom > 0.0
     }
 }

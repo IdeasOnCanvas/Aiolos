@@ -40,6 +40,7 @@ final class PanelGestures: NSObject {
     func install() {
         self.panel.view.addGestureRecognizer(self.verticalPan)
         self.panel.view.addGestureRecognizer(self.horizontalPan)
+        self.configure(with: self.panel.configuration)
     }
 
     func configure(with configuration: Panel.Configuration) {
