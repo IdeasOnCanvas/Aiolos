@@ -146,7 +146,6 @@ extension Panel.Configuration.PositionLogic {
 
     func applyingInsets(of view: UIView, to insets: NSDirectionalEdgeInsets, edge: Panel.Configuration.Edge) -> NSDirectionalEdgeInsets {
         var insets = insets
-        let isRTL = view.effectiveUserInterfaceLayoutDirection == .rightToLeft
 
         switch (self, edge) {
         case (.ignoreSafeArea, _):
@@ -155,11 +154,11 @@ extension Panel.Configuration.PositionLogic {
         case (.respectSafeArea, .top):
             insets.top = view.safeAreaInsets.top
         case (.respectSafeArea, .leading):
-            insets.leading = isRTL ? view.safeAreaInsets.right : view.safeAreaInsets.left
+            insets.leading = view.isRTL ? view.safeAreaInsets.right : view.safeAreaInsets.left
         case (.respectSafeArea, .bottom):
             insets.bottom = view.safeAreaInsets.bottom
         case (.respectSafeArea, .trailing):
-            insets.trailing = isRTL ? view.safeAreaInsets.left : view.safeAreaInsets.right
+            insets.trailing = view.isRTL ? view.safeAreaInsets.left : view.safeAreaInsets.right
         }
 
         return insets

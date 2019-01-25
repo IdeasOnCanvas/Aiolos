@@ -89,7 +89,7 @@ final class PanelAnimator {
         return animationDelegate.panel(self.panel, shouldMoveTo: frame)
     }
     
-    func askDelegateOfMove(from oldFrame: CGRect, to newFrame: CGRect, context: PanelTransitionCoordinator.HorizontalTransitionContext) -> PanelTransitionCoordinator.Instruction {
+    func notifyDelegateOfMove(from oldFrame: CGRect, to newFrame: CGRect, context: PanelTransitionCoordinator.HorizontalTransitionContext) -> PanelTransitionCoordinator.Instruction {
         guard let animationDelegate = self.panel.animationDelegate else { return .none }
         guard self.panel.isVisible else { return .none }
         
@@ -161,12 +161,10 @@ extension PanelAnimator {
 
     func transform(for direction: Panel.Direction, size: CGSize) -> CGAffineTransform {
         guard let safeAreaInsets = self.panel.parent?.view.safeAreaInsets else { return .identity }
-        
-        let isRTL = self.panel.view.effectiveUserInterfaceLayoutDirection == .rightToLeft
+
         let position = self.panel.configuration.position
         let margins = self.panel.configuration.margins
-        
-        let animateToLeft = isRTL != (position == .leadingBottom)
+        let animateToLeft = self.panel.view.isRTL != (position == .leadingBottom)
         
         switch direction {
         case .horizontal:

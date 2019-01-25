@@ -98,14 +98,14 @@ internal extension PanelConstraints {
             insets = positionLogic.applyingInsets(of: parentView, to: insets, edge: edge)
         }
         
-        return parentView.bounds.inset(by: UIEdgeInsets(directionalEdgeInsets: insets, isRTL: parentView.effectiveUserInterfaceLayoutDirection == .rightToLeft))
+        return parentView.bounds.inset(by: UIEdgeInsets(directionalEdgeInsets: insets, isRTL: parentView.isRTL))
     }
 
     var effectiveBounds: CGRect {
         guard let parentView = self.panel.parent?.view else { return .zero }
         
         let insets = self.panel.configuration.margins
-        return self.safeArea.inset(by: UIEdgeInsets(directionalEdgeInsets: insets, isRTL: parentView.effectiveUserInterfaceLayoutDirection == .rightToLeft))
+        return self.safeArea.inset(by: UIEdgeInsets(directionalEdgeInsets: insets, isRTL: parentView.isRTL))
     }
 
     var maxHeight: CGFloat {

@@ -135,18 +135,17 @@ private extension PanelGestures {
             guard let parentView = self.panel.parent?.view else { return }
             
             func dragOffset(for translation: CGPoint, moveAllowed: Bool) -> CGFloat {
-                let dragCoefficient: CGFloat = 1/5 // TODO: revise
-                return moveAllowed ? translation.x : translation.x * dragCoefficient
+                return moveAllowed ? translation.x : translation.x / 3.0
             }
             
             let translation = pan.translation(in: parentView)
-            let transformation = CGAffineTransform(translationX: translation.x, y: 0)
+            let transformation = CGAffineTransform(translationX: translation.x, y: 0.0)
             let targetFrame = self.panel.view.frame.applying(transformation)
             let moveAllowed = self.panel.animator.askDelegateAboutMove(to: targetFrame)
             let xOffset = dragOffset(for: translation, moveAllowed: moveAllowed)
             guard xOffset != 0.0 else { return }
             
-            self.panel.animator.performWithoutAnimation { self.panel.view.transform = CGAffineTransform(translationX: xOffset, y: 0) }
+            self.panel.animator.performWithoutAnimation { self.panel.view.transform = CGAffineTransform(translationX: xOffset, y: 0.0) }
         }
 
         private func handlePanEnded(_ pan: UIPanGestureRecognizer) {
@@ -158,8 +157,7 @@ private extension PanelGestures {
             let velocity = pan.velocity(in: parentView).x
             let context = PanelTransitionCoordinator.HorizontalTransitionContext(panel: self.panel, parentView: parentView, originalFrame: originalFrame, offset: offset, velocity: velocity)
             
-            let instruction = self.panel.animator.askDelegateOfMove(from: originalFrame, to: self.panel.view.frame, context: context)
-            
+            let instruction = self.panel.animator.notifyDelegateOfMove(from: originalFrame, to: self.panel.view.frame, context: context)
             switch instruction {
             case .none:
                 let originalPosition = self.panel.configuration.position
@@ -194,13 +192,7 @@ private extension PanelGestures {
             let originalPosition = self.panel.configuration.position
             let targetOffset = self.offset(for: targetPosition)
             
-            let distance: CGFloat
-            if originalPosition != targetPosition {
-                distance = targetOffset - context.offset
-            } else {
-                distance = context.offset
-            }
-            
+            let distance = originalPosition != targetPosition ? targetOffset - context.offset : context.offset
             return abs(context.velocity / distance)
         }
         
@@ -214,22 +206,21 @@ private extension PanelGestures {
         private func offset(for position: Panel.Configuration.Position) -> CGFloat {
             let originalPosition = self.panel.configuration.position
             guard originalPosition != position else { return 0 }
-            
-            let isRTL = self.panel.view.effectiveUserInterfaceLayoutDirection == .rightToLeft
+
             let distance = self.panel.constraints.effectiveBounds.width - self.panel.view.frame.width
             switch position {
             case .leadingBottom:
-                return isRTL ? distance : -distance
+                return self.panel.view.isRTL ? distance : -distance
             case .trailingBottom:
-                return isRTL ? -distance : distance
+                return self.panel.view.isRTL ? -distance : distance
             default:
-                return 0
+                return 0.0
             }
         }
 
         private func animate(to targetPosition: Panel.Configuration.Position, initialVelocity: CGFloat) {
             let targetOffset = self.offset(for: targetPosition)
-            let timing = Animation.medium.makeTiming(with: initialVelocity)
+            let timing = Animation.overdamped.makeTiming(with: initialVelocity)
             
             self.panel.animator.animateWithTiming(timing, animations: {
                 self.panel.view.transform = CGAffineTransform(translationX: targetOffset, y: 0)
@@ -243,7 +234,7 @@ private extension PanelGestures {
 
         private func animateToHide(initialVelocity: CGFloat) {
             let transformation = self.panel.animator.transform(for: .horizontal, size: self.panel.view.frame.size)
-            let timing = Animation.medium.makeTiming(with: initialVelocity)
+            let timing = Animation.overdamped.makeTiming(with: initialVelocity)
             
             self.panel.animator.animateWithTiming(timing, animations: {
                 self.panel.view.transform = transformation
@@ -524,7 +515,6 @@ private extension PanelGestures {
         let damping: CGFloat
 
         static let springy: Animation = Animation(mass: 6.0, stiffness: 2400.0, damping: 195.0)
-        static let medium: Animation = Animation(mass: 6.0, stiffness: 2400.0, damping: 215.0)
         static let overdamped: Animation = Animation(mass: 6.0, stiffness: 2400.0, damping: 250.0)
 
         func makeTiming(with velocity: CGFloat) -> UISpringTimingParameters {
@@ -637,20 +627,5 @@ private extension Panel {
 
     var currentHeight: CGFloat {
         return self.constraints.heightConstraint!.constant
-    }
-}
-
-extension PanelGestures.Animation {
-    
-    // Inspired by: https://medium.com/ios-os-x-development/demystifying-uikit-spring-animations-2bb868446773
-    public init(dampingRatio: CGFloat, frequencyResponse: CGFloat) {
-        precondition(dampingRatio >= 0)
-        precondition(frequencyResponse > 0)
-        
-        let mass = 1 as CGFloat
-        let stiffness = pow(2 * .pi / frequencyResponse, 2) * mass
-        let damping = 4 * .pi * dampingRatio * mass / frequencyResponse
-        
-        self.init(mass: mass, stiffness: stiffness, damping: damping)
     }
 }

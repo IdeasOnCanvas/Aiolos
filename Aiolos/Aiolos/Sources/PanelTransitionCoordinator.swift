@@ -117,11 +117,11 @@ public extension PanelTransitionCoordinator {
             guard self.panel.configuration.position == .leadingBottom else { return false }
 
             if self.parentView.isRTL {
-                guard self.offset > 0 else { return false }
+                guard self.offset > 0.0 else { return false }
 
                 return self.leadingEdge + self.projectedOffset > self.leadingEdgeThreshold
             } else {
-                guard self.offset < 0 else { return false }
+                guard self.offset < 0.0 else { return false }
 
                 return self.leadingEdge + self.projectedOffset < self.leadingEdgeThreshold
             }
@@ -131,11 +131,11 @@ public extension PanelTransitionCoordinator {
             guard self.panel.configuration.position == .trailingBottom else { return false }
 
             if self.parentView.isRTL {
-                guard self.offset < 0 else { return false }
+                guard self.offset < 0.0 else { return false }
 
                 return self.trailingEdge + self.projectedOffset < self.trailingEdgeThreshold
             } else {
-                guard self.offset > 0 else { return false }
+                guard self.offset > 0.0 else { return false }
 
                 return self.trailingEdge + self.projectedOffset > self.trailingEdgeThreshold
             }
@@ -158,17 +158,17 @@ private extension PanelTransitionCoordinator.HorizontalTransitionContext {
     }
     
     var isMovingTowardsLeadingEdge: Bool {
-        let normalizedOffset = (self.parentView.isRTL ? -1 : 1) * self.offset
-        let normalizedVelocity = (self.parentView.isRTL ? -1 : 1) * self.velocity
+        let normalizedOffset = (self.parentView.isRTL ? -1.0 : 1.0) * self.offset
+        let normalizedVelocity = (self.parentView.isRTL ? -1.0 : 1.0) * self.velocity
         
-        return normalizedOffset < 0 && normalizedVelocity < 0
+        return normalizedOffset < 0.0 && normalizedVelocity < 0.0
     }
     
     var isMovingTowardsTrailingEdge: Bool {
-        let normalizedOffset = (self.parentView.isRTL ? -1 : 1) * self.offset
-        let normalizedVelocity = (self.parentView.isRTL ? -1 : 1) * self.velocity
+        let normalizedOffset = (self.parentView.isRTL ? -1.0 : 1.0) * self.offset
+        let normalizedVelocity = (self.parentView.isRTL ? -1.0 : 1.0) * self.velocity
         
-        return normalizedOffset > 0 && normalizedVelocity > 0
+        return normalizedOffset > 0.0 && normalizedVelocity > 0.0
     }
     
     var horizontalThreshold: CGFloat {
@@ -185,13 +185,13 @@ private extension PanelTransitionCoordinator.HorizontalTransitionContext {
     
     var trailingEdgeThreshold: CGFloat {
         let trailingEdge = (self.parentView.isRTL ? self.parentView.bounds.minX : self.parentView.bounds.maxX)
-        let directionMultiplier: CGFloat = self.parentView.isRTL ? -1 : 1
+        let directionMultiplier: CGFloat = self.parentView.isRTL ? -1.0 : 1.0
         return trailingEdge + directionMultiplier * self.originalFrame.width
     }
     
     var leadingEdgeThreshold: CGFloat {
         let leadingEdge = (self.parentView.isRTL ? self.parentView.bounds.maxX : self.parentView.bounds.minX)
-        let directionMultiplier: CGFloat = self.parentView.isRTL ? -1 : 1
+        let directionMultiplier: CGFloat = self.parentView.isRTL ? -1.0 : 1.0
         return leadingEdge - directionMultiplier * self.originalFrame.width
     }
     
@@ -201,12 +201,5 @@ private extension PanelTransitionCoordinator.HorizontalTransitionContext {
     
     var leadingEdge: CGFloat {
         return self.parentView.isRTL ? self.originalFrame.maxX : self.originalFrame.minX
-    }
-}
-
-private extension UIView {
-
-    var isRTL: Bool {
-        return self.effectiveUserInterfaceLayoutDirection == .rightToLeft
     }
 }
