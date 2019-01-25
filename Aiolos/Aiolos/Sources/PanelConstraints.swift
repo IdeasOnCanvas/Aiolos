@@ -13,7 +13,7 @@ import Foundation
 final class PanelConstraints {
 
     private unowned let panel: Panel
-    private var isPanning: Bool = false
+    private var isResizing: Bool = false
     private lazy var keyboardLayoutGuide: KeyboardLayoutGuide = self.makeKeyboardLayoutGuide()
     private var topConstraint: NSLayoutConstraint?
     private var topConstraintMargin: CGFloat = 0.0
@@ -30,7 +30,7 @@ final class PanelConstraints {
     // MARK: - PanelConstraints
 
     func updateSizeConstraints(for size: CGSize) {
-        guard self.isPanning == false else { return }
+        guard self.isResizing == false else { return }
         guard let widthConstraint = self.widthConstraint, let heightConstraint = self.heightConstraint else {
             self.activateSizeConstraints(for: size)
             return
@@ -43,7 +43,7 @@ final class PanelConstraints {
     }
 
     func updatePositionConstraints(for position: Panel.Configuration.Position, margins: NSDirectionalEdgeInsets) {
-        guard self.isPanning == false else { return }
+        guard self.isResizing == false else { return }
         guard let view = self.panel.view else { return }
         guard let parentView = self.panel.parent?.view else { return }
 
@@ -90,16 +90,26 @@ final class PanelConstraints {
 
 internal extension PanelConstraints {
 
-    var maxHeight: CGFloat {
-        guard let parentView = self.panel.parent?.view else { return 0.0 }
-
+    var safeArea: CGRect {
+        guard let parentView = self.panel.parent?.view else { return .zero }
+        
         var insets: NSDirectionalEdgeInsets = .zero
         for (edge, positionLogic) in self.panel.configuration.positionLogic {
             insets = positionLogic.applyingInsets(of: parentView, to: insets, edge: edge)
         }
+        
+        return parentView.bounds.inset(by: UIEdgeInsets(directionalEdgeInsets: insets, isRTL: parentView.isRTL))
+    }
 
-        let safeArea = parentView.bounds.inset(by: UIEdgeInsets(directionalEdgeInsets: insets, isRTL: parentView.effectiveUserInterfaceLayoutDirection == .rightToLeft))
-        return self.panel.view.frame.maxY - safeArea.minY
+    var effectiveBounds: CGRect {
+        guard let parentView = self.panel.parent?.view else { return .zero }
+        
+        let insets = self.panel.configuration.margins
+        return self.safeArea.inset(by: UIEdgeInsets(directionalEdgeInsets: insets, isRTL: parentView.isRTL))
+    }
+
+    var maxHeight: CGFloat {
+        return self.panel.view.frame.maxY - self.safeArea.minY
     }
 
     func updateForPanStart(with currentSize: CGSize) {
@@ -111,28 +121,28 @@ internal extension PanelConstraints {
     }
 
     func updateForPan(with yOffset: CGFloat) {
-        self.isPanning = true
+        self.isResizing = true
         self.heightConstraint?.constant -= yOffset
     }
 
     func updateForPanEnd() {
         self.setTopConstraintIsRelaxed(false)
-        self.isPanning = false
+        self.isResizing = false
     }
 
     func prepareForPanEndAnimation() {
-        self.isPanning = true
+        self.isResizing = true
     }
 
     func updateForPanEndAnimation(to height: CGFloat) {
         self.heightConstraint?.constant = height
         self.panel.parent?.view.layoutIfNeeded()
-        self.isPanning = false
+        self.isResizing = false
     }
 
     func updateForPanCancelled(with targetSize: CGSize) {
         self.setTopConstraintIsRelaxed(false)
-        self.isPanning = false
+        self.isResizing = false
         self.updateSizeConstraints(for: targetSize)
     }
 }

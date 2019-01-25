@@ -114,7 +114,25 @@ extension ViewController: PanelAnimationDelegate {
             print("Completed panel transition to \(newMode)")
         })
     }
+    
+    func panel(_ panel: Panel, shouldMoveTo frame: CGRect) -> Bool {
+        return true
+    }
+    
+    func panel(_ panel: Panel, didMoveFrom oldFrame: CGRect, to newFrame: CGRect, with coordinator: PanelTransitionCoordinator) -> PanelTransitionCoordinator.Instruction {
+        guard let context = coordinator.direction.context else { return .none }
+
+        print("Panel did move to frame \(newFrame)")
+        
+        let panelShouldHide = context.isMovingPastLeadingEdge || context.isMovingPastTrailingEdge
+        if panelShouldHide {
+            return .hide
+        } else {
+            return .updatePosition(context.targetPosition)
+        }
+    }
 }
+
 
 // MARK: - Private
 
@@ -138,9 +156,11 @@ private extension ViewController {
         panelController.configuration.appearance.separatorColor = .white
 
         if self.traitCollection.userInterfaceIdiom == .pad {
+            panelController.configuration.supportedPositions = [.leadingBottom, .trailingBottom]
             panelController.configuration.appearance.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner, .layerMinXMaxYCorner, .layerMaxXMaxYCorner]
         } else {
             panelController.configuration.supportedModes = [.minimal, .compact, .expanded, .fullHeight]
+            panelController.configuration.supportedPositions = [.bottom]
             panelController.configuration.appearance.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
         }
 
@@ -169,9 +189,9 @@ private extension ViewController {
     @objc
     func handleToggleVisibilityPress() {
         if self.panelController.isVisible {
-            self.panelController.removeFromParent(transition: .slide(direction: .vertical))
+            self.panelController.removeFromParent(transition: .slide(direction: .horizontal))
         } else {
-            self.panelController.add(to: self, transition: .slide(direction: .vertical))
+            self.panelController.add(to: self, transition: .slide(direction: .horizontal))
         }
     }
 

@@ -75,11 +75,26 @@ final class PanelAnimator {
         guard let animationDelegate = self.panel.animationDelegate else { return }
         guard self.panel.isVisible else { return }
 
-        let transitionCoordinator = PanelTransitionCoordinator(animator: self)
+        let transitionCoordinator = PanelTransitionCoordinator(animator: self, direction: .vertical)
         animationDelegate.panel(self.panel, willTransitionFrom: oldMode, to: newMode, with: transitionCoordinator)
         if let contentViewController = self.panel.contentViewController as? PanelAnimationDelegate {
             contentViewController.panel(self.panel, willTransitionFrom: oldMode, to: newMode, with: transitionCoordinator)
         }
+    }
+    
+    func askDelegateAboutMove(to frame: CGRect) -> Bool {
+        guard let animationDelegate = self.panel.animationDelegate else { return false }
+        guard self.panel.isVisible else { return false }
+        
+        return animationDelegate.panel(self.panel, shouldMoveTo: frame)
+    }
+    
+    func notifyDelegateOfMove(from oldFrame: CGRect, to newFrame: CGRect, context: PanelTransitionCoordinator.HorizontalTransitionContext) -> PanelTransitionCoordinator.Instruction {
+        guard let animationDelegate = self.panel.animationDelegate else { return .none }
+        guard self.panel.isVisible else { return .none }
+        
+        let transitionCoordinator = PanelTransitionCoordinator(animator: self, direction: .horizontal(context: context))
+        return animationDelegate.panel(self.panel, didMoveFrom: oldFrame, to: newFrame, with: transitionCoordinator)
     }
 }
 
@@ -142,6 +157,22 @@ extension PanelAnimator {
 
         animator.startAnimation()
         self.animator = animator
+    }
+
+    func transform(for direction: Panel.Direction, size: CGSize) -> CGAffineTransform {
+        guard let safeAreaInsets = self.panel.parent?.view.safeAreaInsets else { return .identity }
+
+        let position = self.panel.configuration.position
+        let margins = self.panel.configuration.margins
+        let animateToLeft = self.panel.view.isRTL != (position == .leadingBottom)
+        
+        switch direction {
+        case .horizontal:
+            let translationX = animateToLeft ? -(size.width + margins.leading) : size.width + margins.trailing
+            return CGAffineTransform(translationX: translationX, y: 0.0)
+        case .vertical:
+            return CGAffineTransform(translationX: 0.0, y: size.height + margins.bottom + safeAreaInsets.bottom)
+        }
     }
 }
 
@@ -226,23 +257,5 @@ private extension PanelAnimator {
 
         animator.startAnimation()
         self.animator = animator
-    }
-
-    func transform(for direction: Panel.Direction, size: CGSize) -> CGAffineTransform {
-        guard let safeAreaInsets = self.panel.parent?.view.safeAreaInsets else { return .identity }
-
-        let isRTL = self.panel.view.effectiveUserInterfaceLayoutDirection == .rightToLeft
-        let position = self.panel.configuration.position
-        let margins = self.panel.configuration.margins
-
-        let animateToLeft = isRTL != (position == .leadingBottom)
-
-        switch direction {
-        case .horizontal:
-            let translationX = animateToLeft ? -(size.width + margins.leading) : size.width + margins.trailing
-            return CGAffineTransform(translationX: translationX, y: 0.0)
-        case .vertical:
-            return CGAffineTransform(translationX: 0.0, y: size.height + margins.bottom + safeAreaInsets.bottom)
-        }
     }
 }

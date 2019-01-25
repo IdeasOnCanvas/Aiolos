@@ -22,6 +22,7 @@
 		9B22527A1F150B14006DE55D /* Panel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B2252791F150B14006DE55D /* Panel.swift */; };
 		9B22527E1F150F39006DE55D /* PanelView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B22527D1F150F39006DE55D /* PanelView.swift */; };
 		9B2252801F151046006DE55D /* PanelConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B22527F1F151046006DE55D /* PanelConfiguration.swift */; };
+		9B5B234A21FB481D00859947 /* UIView+RTL.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B5B234921FB481D00859947 /* UIView+RTL.swift */; };
 		9BC45F8A1F320A860099EE5B /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 9BC45F891F320A860099EE5B /* Launch Screen.storyboard */; };
 		9BC5F42F1F34757C001DDBEE /* ShadowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9BC5F42E1F34757C001DDBEE /* ShadowView.swift */; };
 		9BC6A9411F3A03D100CE9499 /* PanelTransition.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9BC6A9401F3A03D100CE9499 /* PanelTransition.swift */; };
@@ -75,6 +76,7 @@
 		9B2252791F150B14006DE55D /* Panel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Panel.swift; sourceTree = "<group>"; };
 		9B22527D1F150F39006DE55D /* PanelView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PanelView.swift; sourceTree = "<group>"; };
 		9B22527F1F151046006DE55D /* PanelConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PanelConfiguration.swift; sourceTree = "<group>"; };
+		9B5B234921FB481D00859947 /* UIView+RTL.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+RTL.swift"; sourceTree = "<group>"; };
 		9BC45F891F320A860099EE5B /* Launch Screen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = "Launch Screen.storyboard"; sourceTree = "<group>"; };
 		9BC5F42E1F34757C001DDBEE /* ShadowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShadowView.swift; sourceTree = "<group>"; };
 		9BC6A9401F3A03D100CE9499 /* PanelTransition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PanelTransition.swift; sourceTree = "<group>"; };
@@ -164,6 +166,7 @@
 				9B22095F1F1E4CC700BD4E72 /* ResizeHandle.swift */,
 				9B037A8C1F3B618C00ACCC26 /* SeparatorView.swift */,
 				9BC5F42E1F34757C001DDBEE /* ShadowView.swift */,
+				9B5B234921FB481D00859947 /* UIView+RTL.swift */,
 				9B0A24721F34ACB500BCAA91 /* UIViewController+Panel.swift */,
 			);
 			path = Sources;
@@ -307,6 +310,7 @@
 				9BC6A9411F3A03D100CE9499 /* PanelTransition.swift in Sources */,
 				9B2209601F1E4CC700BD4E72 /* ResizeHandle.swift in Sources */,
 				9BC5F42F1F34757C001DDBEE /* ShadowView.swift in Sources */,
+				9B5B234A21FB481D00859947 /* UIView+RTL.swift in Sources */,
 				9BEB702F1F18F9C600EDB0C1 /* PanelGestures.swift in Sources */,
 				9B22527A1F150B14006DE55D /* Panel.swift in Sources */,
 			);
