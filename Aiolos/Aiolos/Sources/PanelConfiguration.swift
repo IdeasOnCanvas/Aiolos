@@ -75,7 +75,6 @@ public extension Panel {
         public var gestureResizingMode: GestureResizingMode
         public var appearance: Appearance
         public var horizontalPositioningEnabled: Bool { return self.supportedPositions.count > 1 }
-        public weak var gestureRecognizerDelegate: UIGestureRecognizerDelegate?
     }
 }
 
@@ -100,8 +99,7 @@ public extension Panel.Configuration {
                                    mode: .compact,
                                    supportedModes: [.compact, .expanded, .fullHeight],
                                    gestureResizingMode: .includingContent,
-                                   appearance: appearance,
-                                   gestureRecognizerDelegate: nil)
+                                   appearance: appearance)
     }
 }
 
