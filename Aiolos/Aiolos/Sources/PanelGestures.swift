@@ -237,10 +237,14 @@ private extension PanelGestures {
             let transformation = self.panel.animator.transform(for: .horizontal, size: self.panel.view.frame.size)
             let timing = Animation.overdamped.makeTiming(with: initialVelocity)
             
+            self.panel.animator.isTransitioningFromParent = true
             self.panel.animator.animateWithTiming(timing, animations: {
                 self.panel.view.transform = transformation
             }, completion: {
                 self.panel.view.transform = .identity
+                // We need to reset the 'isTransitioningFromParent' state
+                // so we can actually remove the panel from its parent.
+                self.panel.animator.isTransitioningFromParent = false
                 self.panel.removeFromParent(transition: .none)
             })
         }
