@@ -102,6 +102,10 @@ extension ViewController: PanelSizeDelegate {
 
 extension ViewController: PanelAnimationDelegate {
 
+    func panel(_ panel: Panel, didStartTransitioningIn direction: Panel.Direction) {
+        print("Panel did start transitioning in \(direction) direction")
+    }
+
     func panel(_ panel: Panel, willTransitionTo size: CGSize) {
         print("Panel will transition to size \(size)")
     }

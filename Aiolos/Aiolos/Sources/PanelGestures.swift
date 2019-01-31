@@ -129,6 +129,7 @@ private extension PanelGestures {
         }
         
         private func handlePanStarted(_ pan: UIPanGestureRecognizer) {
+            self.panel.animator.notifyDelegateOfTransition(in: .horizontal)
             self.gestures.updateResizeHandle()
         }
         
@@ -237,10 +238,14 @@ private extension PanelGestures {
             let transformation = self.panel.animator.transform(for: .horizontal, size: self.panel.view.frame.size)
             let timing = Animation.overdamped.makeTiming(with: initialVelocity)
             
+            self.panel.animator.isTransitioningFromParent = true
             self.panel.animator.animateWithTiming(timing, animations: {
                 self.panel.view.transform = transformation
             }, completion: {
                 self.panel.view.transform = .identity
+                // We need to reset the 'isTransitioningFromParent' state
+                // so we can actually remove the panel from its parent.
+                self.panel.animator.isTransitioningFromParent = false
                 self.panel.removeFromParent(transition: .none)
             })
         }
@@ -320,7 +325,9 @@ private extension PanelGestures {
                     }
                 }
             }
-            
+
+            self.panel.animator.notifyDelegateOfTransition(in: .vertical)
+
             return true
         }
         
@@ -351,7 +358,7 @@ private extension PanelGestures {
             if pan.didPan && pan.cancelsTouchesInView == false {
                 guard self.handlePanDragStart(pan) else { return }
             }
-            
+
             self.panel.animator.performWithoutAnimation { self.panel.constraints.updateForPan(with: yOffset) }
             self.panel.animator.notifyDelegateOfTransition(to: CGSize(width: self.panel.view.frame.width, height: self.panel.currentHeight))
         }
