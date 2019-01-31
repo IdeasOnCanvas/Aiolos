@@ -129,6 +129,7 @@ private extension PanelGestures {
         }
         
         private func handlePanStarted(_ pan: UIPanGestureRecognizer) {
+            self.panel.animator.notifyDelegateOfTransition(in: .horizontal)
             self.gestures.updateResizeHandle()
         }
         
@@ -324,7 +325,9 @@ private extension PanelGestures {
                     }
                 }
             }
-            
+
+            self.panel.animator.notifyDelegateOfTransition(in: .vertical)
+
             return true
         }
         
@@ -355,7 +358,7 @@ private extension PanelGestures {
             if pan.didPan && pan.cancelsTouchesInView == false {
                 guard self.handlePanDragStart(pan) else { return }
             }
-            
+
             self.panel.animator.performWithoutAnimation { self.panel.constraints.updateForPan(with: yOffset) }
             self.panel.animator.notifyDelegateOfTransition(to: CGSize(width: self.panel.view.frame.width, height: self.panel.currentHeight))
         }

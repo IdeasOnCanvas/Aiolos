@@ -61,6 +61,13 @@ final class PanelAnimator {
         animator.finishAnimation(at: .end)
     }
 
+    func notifyDelegateOfTransition(in direction: Panel.Direction) {
+        guard let animationDelegate = self.panel.animationDelegate else { return }
+        guard self.panel.isVisible else { return }
+
+        animationDelegate.panel(self.panel, didStartTransitioningIn: .horizontal)
+    }
+
     func notifyDelegateOfTransition(to size: CGSize) {
         guard let animationDelegate = self.panel.animationDelegate else { return }
         guard self.panel.isVisible else { return }
