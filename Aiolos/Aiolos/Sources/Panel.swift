@@ -95,8 +95,9 @@ public extension Panel {
         super.viewDidLayoutSubviews()
 
         if configuration.shouldShowHandleSpace {
-            self.resizeHandle.frame = .zero
-            self.panelView.frame = self.view.bounds
+            resizeHandle.frame = .zero
+            separatorView.frame = .zero
+            panelView.frame = self.view.bounds
         } else {
             let (resizeFrame, panelFrame) = self.view.bounds.divided(atDistance: ResizeHandle.Constants.height, from: .minYEdge)
             self.resizeHandle.frame = resizeFrame
