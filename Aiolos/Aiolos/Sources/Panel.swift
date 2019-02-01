@@ -94,7 +94,7 @@ public extension Panel {
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
 
-        if configuration.shouldShowHandleSpace {
+        if configuration.shouldHideHandleSpace {
             resizeHandle.frame = .zero
             separatorView.frame = .zero
             panelView.frame = self.view.bounds

@@ -74,7 +74,7 @@ public extension Panel {
         public var supportedModes: Set<Mode>
         public var gestureResizingMode: GestureResizingMode
         public var appearance: Appearance
-        public var shouldShowHandleSpace: Bool = true
+        public var shouldHideHandleSpace: Bool = true
         public var horizontalPositioningEnabled: Bool { return self.supportedPositions.count > 1 }
     }
 }
@@ -101,7 +101,7 @@ public extension Panel.Configuration {
                                    supportedModes: [.compact, .expanded, .fullHeight],
                                    gestureResizingMode: .includingContent,
                                    appearance: appearance,
-                                   shouldShowHandleSpace: true)
+                                   shouldHideHandleSpace: true)
     }
 }
 
