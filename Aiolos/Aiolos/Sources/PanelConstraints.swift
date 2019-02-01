@@ -145,6 +145,15 @@ internal extension PanelConstraints {
         self.isResizing = false
         self.updateSizeConstraints(for: targetSize)
     }
+
+    func prepareForHorizontalPanEndAnimation() {
+        // TODO: Better naming: Either rename the property to something more generic (isPanning|isTransitioning) or create a new one 'isMoving'
+        self.isResizing = true
+    }
+
+    func updateForHorizontalPanEndAnimationCompleted() {
+        self.isResizing = false
+    }
 }
 
 // MARK: - Private
