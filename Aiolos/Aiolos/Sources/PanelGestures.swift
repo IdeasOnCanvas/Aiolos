@@ -133,7 +133,7 @@ private extension PanelGestures {
     final class HorizontalHandler {
         
         private unowned let gestures: PanelGestures
-        private var panel: Panel { return gestures.panel }
+        private var panel: Panel { return self.gestures.panel }
         
         init(gestures: PanelGestures) {
             self.gestures = gestures
@@ -298,7 +298,7 @@ private extension PanelGestures {
     final class VerticalHandler {
         
         private unowned let gestures: PanelGestures
-        private var panel: Panel { return gestures.panel }
+        private var panel: Panel { return self.gestures.panel }
         private var originalConfiguration: PanelGestures.Configuration?
         
         init(gestures: PanelGestures) {
