@@ -176,6 +176,9 @@ private extension ViewController {
             return NSDirectionalEdgeInsets(top: 20.0, leading: horizontalMargin, bottom: 0.0, trailing: horizontalMargin)
         }
 
+        // Toggle here to show/hide the resize handle
+//        configuration.appearance.resizeHandleAppearence = .hidden
+        
         configuration.appearance.separatorColor = .white
         configuration.position = panelPosition
         configuration.margins = panelMargins

@@ -93,12 +93,13 @@ public extension Panel {
 
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-
-        if configuration.shouldHideHandleSpace {
-            resizeHandle.frame = .zero
-            separatorView.frame = .zero
+        
+        switch configuration.appearance.resizeHandleAppearence {
+        case .hidden:
+            resizeHandle.frame = .null
+            separatorView.frame = .null
             panelView.frame = self.view.bounds
-        } else {
+        case .visible:
             let (resizeFrame, panelFrame) = self.view.bounds.divided(atDistance: ResizeHandle.Constants.height, from: .minYEdge)
             self.resizeHandle.frame = resizeFrame
             self.panelView.frame = panelFrame
