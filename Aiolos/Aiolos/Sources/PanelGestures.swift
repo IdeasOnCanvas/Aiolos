@@ -60,7 +60,7 @@ final class PanelGestures: NSObject {
 extension PanelGestures: UIGestureRecognizerDelegate {
 
     func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
-        if let shouldBegin = panel.gestureRecognizerDelegate?.gestureRecognizerShouldBegin?(gestureRecognizer) {
+        if let shouldBegin = self.panel.gestureDelegate?.gestureRecognizerShouldBegin?(gestureRecognizer) {
             return shouldBegin
         }
         
@@ -75,7 +75,7 @@ extension PanelGestures: UIGestureRecognizerDelegate {
     }
 
     func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
-        if let shouldRecognize = panel.gestureRecognizerDelegate?.gestureRecognizer?(gestureRecognizer, shouldRecognizeSimultaneouslyWith: otherGestureRecognizer) {
+        if let shouldRecognize = self.panel.gestureDelegate?.gestureRecognizer?(gestureRecognizer, shouldRecognizeSimultaneouslyWith: otherGestureRecognizer) {
             return shouldRecognize
         }
         
@@ -83,24 +83,24 @@ extension PanelGestures: UIGestureRecognizerDelegate {
     }
 
     func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRequireFailureOf otherGestureRecognizer: UIGestureRecognizer) -> Bool {
-        // fail for built-in drag gesture recognizers 🤷‍♂️
-        let className = String(describing: type(of: otherGestureRecognizer))
-        if className.contains("UIDrag") { return true }
-
         // horizontal and vertical pan should not happen together
         if gestureRecognizer == self.horizontalPan {
             return otherGestureRecognizer == self.verticalPan
         }
 
-        if let shouldRequireFailureOf = panel.gestureRecognizerDelegate?.gestureRecognizer?(gestureRecognizer, shouldRequireFailureOf: otherGestureRecognizer) {
+        if let shouldRequireFailureOf = self.panel.gestureDelegate?.gestureRecognizer?(gestureRecognizer, shouldRequireFailureOf: otherGestureRecognizer) {
             return shouldRequireFailureOf
         }
+
+        // fail for built-in drag gesture recognizers 🤷‍♂️
+        let className = String(describing: type(of: otherGestureRecognizer))
+        if className.contains("UIDrag") { return true }
         
         return false
     }
     
     func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldBeRequiredToFailBy otherGestureRecognizer: UIGestureRecognizer) -> Bool {
-        if let shouldBeRequiredToFailBy = panel.gestureRecognizerDelegate?.gestureRecognizer?(gestureRecognizer, shouldBeRequiredToFailBy: otherGestureRecognizer) {
+        if let shouldBeRequiredToFailBy = self.panel.gestureDelegate?.gestureRecognizer?(gestureRecognizer, shouldBeRequiredToFailBy: otherGestureRecognizer) {
             return shouldBeRequiredToFailBy
         }
         
@@ -108,7 +108,7 @@ extension PanelGestures: UIGestureRecognizerDelegate {
     }
     
     func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive press: UIPress) -> Bool {
-        if let shouldReceivePress = panel.gestureRecognizerDelegate?.gestureRecognizer?(gestureRecognizer, shouldReceive: press) {
+        if let shouldReceivePress = self.panel.gestureDelegate?.gestureRecognizer?(gestureRecognizer, shouldReceive: press) {
             return shouldReceivePress
         }
         
@@ -116,7 +116,7 @@ extension PanelGestures: UIGestureRecognizerDelegate {
     }
     
     func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
-        if let shouldReceiveTouch = panel.gestureRecognizerDelegate?.gestureRecognizer?(gestureRecognizer, shouldReceive: touch) {
+        if let shouldReceiveTouch = self.panel.gestureDelegate?.gestureRecognizer?(gestureRecognizer, shouldReceive: touch) {
             return shouldReceiveTouch
         }
         
