@@ -13,7 +13,7 @@ import Foundation
 final class PanelConstraints {
 
     private unowned let panel: Panel
-    private var isResizing: Bool = false
+    private var isTransitioning: Bool = false
     private lazy var keyboardLayoutGuide: KeyboardLayoutGuide = self.makeKeyboardLayoutGuide()
     private var topConstraint: NSLayoutConstraint?
     private var topConstraintMargin: CGFloat = 0.0
@@ -30,7 +30,7 @@ final class PanelConstraints {
     // MARK: - PanelConstraints
 
     func updateSizeConstraints(for size: CGSize) {
-        guard self.isResizing == false else { return }
+        guard self.isTransitioning == false else { return }
         guard let widthConstraint = self.widthConstraint, let heightConstraint = self.heightConstraint else {
             self.activateSizeConstraints(for: size)
             return
@@ -43,7 +43,7 @@ final class PanelConstraints {
     }
 
     func updatePositionConstraints(for position: Panel.Configuration.Position, margins: NSDirectionalEdgeInsets) {
-        guard self.isResizing == false else { return }
+        guard self.isTransitioning == false else { return }
         guard let view = self.panel.view else { return }
         guard let parentView = self.panel.parent?.view else { return }
 
@@ -121,29 +121,37 @@ internal extension PanelConstraints {
     }
 
     func updateForPan(with yOffset: CGFloat) {
-        self.isResizing = true
+        self.isTransitioning = true
         self.heightConstraint?.constant -= yOffset
     }
 
     func updateForPanEnd() {
         self.setTopConstraintIsRelaxed(false)
-        self.isResizing = false
+        self.isTransitioning = false
     }
 
     func prepareForPanEndAnimation() {
-        self.isResizing = true
+        self.isTransitioning = true
     }
 
     func updateForPanEndAnimation(to height: CGFloat) {
         self.heightConstraint?.constant = height
         self.panel.parent?.view.layoutIfNeeded()
-        self.isResizing = false
+        self.isTransitioning = false
     }
 
     func updateForPanCancelled(with targetSize: CGSize) {
         self.setTopConstraintIsRelaxed(false)
-        self.isResizing = false
+        self.isTransitioning = false
         self.updateSizeConstraints(for: targetSize)
+    }
+
+    func prepareForHorizontalPanEndAnimation() {
+        self.isTransitioning = true
+    }
+
+    func updateForHorizontalPanEndAnimationCompleted() {
+        self.isTransitioning = false
     }
 }
 

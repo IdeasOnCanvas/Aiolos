@@ -223,13 +223,16 @@ private extension PanelGestures {
         private func animate(to targetPosition: Panel.Configuration.Position, initialVelocity: CGFloat) {
             let targetOffset = self.offset(for: targetPosition)
             let timing = Animation.overdamped.makeTiming(with: initialVelocity)
-            
+
+            self.panel.constraints.prepareForHorizontalPanEndAnimation()
+            self.panel.configuration.position = targetPosition
             self.panel.animator.animateWithTiming(timing, animations: {
                 self.panel.view.transform = CGAffineTransform(translationX: targetOffset, y: 0)
             }, completion: {
                 self.panel.animator.performWithoutAnimation {
                     self.panel.view.transform = .identity
-                    self.panel.configuration.position = targetPosition
+                    self.panel.constraints.updateForHorizontalPanEndAnimationCompleted()
+                    self.panel.constraints.updatePositionConstraints(for: targetPosition, margins: self.panel.configuration.margins)
                 }
             })
         }
