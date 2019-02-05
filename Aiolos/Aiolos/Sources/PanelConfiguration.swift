@@ -56,14 +56,18 @@ public extension Panel {
         public struct Appearance {
             public var visualEffect: UIVisualEffect?
             public var borderColor: UIColor
-            public var resizeHandleColor: UIColor
-            public var resizeHandleBackgroundColor: UIColor
             public var separatorColor: UIColor
             public var cornerRadius: CGFloat
             public var maskedCorners: CACornerMask
             public var shadowColor: UIColor
             public var shadowOpacity: Float
             public var shadowOffset: UIOffset
+            public var resizeHandleAppearence: ResizeHandleAppearance
+            
+            public enum ResizeHandleAppearance {
+                case hidden
+                case visible(foregroundColor: UIColor, backgroundColor: UIColor)
+            }
         }
 
         public var position: Position
@@ -83,14 +87,13 @@ public extension Panel.Configuration {
     static var `default`: Panel.Configuration {
         let appearance = Appearance(visualEffect: UIBlurEffect(style: .extraLight),
                                     borderColor: UIColor.gray.withAlphaComponent(0.5),
-                                    resizeHandleColor: UIColor.gray.withAlphaComponent(0.3),
-                                    resizeHandleBackgroundColor: .white,
                                     separatorColor: UIColor.gray.withAlphaComponent(0.5),
                                     cornerRadius: 10.0,
                                     maskedCorners: [.layerMinXMinYCorner, .layerMinXMaxYCorner, .layerMaxXMinYCorner, .layerMaxXMaxYCorner],
                                     shadowColor: .black,
                                     shadowOpacity: 0.15,
-                                    shadowOffset: UIOffset(horizontal: 0.0, vertical: 1.0))
+                                    shadowOffset: UIOffset(horizontal: 0.0, vertical: 1.0),
+                                    resizeHandleAppearence: .visible(foregroundColor: UIColor.gray.withAlphaComponent(0.3), backgroundColor: .white))
 
         return Panel.Configuration(position: .bottom,
                                    positionLogic: PositionLogic.respectAllSafeAreas,

@@ -94,17 +94,24 @@ public extension Panel {
 
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-
-        let (resizeFrame, panelFrame) = self.view.bounds.divided(atDistance: ResizeHandle.Constants.height, from: .minYEdge)
-        self.resizeHandle.frame = resizeFrame
-        self.panelView.frame = panelFrame
-
-        let lineWidth = 1.0 / UIScreen.main.scale
-        var dividerFrame = panelFrame.insetBy(dx: lineWidth, dy: 0.0)
-        dividerFrame.size.height = lineWidth
-        dividerFrame.origin.y -= dividerFrame.size.height / 2.0
-        self.separatorView.frame = dividerFrame
-
+        
+        switch configuration.appearance.resizeHandleAppearence {
+        case .hidden:
+            resizeHandle.frame = .null
+            separatorView.frame = .null
+            panelView.frame = self.view.bounds
+        case .visible:
+            let (resizeFrame, panelFrame) = self.view.bounds.divided(atDistance: ResizeHandle.Constants.height, from: .minYEdge)
+            self.resizeHandle.frame = resizeFrame
+            self.panelView.frame = panelFrame
+            
+            let lineWidth = 1.0 / UIScreen.main.scale
+            var dividerFrame = panelFrame.insetBy(dx: lineWidth, dy: 0.0)
+            dividerFrame.size.height = lineWidth
+            dividerFrame.origin.y -= dividerFrame.size.height / 2.0
+            self.separatorView.frame = dividerFrame
+        }
+        
         self.fixNavigationBarLayoutMargins()
     }
 
