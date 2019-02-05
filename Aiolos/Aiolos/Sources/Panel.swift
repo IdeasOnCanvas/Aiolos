@@ -33,6 +33,7 @@ public final class Panel: UIViewController {
     @objc public var isVisible: Bool { return self.parent != nil && self.animator.isTransitioningFromParent == false }
     public weak var sizeDelegate: PanelSizeDelegate?
     public weak var animationDelegate: PanelAnimationDelegate?
+    public weak var gestureRecognizerDelegate: UIGestureRecognizerDelegate?
     public weak var accessibilityDelegate: PanelAccessibilityDelegate? {
         didSet {
             guard self.accessibilityDelegate !== oldValue else { return }

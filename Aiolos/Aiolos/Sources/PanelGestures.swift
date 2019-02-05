@@ -60,6 +60,10 @@ final class PanelGestures: NSObject {
 extension PanelGestures: UIGestureRecognizerDelegate {
 
     func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
+        if let shouldBegin = panel.gestureRecognizerDelegate?.gestureRecognizerShouldBegin?(gestureRecognizer) {
+            return shouldBegin
+        }
+        
         switch gestureRecognizer {
         case self.horizontalPan:
             return self.horizontalHandler.shouldStartPan(self.horizontalPan)
@@ -71,6 +75,10 @@ extension PanelGestures: UIGestureRecognizerDelegate {
     }
 
     func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
+        if let shouldRecognize = panel.gestureRecognizerDelegate?.gestureRecognizer?(gestureRecognizer, shouldRecognizeSimultaneouslyWith: otherGestureRecognizer) {
+            return shouldRecognize
+        }
+        
         return true
     }
 
@@ -84,7 +92,35 @@ extension PanelGestures: UIGestureRecognizerDelegate {
             return otherGestureRecognizer == self.verticalPan
         }
 
+        if let shouldRequireFailureOf = panel.gestureRecognizerDelegate?.gestureRecognizer?(gestureRecognizer, shouldRequireFailureOf: otherGestureRecognizer) {
+            return shouldRequireFailureOf
+        }
+        
         return false
+    }
+    
+    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldBeRequiredToFailBy otherGestureRecognizer: UIGestureRecognizer) -> Bool {
+        if let shouldBeRequiredToFailBy = panel.gestureRecognizerDelegate?.gestureRecognizer?(gestureRecognizer, shouldBeRequiredToFailBy: otherGestureRecognizer) {
+            return shouldBeRequiredToFailBy
+        }
+        
+        return false
+    }
+    
+    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive press: UIPress) -> Bool {
+        if let shouldReceivePress = panel.gestureRecognizerDelegate?.gestureRecognizer?(gestureRecognizer, shouldReceive: press) {
+            return shouldReceivePress
+        }
+        
+        return true
+    }
+    
+    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
+        if let shouldReceiveTouch = panel.gestureRecognizerDelegate?.gestureRecognizer?(gestureRecognizer, shouldReceive: touch) {
+            return shouldReceiveTouch
+        }
+        
+        return true
     }
 }
 
