@@ -53,6 +53,11 @@ public extension Panel {
             case includingContent
         }
 
+        public enum ResizeHandleMode {
+            case hidden
+            case visible(foregroundColor: UIColor, backgroundColor: UIColor)
+        }
+
         public struct Appearance {
             public var visualEffect: UIVisualEffect?
             public var borderColor: UIColor
@@ -62,12 +67,7 @@ public extension Panel {
             public var shadowColor: UIColor
             public var shadowOpacity: Float
             public var shadowOffset: UIOffset
-            public var resizeHandleAppearence: ResizeHandleAppearance
-            
-            public enum ResizeHandleAppearance {
-                case hidden
-                case visible(foregroundColor: UIColor, backgroundColor: UIColor)
-            }
+            public var resizeHandle: ResizeHandleMode
         }
 
         public var position: Position
@@ -93,7 +93,7 @@ public extension Panel.Configuration {
                                     shadowColor: .black,
                                     shadowOpacity: 0.15,
                                     shadowOffset: UIOffset(horizontal: 0.0, vertical: 1.0),
-                                    resizeHandleAppearence: .visible(foregroundColor: UIColor.gray.withAlphaComponent(0.3), backgroundColor: .white))
+                                    resizeHandle: .visible(foregroundColor: UIColor.gray.withAlphaComponent(0.3), backgroundColor: .white))
 
         return Panel.Configuration(position: .bottom,
                                    positionLogic: PositionLogic.respectAllSafeAreas,

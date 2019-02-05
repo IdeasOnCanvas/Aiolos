@@ -175,9 +175,6 @@ private extension ViewController {
             let horizontalMargin: CGFloat = traitCollection.verticalSizeClass == .compact ? 20.0 : 0.0
             return NSDirectionalEdgeInsets(top: 20.0, leading: horizontalMargin, bottom: 0.0, trailing: horizontalMargin)
         }
-
-        // Toggle here to show/hide the resize handle
-//        configuration.appearance.resizeHandleAppearence = .hidden
         
         configuration.appearance.separatorColor = .white
         configuration.position = panelPosition
