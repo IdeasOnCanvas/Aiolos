@@ -98,12 +98,11 @@ extension ViewController: PanelSizeDelegate {
     }
 }
 
-// MARK: - PanelAnimationDelegate
+// MARK: - PanelResizeDelegate
 
-extension ViewController: PanelAnimationDelegate {
-
-    func panel(_ panel: Panel, didStartTransitioningIn direction: Panel.Direction) {
-        print("Panel did start transitioning in \(direction) direction")
+extension ViewController: PanelResizeDelegate {
+    func panelDidStartResizing(_ panel: Panel) {
+        print("Panel did start resizing")
     }
 
     func panel(_ panel: Panel, willTransitionTo size: CGSize) {
@@ -120,16 +119,24 @@ extension ViewController: PanelAnimationDelegate {
             print("Completed panel transition to \(newMode)")
         })
     }
-    
+}
+
+// MARK: - PanelRepositionDelegate
+
+extension ViewController: PanelRepositionDelegate {
+    func panelDidStartMoving(_ panel: Panel) {
+        print("Panel did start moving")
+    }
+
     func panel(_ panel: Panel, shouldMoveTo frame: CGRect) -> Bool {
         return true
     }
-    
+
     func panel(_ panel: Panel, didMoveFrom oldFrame: CGRect, to newFrame: CGRect, with coordinator: PanelTransitionCoordinator) -> PanelTransitionCoordinator.Instruction {
         guard let context = coordinator.direction.context else { return .none }
 
         print("Panel did move to frame \(newFrame)")
-        
+
         let panelShouldHide = context.isMovingPastLeadingEdge || context.isMovingPastTrailingEdge
         if panelShouldHide {
             return .hide
@@ -138,7 +145,6 @@ extension ViewController: PanelAnimationDelegate {
         }
     }
 }
-
 
 // MARK: - Private
 
@@ -154,7 +160,8 @@ private extension ViewController {
         contentNavigationController.view.bringSubviewToFront(contentNavigationController.navigationBar)
 
         panelController.sizeDelegate = self
-        panelController.animationDelegate = self
+        panelController.resizeDelegate = self
+        panelController.repositionDelegate = self
         panelController.contentViewController = contentNavigationController
 
         return panelController
