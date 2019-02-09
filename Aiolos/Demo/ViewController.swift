@@ -101,6 +101,7 @@ extension ViewController: PanelSizeDelegate {
 // MARK: - PanelResizeDelegate
 
 extension ViewController: PanelResizeDelegate {
+
     func panelDidStartResizing(_ panel: Panel) {
         print("Panel did start resizing")
     }
@@ -124,6 +125,7 @@ extension ViewController: PanelResizeDelegate {
 // MARK: - PanelRepositionDelegate
 
 extension ViewController: PanelRepositionDelegate {
+
     func panelDidStartMoving(_ panel: Panel) {
         print("Panel did start moving")
     }
