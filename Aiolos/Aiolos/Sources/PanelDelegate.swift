@@ -19,7 +19,7 @@ public protocol PanelSizeDelegate: AnyObject {
 
 public protocol PanelResizeDelegate: AnyObject {
 
-    /// Tells the delegate that the `panel` has started transitioning vertically
+    /// Tells the delegate that the `panel` has started resizing
     func panelDidStartResizing(_ panel: Panel)
 
     /// Tells the delegate that the `panel` is transitioning to a specific size
@@ -31,7 +31,7 @@ public protocol PanelResizeDelegate: AnyObject {
 
 public protocol PanelRepositionDelegate: AnyObject {
 
-    /// Tells the delegate that the `panel` has started transitioning horizontally
+    /// Tells the delegate that the `panel` has started moving
     func panelDidStartMoving(_ panel: Panel)
 
     /// Asks the delegate if the `panel` can move to a specific frame
