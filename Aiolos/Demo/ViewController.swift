@@ -102,10 +102,6 @@ extension ViewController: PanelSizeDelegate {
 
 extension ViewController: PanelResizeDelegate {
 
-    func panelDidStartResizing(_ panel: Panel) {
-        print("Panel did start resizing")
-    }
-
     func panel(_ panel: Panel, willTransitionTo size: CGSize) {
         print("Panel will transition to size \(size)")
     }
