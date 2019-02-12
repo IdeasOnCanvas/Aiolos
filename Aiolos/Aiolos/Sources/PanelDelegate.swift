@@ -48,6 +48,13 @@ public protocol PanelRepositionDelegate: AnyObject {
     func panel(_ panel: Panel, didMoveFrom oldFrame: CGRect, to newFrame: CGRect, with coordinator: PanelTransitionCoordinator) -> PanelTransitionCoordinator.Instruction
 }
 
+public extension PanelRepositionDelegate {
+
+    func panelDidStartMoving(_ panel: Panel) {
+        // Do nothing
+    }
+}
+
 @available(*, deprecated, message: "Use protocols PanelResizeDelegate and PanelRepositionDelegate instead.")
 public typealias PanelAnimationDelegate = PanelResizeDelegate & PanelRepositionDelegate
 
