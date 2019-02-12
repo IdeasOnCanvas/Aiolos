@@ -29,6 +29,13 @@ public protocol PanelResizeDelegate: AnyObject {
     func panel(_ panel: Panel, willTransitionFrom oldMode: Panel.Configuration.Mode?, to newMode: Panel.Configuration.Mode, with coordinator: PanelTransitionCoordinator)
 }
 
+public extension PanelResizeDelegate {
+
+    func panelDidStartResizing(_ panel: Panel) {
+        // Do nothing
+    }
+}
+
 public protocol PanelRepositionDelegate: AnyObject {
 
     /// Tells the delegate that the `panel` has started moving
