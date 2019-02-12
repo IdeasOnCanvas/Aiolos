@@ -36,7 +36,7 @@ public final class Panel: UIViewController {
     public weak var repositionDelegate: PanelRepositionDelegate?
 
     @available(*, deprecated, message: "This property will be removed. Use 'resizeDelegate' and 'repositionDelegate' properties instead.")
-    public weak var animationDelegate: PanelAnimationDelegate? {
+    public weak var animationDelegate: (PanelResizeDelegate & PanelRepositionDelegate)? {
         didSet {
             self.resizeDelegate = animationDelegate
             self.repositionDelegate = animationDelegate
