@@ -66,7 +66,6 @@ final class PanelAnimator {
         guard self.panel.isVisible else { return }
 
         resizeDelegate.panelDidStartResizing(self.panel)
-        self.panel.animationDelegate?.panel(self.panel, didStartTransitioningIn: .vertical)
     }
 
     func notifyDelegateOfTransition(to size: CGSize) {
@@ -95,7 +94,6 @@ final class PanelAnimator {
         guard self.panel.isVisible else { return }
 
         repositionDelegate.panelDidStartMoving(self.panel)
-        self.panel.animationDelegate?.panel(self.panel, didStartTransitioningIn: .horizontal)
     }
 
     func askDelegateAboutMove(to frame: CGRect) -> Bool {
