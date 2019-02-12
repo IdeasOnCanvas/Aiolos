@@ -19,6 +19,9 @@ public protocol PanelSizeDelegate: AnyObject {
 
 public protocol PanelResizeDelegate: AnyObject {
 
+    /// Tells the delegate that the `panel` has started resizing
+    func panelDidStartResizing(_ panel: Panel)
+
     /// Tells the delegate that the `panel` is transitioning to a specific size
     func panel(_ panel: Panel, willTransitionTo size: CGSize)
 

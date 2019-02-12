@@ -365,6 +365,8 @@ private extension PanelGestures {
                 }
             }
 
+            self.panel.animator.notifyDelegateOfResizing()
+
             return true
         }
         

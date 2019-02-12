@@ -61,6 +61,13 @@ final class PanelAnimator {
         animator.finishAnimation(at: .end)
     }
 
+    func notifyDelegateOfResizing() {
+        guard let resizeDelegate = self.panel.resizeDelegate else { return }
+        guard self.panel.isVisible else { return }
+
+        resizeDelegate.panelDidStartResizing(self.panel)
+    }
+
     func notifyDelegateOfTransition(to size: CGSize) {
         guard let animationDelegate = self.panel.resizeDelegate else { return }
         guard self.panel.isVisible else { return }
