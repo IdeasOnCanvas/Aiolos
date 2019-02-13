@@ -103,12 +103,27 @@ final class PanelAnimator {
         return repositionDelegate.panel(self.panel, shouldMoveTo: frame)
     }
     
-    func notifyDelegateOfMove(from oldFrame: CGRect, to newFrame: CGRect, context: PanelTransitionCoordinator.HorizontalTransitionContext) -> PanelTransitionCoordinator.Instruction {
+    func notifyDelegateOfMove(from oldFrame: CGRect, to newFrame: CGRect, context: PanelHorizontalTransitionContext) -> PanelHorizontalTransitionContext.Instruction {
         guard let repositionDelegate = self.panel.repositionDelegate else { return .none }
         guard self.panel.isVisible else { return .none }
-        
-        let transitionCoordinator = PanelTransitionCoordinator(animator: self, direction: .horizontal(context: context))
-        return repositionDelegate.panel(self.panel, didMoveFrom: oldFrame, to: newFrame, with: transitionCoordinator)
+
+        return repositionDelegate.panel(self.panel, didMoveFrom: oldFrame, to: newFrame, with: context)
+    }
+
+    func notifyDelegateOfMove(from oldPosition: Panel.Configuration.Position, to newPosition: Panel.Configuration.Position) {
+        guard let repositionDelegate = self.panel.repositionDelegate else { return }
+        guard self.panel.isVisible else { return }
+
+        let transitionCoordinator = PanelTransitionCoordinator(animator: self, direction: .horizontal)
+        repositionDelegate.panel(self.panel, willMoveFrom: oldPosition, to: newPosition, with: transitionCoordinator)
+    }
+
+    func notifyDelegateOfHide() {
+        guard let repositionDelegate = self.panel.repositionDelegate else { return }
+        guard self.panel.isVisible else { return }
+
+        let transitionCoordinator = PanelTransitionCoordinator(animator: self, direction: .horizontal)
+        repositionDelegate.panelWillHide(self.panel, with: transitionCoordinator)
     }
 }
 

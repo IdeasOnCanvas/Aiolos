@@ -12,28 +12,17 @@ import UIKit
 
 /// This coordinator can be used to animate things alongside the movement of the Panel
 public final class PanelTransitionCoordinator {
-
-    public enum Direction {
-        case horizontal(context: HorizontalTransitionContext)
-        case vertical
-    }
-    
-    public enum Instruction {
-        case updatePosition(_ newPosition: Panel.Configuration.Position)
-        case hide
-        case none
-    }
     
     private unowned let animator: PanelAnimator
 
     // MARK: - Properties
 
-    public let direction: Direction
+    public let direction: Panel.Direction
     public var isAnimated: Bool { return self.animator.animateChanges }
     
     // MARK: - Lifecycle
 
-    init(animator: PanelAnimator, direction: Direction) {
+    init(animator: PanelAnimator, direction: Panel.Direction) {
         self.animator = animator
         self.direction = direction
     }
@@ -42,20 +31,6 @@ public final class PanelTransitionCoordinator {
 
     public func animateAlongsideTransition(_ animations: @escaping () -> Void, completion: ((UIViewAnimatingPosition) -> Void)? = nil) {
         self.animator.transitionCoordinatorQueuedAnimations.append(Animation(animations: animations, completion: completion))
-    }
-}
-
-// MARK: - PanelTransitionCoordinator.Direction
-
-extension PanelTransitionCoordinator.Direction {
-
-    public var context: PanelTransitionCoordinator.HorizontalTransitionContext? {
-        switch self {
-        case .horizontal(let context):
-            return context
-        case .vertical:
-            return nil
-        }
     }
 }
 

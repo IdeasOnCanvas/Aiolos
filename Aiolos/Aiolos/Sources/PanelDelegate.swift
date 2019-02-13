@@ -38,7 +38,13 @@ public protocol PanelRepositionDelegate: AnyObject {
     func panel(_ panel: Panel, shouldMoveTo frame: CGRect) -> Bool
 
     /// Tells the delegate that the `panel` did move to a specific frame
-    func panel(_ panel: Panel, didMoveFrom oldFrame: CGRect, to newFrame: CGRect, with coordinator: PanelTransitionCoordinator) -> PanelTransitionCoordinator.Instruction
+    func panel(_ panel: Panel, didMoveFrom oldFrame: CGRect, to newFrame: CGRect, with context: PanelHorizontalTransitionContext) -> PanelHorizontalTransitionContext.Instruction
+
+    // Tells the delegate that the `panel` is moving to a specific position
+    func panel(_ panel: Panel, willMoveFrom oldPosition: Panel.Configuration.Position, to newPosition: Panel.Configuration.Position, with coordinator: PanelTransitionCoordinator)
+
+    // Tells the delegate that the `panel` is hiding
+    func panelWillHide(_ panel: Panel, with coordinator: PanelTransitionCoordinator)
 }
 
 public protocol PanelAccessibilityDelegate: AnyObject {

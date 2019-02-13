@@ -134,17 +134,35 @@ extension ViewController: PanelRepositionDelegate {
         return true
     }
 
-    func panel(_ panel: Panel, didMoveFrom oldFrame: CGRect, to newFrame: CGRect, with coordinator: PanelTransitionCoordinator) -> PanelTransitionCoordinator.Instruction {
-        guard let context = coordinator.direction.context else { return .none }
-
+    func panel(_ panel: Panel, didMoveFrom oldFrame: CGRect, to newFrame: CGRect, with context: PanelHorizontalTransitionContext) -> PanelHorizontalTransitionContext.Instruction {
         print("Panel did move to frame \(newFrame)")
 
         let panelShouldHide = context.isMovingPastLeadingEdge || context.isMovingPastTrailingEdge
-        if panelShouldHide {
-            return .hide
-        } else {
-            return .updatePosition(context.targetPosition)
-        }
+        guard !panelShouldHide else { return .hide }
+
+        return .updatePosition(context.targetPosition)
+    }
+
+    func panel(_ panel: Panel, willMoveFrom oldPosition: Panel.Configuration.Position, to newPosition: Panel.Configuration.Position, with coordinator: PanelTransitionCoordinator) {
+        print("Panel will move to position \(newPosition)")
+
+        // we can animate things along the way
+        coordinator.animateAlongsideTransition({
+            print("Animating alongside of panel transition")
+        }, completion: { animationPosition in
+            print("Completed panel transition to \(newPosition)")
+        })
+    }
+
+    func panelWillHide(_ panel: Panel, with coordinator: PanelTransitionCoordinator) {
+        print("Panel did hide")
+
+        // we can animate things along the way
+        coordinator.animateAlongsideTransition({
+            print("Animating alongside of panel transition")
+        }, completion: { animationPosition in
+            print("Completed panel transition to hidden")
+        })
     }
 }
 
