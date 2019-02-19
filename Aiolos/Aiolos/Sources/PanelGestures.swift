@@ -165,7 +165,7 @@ private extension PanelGestures {
         }
         
         private func handlePanStarted(_ pan: UIPanGestureRecognizer) {
-            self.panel.animator.notifyDelegateOfTransition(in: .horizontal)
+            self.panel.animator.notifyDelegateOfRepositioning()
             self.gestures.updateResizeHandle()
         }
         
@@ -365,7 +365,7 @@ private extension PanelGestures {
                 }
             }
 
-            self.panel.animator.notifyDelegateOfTransition(in: .vertical)
+            self.panel.animator.notifyDelegateOfResizing()
 
             return true
         }
