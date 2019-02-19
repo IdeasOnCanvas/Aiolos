@@ -22,8 +22,8 @@ public protocol PanelResizeDelegate: AnyObject {
     /// Tells the delegate that the `panel` has started resizing
     func panelDidStartResizing(_ panel: Panel)
 
-    /// Tells the delegate that the `panel` is transitioning to a specific size
-    func panel(_ panel: Panel, willTransitionTo size: CGSize)
+    /// Tells the delegate that the `panel` is resizing to a specific size
+    func panel(_ panel: Panel, willResizeTo size: CGSize)
 
     /// Tells the delegate that the `panel` is transitioning to a specific mode
     func panel(_ panel: Panel, willTransitionFrom oldMode: Panel.Configuration.Mode?, to newMode: Panel.Configuration.Mode, with coordinator: PanelTransitionCoordinator)
@@ -37,14 +37,14 @@ public protocol PanelRepositionDelegate: AnyObject {
     /// Asks the delegate if the `panel` can move to a specific frame
     func panel(_ panel: Panel, shouldMoveTo frame: CGRect) -> Bool
 
-    /// Tells the delegate that the `panel` did move to a specific frame
-    func panel(_ panel: Panel, didMoveFrom oldFrame: CGRect, to newFrame: CGRect, with context: PanelHorizontalTransitionContext) -> PanelHorizontalTransitionContext.Instruction
+    /// Tells the delegate that the `panel` did stop moving
+    func panel(_ panel: Panel, didStopMoving endFrame: CGRect, with context: PanelRepositionContext) -> PanelRepositionContext.Instruction
 
-    // Tells the delegate that the `panel` is moving to a specific position
-    func panel(_ panel: Panel, willMoveFrom oldPosition: Panel.Configuration.Position, to newPosition: Panel.Configuration.Position, with coordinator: PanelTransitionCoordinator)
+    // Tells the delegate that the `panel` is transitioning to a specific position
+    func panel(_ panel: Panel, willTransitionFrom oldPosition: Panel.Configuration.Position, to newPosition: Panel.Configuration.Position, with coordinator: PanelTransitionCoordinator)
 
-    // Tells the delegate that the `panel` is hiding
-    func panelWillHide(_ panel: Panel, with coordinator: PanelTransitionCoordinator)
+    // Tells the delegate that the `panel` is transitioning to a hidden state
+    func panelWillTransitionToHide(_ panel: Panel, with coordinator: PanelTransitionCoordinator)
 }
 
 public protocol PanelAccessibilityDelegate: AnyObject {

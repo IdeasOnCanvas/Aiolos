@@ -1,5 +1,5 @@
 //
-//  PanelHorizontalTransitionContext.swift
+//  PanelRepositionContext.swift
 //  Aiolos
 //
 //  Created by Tom Kraina on 13/02/2019.
@@ -9,7 +9,7 @@
 import Foundation
 
 
-public final class PanelHorizontalTransitionContext {
+public final class PanelRepositionContext {
 
     public enum Instruction {
         case updatePosition(_ newPosition: Panel.Configuration.Position)
@@ -36,7 +36,7 @@ public final class PanelHorizontalTransitionContext {
         self.velocity = velocity
     }
 
-    // MARK: PanelHorizontalTransitionContext
+    // MARK: PanelRepositionContext
 
     public var originalPosition: Panel.Configuration.Position {
         return self.panel.configuration.position
@@ -89,7 +89,7 @@ public final class PanelHorizontalTransitionContext {
 
 // MARK: - Private
 
-private extension PanelHorizontalTransitionContext {
+private extension PanelRepositionContext {
 
     var projectedOffset: CGFloat {
         // Inspired by: https://medium.com/ios-os-x-development/gestures-in-fluid-interfaces-on-intent-and-projection-36d158db7395
