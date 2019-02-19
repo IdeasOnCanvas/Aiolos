@@ -41,9 +41,6 @@ public protocol PanelRepositionDelegate: AnyObject {
     func panel(_ panel: Panel, didMoveFrom oldFrame: CGRect, to newFrame: CGRect, with coordinator: PanelTransitionCoordinator) -> PanelTransitionCoordinator.Instruction
 }
 
-@available(*, deprecated, message: "Use protocols PanelResizeDelegate and PanelRepositionDelegate instead.")
-public typealias PanelAnimationDelegate = PanelResizeDelegate & PanelRepositionDelegate
-
 public protocol PanelAccessibilityDelegate: AnyObject {
 
     /// Asks the delegate for the accessibility label of the resize handle
