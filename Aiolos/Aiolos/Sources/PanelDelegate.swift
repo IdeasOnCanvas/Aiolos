@@ -29,13 +29,6 @@ public protocol PanelResizeDelegate: AnyObject {
     func panel(_ panel: Panel, willTransitionFrom oldMode: Panel.Configuration.Mode?, to newMode: Panel.Configuration.Mode, with coordinator: PanelTransitionCoordinator)
 }
 
-public extension PanelResizeDelegate {
-
-    func panelDidStartResizing(_ panel: Panel) {
-        // Do nothing
-    }
-}
-
 public protocol PanelRepositionDelegate: AnyObject {
 
     /// Tells the delegate that the `panel` has started moving
@@ -46,13 +39,6 @@ public protocol PanelRepositionDelegate: AnyObject {
 
     /// Tells the delegate that the `panel` did move to a specific frame
     func panel(_ panel: Panel, didMoveFrom oldFrame: CGRect, to newFrame: CGRect, with coordinator: PanelTransitionCoordinator) -> PanelTransitionCoordinator.Instruction
-}
-
-public extension PanelRepositionDelegate {
-
-    func panelDidStartMoving(_ panel: Panel) {
-        // Do nothing
-    }
 }
 
 @available(*, deprecated, message: "Use protocols PanelResizeDelegate and PanelRepositionDelegate instead.")
