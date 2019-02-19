@@ -44,7 +44,7 @@ public protocol PanelRepositionDelegate: AnyObject {
     func panel(_ panel: Panel, willTransitionFrom oldPosition: Panel.Configuration.Position, to newPosition: Panel.Configuration.Position, with coordinator: PanelTransitionCoordinator)
 
     // Tells the delegate that the `panel` is transitioning to a hidden state
-    func panelWillTransitionToHide(_ panel: Panel, with coordinator: PanelTransitionCoordinator)
+    func panelWillTransitionToHiddenState(_ panel: Panel, with coordinator: PanelTransitionCoordinator)
 }
 
 public protocol PanelAccessibilityDelegate: AnyObject {

@@ -157,7 +157,7 @@ extension ViewController: PanelRepositionDelegate {
         })
     }
 
-    func panelWillTransitionToHide(_ panel: Panel, with coordinator: PanelTransitionCoordinator) {
+    func panelWillTransitionToHiddenState(_ panel: Panel, with coordinator: PanelTransitionCoordinator) {
         print("Panel is transitioning to hidden state")
 
         // we can animate things along the way

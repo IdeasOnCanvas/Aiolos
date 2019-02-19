@@ -123,7 +123,7 @@ final class PanelAnimator {
         guard self.panel.isVisible else { return }
 
         let transitionCoordinator = PanelTransitionCoordinator(animator: self, direction: .horizontal)
-        repositionDelegate.panelWillTransitionToHide(self.panel, with: transitionCoordinator)
+        repositionDelegate.panelWillTransitionToHiddenState(self.panel, with: transitionCoordinator)
     }
 }
 
