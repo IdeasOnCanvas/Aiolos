@@ -106,8 +106,8 @@ extension ViewController: PanelResizeDelegate {
         print("Panel did start resizing")
     }
 
-    func panel(_ panel: Panel, willTransitionTo size: CGSize) {
-        print("Panel will transition to size \(size)")
+    func panel(_ panel: Panel, willResizeTo size: CGSize) {
+        print("Panel will resize to size \(size)")
     }
 
     func panel(_ panel: Panel, willTransitionFrom oldMode: Panel.Configuration.Mode?, to newMode: Panel.Configuration.Mode, with coordinator: PanelTransitionCoordinator) {
@@ -131,20 +131,41 @@ extension ViewController: PanelRepositionDelegate {
     }
 
     func panel(_ panel: Panel, shouldMoveTo frame: CGRect) -> Bool {
+        print("Panel will move to frame \(frame)")
+
+        // we can prevent the panel from begin dragged
         return true
     }
 
-    func panel(_ panel: Panel, didMoveFrom oldFrame: CGRect, to newFrame: CGRect, with coordinator: PanelTransitionCoordinator) -> PanelTransitionCoordinator.Instruction {
-        guard let context = coordinator.direction.context else { return .none }
-
-        print("Panel did move to frame \(newFrame)")
+    func panel(_ panel: Panel, didStopMoving endFrame: CGRect, with context: PanelRepositionContext) -> PanelRepositionContext.Instruction {
+        print("Panel did move to frame \(endFrame)")
 
         let panelShouldHide = context.isMovingPastLeadingEdge || context.isMovingPastTrailingEdge
-        if panelShouldHide {
-            return .hide
-        } else {
-            return .updatePosition(context.targetPosition)
-        }
+        guard !panelShouldHide else { return .hide }
+
+        return .updatePosition(context.targetPosition)
+    }
+
+    func panel(_ panel: Panel, willTransitionFrom oldPosition: Panel.Configuration.Position, to newPosition: Panel.Configuration.Position, with coordinator: PanelTransitionCoordinator) {
+        print("Panel is transitioning from \(String(describing: oldPosition)) to position \(newPosition)")
+
+        // we can animate things along the way
+        coordinator.animateAlongsideTransition({
+            print("Animating alongside of panel transition")
+        }, completion: { animationPosition in
+            print("Completed panel transition to \(newPosition)")
+        })
+    }
+
+    func panelWillTransitionToHiddenState(_ panel: Panel, with coordinator: PanelTransitionCoordinator) {
+        print("Panel is transitioning to hidden state")
+
+        // we can animate things along the way
+        coordinator.animateAlongsideTransition({
+            print("Animating alongside of panel transition")
+        }, completion: { animationPosition in
+            print("Completed panel transition to hidden state")
+        })
     }
 }
 

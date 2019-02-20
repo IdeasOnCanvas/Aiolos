@@ -193,21 +193,25 @@ private extension PanelGestures {
             let originalFrame = self.panel.view.frame.applying(self.panel.view.transform.inverted())
             let offset = pan.translation(in: parentView).x
             let velocity = pan.velocity(in: parentView).x
-            let context = PanelTransitionCoordinator.HorizontalTransitionContext(panel: self.panel, parentView: parentView, originalFrame: originalFrame, offset: offset, velocity: velocity)
+            let context = PanelRepositionContext(panel: self.panel, parentView: parentView, originalFrame: originalFrame, offset: offset, velocity: velocity)
             
-            let instruction = self.panel.animator.notifyDelegateOfMove(from: originalFrame, to: self.panel.view.frame, context: context)
+            let instruction = self.panel.animator.notifyDelegateOfMove(to: self.panel.view.frame, context: context)
             switch instruction {
             case .none:
                 let originalPosition = self.panel.configuration.position
                 let velocity = self.initialVelocity(with: context, targetPosition: originalPosition)
                 self.animate(to: originalPosition, initialVelocity: velocity)
+                self.panel.animator.notifyDelegateOfMove(from: originalPosition, to: originalPosition)
                 
             case .updatePosition(let position):
+                let originalPosition = self.panel.configuration.position
                 let velocity = self.initialVelocity(with: context, targetPosition: position)
+                self.panel.animator.notifyDelegateOfMove(from: originalPosition, to: position)
                 self.animate(to: position, initialVelocity: velocity)
                 
             case .hide:
                 let velocity = self.initialVelocityForHiding(with: context)
+                self.panel.animator.notifyDelegateOfHide()
                 self.animateToHide(initialVelocity: velocity)
             }
             
@@ -226,7 +230,7 @@ private extension PanelGestures {
             self.gestures.updateResizeHandle()
         }
         
-        private func initialVelocity(with context: PanelTransitionCoordinator.HorizontalTransitionContext, targetPosition: Panel.Configuration.Position) -> CGFloat {
+        private func initialVelocity(with context: PanelRepositionContext, targetPosition: Panel.Configuration.Position) -> CGFloat {
             let originalPosition = self.panel.configuration.position
             let targetOffset = self.offset(for: targetPosition)
             
@@ -234,7 +238,7 @@ private extension PanelGestures {
             return abs(context.velocity / distance)
         }
         
-        private func initialVelocityForHiding(with context: PanelTransitionCoordinator.HorizontalTransitionContext) -> CGFloat {
+        private func initialVelocityForHiding(with context: PanelRepositionContext) -> CGFloat {
             let transformation = self.panel.animator.transform(for: .horizontal, size: self.panel.view.frame.size)
             let distance = transformation.tx - context.offset
             
