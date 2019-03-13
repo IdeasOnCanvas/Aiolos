@@ -60,22 +60,14 @@ public final class PanelRepositionContext {
         guard self.panel.configuration.position == .leadingBottom else { return false }
         guard self.normalized(self.offset) < 0.0 else { return false }
 
-        if self.parentView.isRTL {
-            return self.leadingEdge + self.projectedOffset > self.leadingEdgeThreshold
-        } else {
-            return self.leadingEdge + self.projectedOffset < self.leadingEdgeThreshold
-        }
+        return self.normalized(self.leadingEdge + self.projectedOffset) < self.leadingEdgeThreshold
     }
 
     public var isMovingPastTrailingEdge: Bool {
         guard self.panel.configuration.position == .trailingBottom else { return false }
         guard self.normalized(self.offset) > 0.0 else { return false }
 
-        if self.parentView.isRTL {
-            return self.trailingEdge + self.projectedOffset < self.trailingEdgeThreshold
-        } else {
-            return self.trailingEdge + self.projectedOffset > self.trailingEdgeThreshold
-        }
+        return self.normalized(self.trailingEdge + self.projectedOffset) > self.trailingEdgeThreshold
     }
 }
 
