@@ -45,8 +45,6 @@ public final class PanelRepositionContext {
     public var targetPosition: Panel.Configuration.Position {
         let supportedPositions = self.panel.configuration.supportedPositions
 
-        guard abs(self.projectedOffset) > self.horizontalThreshold else { return self.originalPosition }
-
         if self.isMovingTowardsLeadingEdge && supportedPositions.contains(.leadingBottom) {
             return .leadingBottom
         }
@@ -102,17 +100,13 @@ private extension PanelRepositionContext {
     }
 
     var isMovingTowardsLeadingEdge: Bool {
-        let normalizedOffset = (self.parentView.isRTL ? -1.0 : 1.0) * self.offset
-        let normalizedVelocity = (self.parentView.isRTL ? -1.0 : 1.0) * self.velocity
-
-        return normalizedOffset < 0.0 && normalizedVelocity < 0.0
+        let normalizedProjectedOffset = (self.parentView.isRTL ? -1.0 : 1.0) * self.projectedOffset
+        return normalizedProjectedOffset < -self.horizontalThreshold
     }
 
     var isMovingTowardsTrailingEdge: Bool {
-        let normalizedOffset = (self.parentView.isRTL ? -1.0 : 1.0) * self.offset
-        let normalizedVelocity = (self.parentView.isRTL ? -1.0 : 1.0) * self.velocity
-
-        return normalizedOffset > 0.0 && normalizedVelocity > 0.0
+        let normalizedProjectedOffset = (self.parentView.isRTL ? -1.0 : 1.0) * self.projectedOffset
+        return normalizedProjectedOffset > self.horizontalThreshold
     }
 
     var horizontalThreshold: CGFloat {
