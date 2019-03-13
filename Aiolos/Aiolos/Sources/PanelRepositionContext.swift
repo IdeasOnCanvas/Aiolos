@@ -58,28 +58,22 @@ public final class PanelRepositionContext {
 
     public var isMovingPastLeadingEdge: Bool {
         guard self.panel.configuration.position == .leadingBottom else { return false }
+        guard self.normalized(self.offset) < 0.0 else { return false }
 
         if self.parentView.isRTL {
-            guard self.offset > 0.0 else { return false }
-
             return self.leadingEdge + self.projectedOffset > self.leadingEdgeThreshold
         } else {
-            guard self.offset < 0.0 else { return false }
-
             return self.leadingEdge + self.projectedOffset < self.leadingEdgeThreshold
         }
     }
 
     public var isMovingPastTrailingEdge: Bool {
         guard self.panel.configuration.position == .trailingBottom else { return false }
+        guard self.normalized(self.offset) > 0.0 else { return false }
 
         if self.parentView.isRTL {
-            guard self.offset < 0.0 else { return false }
-
             return self.trailingEdge + self.projectedOffset < self.trailingEdgeThreshold
         } else {
-            guard self.offset > 0.0 else { return false }
-
             return self.trailingEdge + self.projectedOffset > self.trailingEdgeThreshold
         }
     }
@@ -88,6 +82,10 @@ public final class PanelRepositionContext {
 // MARK: - Private
 
 private extension PanelRepositionContext {
+
+    func normalized(_ value: CGFloat) -> CGFloat {
+        return (self.parentView.isRTL ? -1.0 : 1.0) * value
+    }
 
     var projectedOffset: CGFloat {
         // Inspired by: https://medium.com/ios-os-x-development/gestures-in-fluid-interfaces-on-intent-and-projection-36d158db7395
@@ -100,12 +98,12 @@ private extension PanelRepositionContext {
     }
 
     var isMovingTowardsLeadingEdge: Bool {
-        let normalizedProjectedOffset = (self.parentView.isRTL ? -1.0 : 1.0) * self.projectedOffset
+        let normalizedProjectedOffset = self.normalized(self.projectedOffset)
         return normalizedProjectedOffset < -self.horizontalThreshold
     }
 
     var isMovingTowardsTrailingEdge: Bool {
-        let normalizedProjectedOffset = (self.parentView.isRTL ? -1.0 : 1.0) * self.projectedOffset
+        let normalizedProjectedOffset = self.normalized(self.projectedOffset)
         return normalizedProjectedOffset > self.horizontalThreshold
     }
 
@@ -122,15 +120,13 @@ private extension PanelRepositionContext {
     }
 
     var trailingEdgeThreshold: CGFloat {
-        let trailingEdge = (self.parentView.isRTL ? self.parentView.bounds.minX : self.parentView.bounds.maxX)
-        let directionMultiplier: CGFloat = self.parentView.isRTL ? -1.0 : 1.0
-        return trailingEdge + directionMultiplier * self.originalFrame.width
+        let parentTrailingEdge = (self.parentView.isRTL ? self.parentView.bounds.minX : self.parentView.bounds.maxX)
+        return parentTrailingEdge + self.normalized(self.originalFrame.width)
     }
 
     var leadingEdgeThreshold: CGFloat {
-        let leadingEdge = (self.parentView.isRTL ? self.parentView.bounds.maxX : self.parentView.bounds.minX)
-        let directionMultiplier: CGFloat = self.parentView.isRTL ? -1.0 : 1.0
-        return leadingEdge - directionMultiplier * self.originalFrame.width
+        let parentLeadingEdge = (self.parentView.isRTL ? self.parentView.bounds.maxX : self.parentView.bounds.minX)
+        return parentLeadingEdge - self.normalized(self.originalFrame.width)
     }
 
     var trailingEdge: CGFloat {
