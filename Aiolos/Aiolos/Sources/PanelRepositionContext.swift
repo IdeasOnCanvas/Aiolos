@@ -45,8 +45,6 @@ public final class PanelRepositionContext {
     public var targetPosition: Panel.Configuration.Position {
         let supportedPositions = self.panel.configuration.supportedPositions
 
-        guard abs(self.projectedOffset) > self.horizontalThreshold else { return self.originalPosition }
-
         if self.isMovingTowardsLeadingEdge && supportedPositions.contains(.leadingBottom) {
             return .leadingBottom
         }
@@ -60,36 +58,26 @@ public final class PanelRepositionContext {
 
     public var isMovingPastLeadingEdge: Bool {
         guard self.panel.configuration.position == .leadingBottom else { return false }
+        guard self.normalized(self.offset) < 0.0 else { return false }
 
-        if self.parentView.isRTL {
-            guard self.offset > 0.0 else { return false }
-
-            return self.leadingEdge + self.projectedOffset > self.leadingEdgeThreshold
-        } else {
-            guard self.offset < 0.0 else { return false }
-
-            return self.leadingEdge + self.projectedOffset < self.leadingEdgeThreshold
-        }
+        return self.normalized(self.projectedOffset) < -self.hidingTreshold
     }
 
     public var isMovingPastTrailingEdge: Bool {
         guard self.panel.configuration.position == .trailingBottom else { return false }
+        guard self.normalized(self.offset) > 0.0 else { return false }
 
-        if self.parentView.isRTL {
-            guard self.offset < 0.0 else { return false }
-
-            return self.trailingEdge + self.projectedOffset < self.trailingEdgeThreshold
-        } else {
-            guard self.offset > 0.0 else { return false }
-
-            return self.trailingEdge + self.projectedOffset > self.trailingEdgeThreshold
-        }
+        return self.normalized(self.projectedOffset) > self.hidingTreshold
     }
 }
 
 // MARK: - Private
 
 private extension PanelRepositionContext {
+
+    func normalized(_ value: CGFloat) -> CGFloat {
+        return (self.parentView.isRTL ? -1.0 : 1.0) * value
+    }
 
     var projectedOffset: CGFloat {
         // Inspired by: https://medium.com/ios-os-x-development/gestures-in-fluid-interfaces-on-intent-and-projection-36d158db7395
@@ -102,20 +90,16 @@ private extension PanelRepositionContext {
     }
 
     var isMovingTowardsLeadingEdge: Bool {
-        let normalizedOffset = (self.parentView.isRTL ? -1.0 : 1.0) * self.offset
-        let normalizedVelocity = (self.parentView.isRTL ? -1.0 : 1.0) * self.velocity
-
-        return normalizedOffset < 0.0 && normalizedVelocity < 0.0
+        let normalizedProjectedOffset = self.normalized(self.projectedOffset)
+        return normalizedProjectedOffset < -self.repositioningThreshold
     }
 
     var isMovingTowardsTrailingEdge: Bool {
-        let normalizedOffset = (self.parentView.isRTL ? -1.0 : 1.0) * self.offset
-        let normalizedVelocity = (self.parentView.isRTL ? -1.0 : 1.0) * self.velocity
-
-        return normalizedOffset > 0.0 && normalizedVelocity > 0.0
+        let normalizedProjectedOffset = self.normalized(self.projectedOffset)
+        return normalizedProjectedOffset > self.repositioningThreshold
     }
 
-    var horizontalThreshold: CGFloat {
+    var repositioningThreshold: CGFloat {
         // An approximation of how the Slide Over mode on iPad switches the panel to the other side:
         // - First edge of the panel is over the middle of the screen (landscape mode)
         // - The panel is moved at least 1/2 of it width (portrait mode)
@@ -127,23 +111,9 @@ private extension PanelRepositionContext {
         return min(max(midScreenDistance, minValue), maxValue)
     }
 
-    var trailingEdgeThreshold: CGFloat {
-        let trailingEdge = (self.parentView.isRTL ? self.parentView.bounds.minX : self.parentView.bounds.maxX)
-        let directionMultiplier: CGFloat = self.parentView.isRTL ? -1.0 : 1.0
-        return trailingEdge + directionMultiplier * self.originalFrame.width
-    }
-
-    var leadingEdgeThreshold: CGFloat {
-        let leadingEdge = (self.parentView.isRTL ? self.parentView.bounds.maxX : self.parentView.bounds.minX)
-        let directionMultiplier: CGFloat = self.parentView.isRTL ? -1.0 : 1.0
-        return leadingEdge - directionMultiplier * self.originalFrame.width
-    }
-
-    var trailingEdge: CGFloat {
-        return self.parentView.isRTL ? self.originalFrame.minX : self.originalFrame.maxX
-    }
-
-    var leadingEdge: CGFloat {
-        return self.parentView.isRTL ? self.originalFrame.maxX : self.originalFrame.minX
+    var hidingTreshold: CGFloat {
+        // An approximation of how the Slide Over mode on iPad hides the panel:
+        // - The panel is moved at least 1/3 of its width towards the edge of the screen
+        return self.originalFrame.width / 3.0
     }
 }
