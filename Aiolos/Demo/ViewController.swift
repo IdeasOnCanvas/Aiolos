@@ -169,6 +169,20 @@ extension ViewController: PanelRepositionDelegate {
     }
 }
 
+// MARK: - UIGestureRecognizerDelegate
+
+extension ViewController: UIGestureRecognizerDelegate {
+
+    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
+        guard let contentNavigationController = self.panelController.contentViewController as? UINavigationController else { return true }
+        guard let tableViewController = contentNavigationController.topViewController as? UITableViewController else { return true }
+
+        // Prevent swipes on the table view being triggered as the panel is being dragged horizontally
+        // More info: https://github.com/IdeasOnCanvas/Aiolos/issues/23
+        return otherGestureRecognizer.view !== tableViewController.tableView
+    }
+}
+
 // MARK: - Private
 
 private extension ViewController {
@@ -185,6 +199,7 @@ private extension ViewController {
         panelController.sizeDelegate = self
         panelController.resizeDelegate = self
         panelController.repositionDelegate = self
+        panelController.gestureDelegate = self
         panelController.contentViewController = contentNavigationController
 
         return panelController
