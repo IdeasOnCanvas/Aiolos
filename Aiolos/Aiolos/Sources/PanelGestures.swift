@@ -200,8 +200,8 @@ private extension PanelGestures {
             case .none:
                 let originalPosition = self.panel.configuration.position
                 let velocity = self.initialVelocity(with: context, targetPosition: originalPosition)
-                self.animate(to: originalPosition, initialVelocity: velocity)
                 self.panel.animator.notifyDelegateOfMove(from: originalPosition, to: originalPosition)
+                self.animate(to: originalPosition, initialVelocity: velocity)
                 
             case .updatePosition(let position):
                 let originalPosition = self.panel.configuration.position
