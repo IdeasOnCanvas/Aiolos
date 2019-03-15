@@ -212,10 +212,12 @@ private extension ViewController {
 
         if self.traitCollection.userInterfaceIdiom == .pad {
             configuration.supportedPositions = [.leadingBottom, .trailingBottom]
+            configuration.isHorizontalPositioningEnabled = true
             configuration.appearance.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner, .layerMinXMaxYCorner, .layerMaxXMaxYCorner]
         } else {
             configuration.supportedModes = [.minimal, .compact, .expanded, .fullHeight]
             configuration.supportedPositions = [configuration.position]
+            configuration.isHorizontalPositioningEnabled = false
 
             if traitCollection.hasNotch {
                 configuration.appearance.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner, .layerMinXMaxYCorner, .layerMaxXMaxYCorner]
