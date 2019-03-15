@@ -54,6 +54,10 @@ extension PanelContentViewController {
         cell.backgroundColor = .clear
         return cell
     }
+
+    override func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath) -> [UITableViewRowAction]? {
+        return [UITableViewRowAction(style: .destructive, title: "Delete", handler: { _, _ in })]
+    }
 }
 
 // MARK: - Private
