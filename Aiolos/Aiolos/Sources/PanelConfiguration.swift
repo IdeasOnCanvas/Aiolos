@@ -67,6 +67,7 @@ public extension Panel {
             public var shadowColor: UIColor
             public var shadowOpacity: Float
             public var shadowOffset: UIOffset
+            public var shadowRadius: CGFloat
             public var resizeHandle: ResizeHandleMode
         }
 
@@ -93,6 +94,7 @@ public extension Panel.Configuration {
                                     shadowColor: .black,
                                     shadowOpacity: 0.15,
                                     shadowOffset: UIOffset(horizontal: 0.0, vertical: 1.0),
+                                    shadowRadius: 3.0,
                                     resizeHandle: .visible(foregroundColor: UIColor.gray.withAlphaComponent(0.3), backgroundColor: .white))
 
         return Panel.Configuration(position: .bottom,
