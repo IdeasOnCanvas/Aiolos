@@ -230,6 +230,21 @@ internal extension Panel {
         return CGSize(width: width, height: height)
     }
 
+    func horizontalOffset(at position: Panel.Configuration.Position) -> CGFloat {
+        let originalPosition = self.configuration.position
+        guard originalPosition != position else { return 0 }
+
+        let distance = self.constraints.effectiveBounds.width - self.view.frame.width
+        switch position {
+        case .leadingBottom:
+            return self.view.isRTL ? distance : -distance
+        case .trailingBottom:
+            return self.view.isRTL ? -distance : distance
+        default:
+            return 0.0
+        }
+    }
+
     func fixNavigationBarLayoutMargins() {
         guard let navigationController = self.contentViewController as? UINavigationController else { return }
 

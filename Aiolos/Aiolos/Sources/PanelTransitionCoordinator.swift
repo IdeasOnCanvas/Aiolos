@@ -34,6 +34,15 @@ public final class PanelTransitionCoordinator {
     }
 }
 
+// MARK: - Helpers
+
+public extension PanelTransitionCoordinator {
+
+    public func horizontalOffset(for panel: Panel, at position: Panel.Configuration.Position) -> CGFloat {
+        return panel.horizontalOffset(at: position)
+    }
+}
+
 // MARK: - PanelTransitionCoordinator.Animation
 
 extension PanelTransitionCoordinator {
