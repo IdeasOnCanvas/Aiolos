@@ -40,6 +40,7 @@ final class ShadowView: UIView {
         self.layer.shadowOpacity = configuration.appearance.shadowOpacity
         self.layer.shadowColor = configuration.appearance.shadowColor.cgColor
         self.layer.shadowOffset = CGSize(offset: configuration.appearance.shadowOffset)
+        self.layer.shadowRadius = configuration.appearance.shadowRadius
 
         // configure border
         self.layer.cornerRadius = configuration.appearance.cornerRadius
