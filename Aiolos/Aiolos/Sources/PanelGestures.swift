@@ -44,7 +44,6 @@ final class PanelGestures: NSObject {
     }
 
     func configure(with configuration: Panel.Configuration) {
-        self.cancel()
         self.isVerticalPanEnabled = configuration.gestureResizingMode != .disabled
         self.isHorizontalPanEnabled = configuration.isHorizontalPositioningEnabled
     }

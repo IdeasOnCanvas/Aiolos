@@ -341,6 +341,7 @@ private extension Panel {
         self.panelView.configure(with: newConfiguration)
         self.resizeHandle.configure(with: newConfiguration)
         self.separatorView.configure(with: newConfiguration)
+        self.gestures.configure(with: newConfiguration)
 
         let modeChanged = oldConfiguration.mode != newConfiguration.mode
         let positionChanged = oldConfiguration.position != newConfiguration.position
@@ -350,7 +351,7 @@ private extension Panel {
         let horizontalPositioningChanged = oldConfiguration.isHorizontalPositioningEnabled != newConfiguration.isHorizontalPositioningEnabled
 
         if modeChanged || positionChanged || marginsChanged || positionLogicChanged || gestureResizingModeChanged || horizontalPositioningChanged {
-            self.gestures.configure(with: newConfiguration)
+            self.gestures.cancel()
         }
 
         if modeChanged || positionChanged {
