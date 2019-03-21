@@ -341,12 +341,17 @@ private extension Panel {
         self.panelView.configure(with: newConfiguration)
         self.resizeHandle.configure(with: newConfiguration)
         self.separatorView.configure(with: newConfiguration)
-        self.gestures.configure(with: newConfiguration)
 
         let modeChanged = oldConfiguration.mode != newConfiguration.mode
         let positionChanged = oldConfiguration.position != newConfiguration.position
         let marginsChanged = oldConfiguration.margins != newConfiguration.margins
         let positionLogicChanged = oldConfiguration.positionLogic != newConfiguration.positionLogic
+        let gestureResizingModeChanged = oldConfiguration.gestureResizingMode != newConfiguration.gestureResizingMode
+        let horizontalPositioningChanged = oldConfiguration.isHorizontalPositioningEnabled != newConfiguration.isHorizontalPositioningEnabled
+
+        if modeChanged || positionChanged || marginsChanged || positionLogicChanged || gestureResizingModeChanged || horizontalPositioningChanged {
+            self.gestures.configure(with: newConfiguration)
+        }
 
         if modeChanged || positionChanged {
             let size = self.size(for: newConfiguration.mode)
