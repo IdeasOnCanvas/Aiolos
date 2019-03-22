@@ -362,6 +362,12 @@ private extension Panel {
         let positionChanged = oldConfiguration.position != newConfiguration.position
         let marginsChanged = oldConfiguration.margins != newConfiguration.margins
         let positionLogicChanged = oldConfiguration.positionLogic != newConfiguration.positionLogic
+        let gestureResizingModeChanged = oldConfiguration.gestureResizingMode != newConfiguration.gestureResizingMode
+        let horizontalPositioningChanged = oldConfiguration.isHorizontalPositioningEnabled != newConfiguration.isHorizontalPositioningEnabled
+
+        if modeChanged || positionChanged || marginsChanged || positionLogicChanged || gestureResizingModeChanged || horizontalPositioningChanged {
+            self.gestures.cancel()
+        }
 
         if modeChanged || positionChanged {
             let size = self.size(for: newConfiguration.mode)
