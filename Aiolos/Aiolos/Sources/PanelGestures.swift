@@ -232,7 +232,7 @@ private extension PanelGestures {
         
         private func initialVelocity(with context: PanelRepositionContext, targetPosition: Panel.Configuration.Position) -> CGFloat {
             let originalPosition = self.panel.configuration.position
-            let targetOffset = self.offset(for: targetPosition)
+            let targetOffset = self.panel.horizontalOffset(at: targetPosition)
             
             let distance = originalPosition != targetPosition ? targetOffset - context.offset : context.offset
             return abs(context.velocity / distance)
@@ -245,23 +245,8 @@ private extension PanelGestures {
             return abs(context.velocity / distance)
         }
 
-        private func offset(for position: Panel.Configuration.Position) -> CGFloat {
-            let originalPosition = self.panel.configuration.position
-            guard originalPosition != position else { return 0 }
-
-            let distance = self.panel.constraints.effectiveBounds.width - self.panel.view.frame.width
-            switch position {
-            case .leadingBottom:
-                return self.panel.view.isRTL ? distance : -distance
-            case .trailingBottom:
-                return self.panel.view.isRTL ? -distance : distance
-            default:
-                return 0.0
-            }
-        }
-
         private func animate(to targetPosition: Panel.Configuration.Position, initialVelocity: CGFloat) {
-            let targetOffset = self.offset(for: targetPosition)
+            let targetOffset = self.panel.horizontalOffset(at: targetPosition)
             let timing = Animation.overdamped.makeTiming(with: initialVelocity)
 
             self.panel.constraints.prepareForHorizontalPanEndAnimation()
