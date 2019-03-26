@@ -100,7 +100,7 @@ final class PanelAnimator {
         guard let repositionDelegate = self.panel.repositionDelegate else { return false }
         guard self.panel.isVisible else { return false }
         
-        return repositionDelegate.panel(self.panel, shouldMoveTo: frame)
+        return repositionDelegate.panel(self.panel, willMoveTo: frame)
     }
     
     func notifyDelegateOfMove(to endFrame: CGRect, context: PanelRepositionContext) -> PanelRepositionContext.Instruction {

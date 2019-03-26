@@ -130,10 +130,11 @@ extension ViewController: PanelRepositionDelegate {
         print("Panel did start moving")
     }
 
-    func panel(_ panel: Panel, shouldMoveTo frame: CGRect) -> Bool {
+    func panel(_ panel: Panel, willMoveTo frame: CGRect) -> Bool {
         print("Panel will move to frame \(frame)")
 
         // we can prevent the panel from begin dragged
+        // returning false will result in a rubber-band effect
         return true
     }
 

@@ -34,8 +34,9 @@ public protocol PanelRepositionDelegate: AnyObject {
     /// Tells the delegate that the `panel` has started moving
     func panelDidStartMoving(_ panel: Panel)
 
-    /// Asks the delegate if the `panel` can move to a specific frame
-    func panel(_ panel: Panel, shouldMoveTo frame: CGRect) -> Bool
+    /// Tells the delegate that the `panel` will move to a specific frame
+    /// Returning false will result in a rubber-band effect
+    func panel(_ panel: Panel, willMoveTo frame: CGRect) -> Bool
 
     /// Tells the delegate that the `panel` did stop moving
     func panel(_ panel: Panel, didStopMoving endFrame: CGRect, with context: PanelRepositionContext) -> PanelRepositionContext.Instruction
