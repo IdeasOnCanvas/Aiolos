@@ -15,7 +15,7 @@ final class PanelGestures: NSObject {
     private unowned let panel: Panel
     
     private lazy var verticalPan: PanGestureRecognizer = self.makeVerticalPanGestureRecognizer()
-    private lazy var horizontalPan: UIPanGestureRecognizer = self.makeHorizontalPanGestureRecognizer()
+    private lazy var horizontalPan: HorizontalPanGestureRecognizer = self.makeHorizontalPanGestureRecognizer()
     private lazy var verticalHandler: VerticalHandler = VerticalHandler(gestures: self)
     private lazy var horizontalHandler: HorizontalHandler = HorizontalHandler(gestures: self)
     
@@ -564,8 +564,8 @@ private extension PanelGestures {
         return pan
     }
     
-    func makeHorizontalPanGestureRecognizer() -> UIPanGestureRecognizer {
-        let pan = UIPanGestureRecognizer(target: self.horizontalHandler, action: #selector(HorizontalHandler.handlePan))
+    func makeHorizontalPanGestureRecognizer() -> HorizontalPanGestureRecognizer {
+        let pan = HorizontalPanGestureRecognizer(target: self.horizontalHandler, action: #selector(HorizontalHandler.handlePan))
         pan.delegate = self
         pan.cancelsTouchesInView = true
         return pan
