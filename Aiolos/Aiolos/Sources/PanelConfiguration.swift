@@ -12,8 +12,9 @@ import Foundation
 /// Allows to configure the appearance of the floating panel
 public extension Panel {
 
-    public struct Configuration {
+    struct Configuration {
 
+        @objc(PanelEdge)
         public enum Edge: Int {
             case top
             case leading
@@ -21,12 +22,14 @@ public extension Panel {
             case trailing
         }
 
+        @objc(PanelPosition)
         public enum Position: Int {
             case bottom
             case leadingBottom
             case trailingBottom
         }
 
+        @objc(PanelPositionLogic)
         public enum PositionLogic: Int {
             case respectSafeArea
             case ignoreSafeArea
@@ -40,6 +43,7 @@ public extension Panel {
             }
         }
 
+        @objc(PanelMode)
         public enum Mode: Int {
             case minimal
             case compact
@@ -47,6 +51,7 @@ public extension Panel {
             case fullHeight
         }
 
+        @objc(PanelGestureResizingMode)
         public enum GestureResizingMode: Int {
             case disabled
             case excludingContent

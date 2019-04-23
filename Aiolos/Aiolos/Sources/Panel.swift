@@ -196,6 +196,17 @@ public extension Panel {
     }
 }
 
+// MARK: - ObjC Compatibility
+
+public extension Panel {
+
+    @objc(isInMode:)
+    @available(swift, obsoleted: 1.0)
+    func isInMode(_ mode: Configuration.Mode) -> Bool {
+        return self.configuration.mode == mode
+    }
+}
+
 // MARK: - Internal
 
 internal extension Panel {

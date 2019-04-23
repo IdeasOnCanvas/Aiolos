@@ -26,19 +26,17 @@ public final class PanelTransitionCoordinator {
         self.animator = animator
         self.direction = direction
     }
-
-    // MARK: - PanelTransitionCoordinator
-
-    public func animateAlongsideTransition(_ animations: @escaping () -> Void, completion: ((UIViewAnimatingPosition) -> Void)? = nil) {
-        self.animator.transitionCoordinatorQueuedAnimations.append(Animation(animations: animations, completion: completion))
-    }
 }
 
-// MARK: - Helpers
+// MARK: - PanelTransitionCoordinator
 
 public extension PanelTransitionCoordinator {
 
-    public func horizontalOffset(for panel: Panel, at position: Panel.Configuration.Position) -> CGFloat {
+    func animateAlongsideTransition(_ animations: @escaping () -> Void, completion: ((UIViewAnimatingPosition) -> Void)? = nil) {
+        self.animator.transitionCoordinatorQueuedAnimations.append(Animation(animations: animations, completion: completion))
+    }
+
+    func horizontalOffset(for panel: Panel, at position: Panel.Configuration.Position) -> CGFloat {
         return panel.horizontalOffset(at: position)
     }
 }

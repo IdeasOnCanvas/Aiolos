@@ -12,12 +12,12 @@ import Foundation
 /// Enum that can be used to modify the panel's initial appearance/disappearance transition
 public extension Panel {
 
-    public enum Direction {
+    enum Direction {
         case horizontal
         case vertical
     }
 
-    public enum Transition {
+    enum Transition {
         case none
         case fade
         case slide(direction: Direction)
