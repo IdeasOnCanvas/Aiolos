@@ -13,50 +13,11 @@ import Foundation
 public extension Panel {
 
     struct Configuration {
-
-        @objc(PanelEdge)
-        public enum Edge: Int {
-            case top
-            case leading
-            case bottom
-            case trailing
-        }
-
-        @objc(PanelPosition)
-        public enum Position: Int {
-            case bottom
-            case leadingBottom
-            case trailingBottom
-        }
-
-        @objc(PanelPositionLogic)
-        public enum PositionLogic: Int {
-            case respectSafeArea
-            case ignoreSafeArea
-
-            public static var respectAllSafeAreas: [Edge: PositionLogic] {
-                return [.top: .respectSafeArea, .leading: .respectSafeArea, .bottom: .respectSafeArea, .trailing: .respectSafeArea]
-            }
-
-            public static var ignoreAllSafeAreas: [Edge: PositionLogic] {
-                return [.top: .ignoreSafeArea, .leading: .ignoreSafeArea, .bottom: .ignoreSafeArea, .trailing: .ignoreSafeArea]
-            }
-        }
-
-        @objc(PanelMode)
-        public enum Mode: Int {
-            case minimal
-            case compact
-            case expanded
-            case fullHeight
-        }
-
-        @objc(PanelGestureResizingMode)
-        public enum GestureResizingMode: Int {
-            case disabled
-            case excludingContent
-            case includingContent
-        }
+        public typealias Mode = _PanelMode
+        public typealias Edge = _PanelEdge
+        public typealias Position = _PanelPosition
+        public typealias PositionLogic = _PanelPositionLogic
+        public typealias GestureResizingMode = _PanelGestureResizingMode
 
         public enum ResizeHandleMode {
             case hidden
@@ -153,7 +114,54 @@ extension Panel.Configuration {
     }
 }
 
-extension Panel.Configuration.PositionLogic {
+// MARK: - Inner Types
+
+// we define these types here and use a typealias inside the Panel, to make them visible to ObjC and Swift
+@objc(PanelMode)
+public enum _PanelMode: Int {
+    case minimal
+    case compact
+    case expanded
+    case fullHeight
+}
+
+@objc(PanelEdge)
+public enum _PanelEdge: Int {
+    case top
+    case leading
+    case bottom
+    case trailing
+}
+
+@objc(PanelPosition)
+public enum _PanelPosition: Int {
+    case bottom
+    case leadingBottom
+    case trailingBottom
+}
+
+@objc(PanelPositionLogic)
+public enum _PanelPositionLogic: Int {
+    case respectSafeArea
+    case ignoreSafeArea
+
+    public static var respectAllSafeAreas: [Panel.Configuration.Edge: Panel.Configuration.PositionLogic] {
+        return [.top: .respectSafeArea, .leading: .respectSafeArea, .bottom: .respectSafeArea, .trailing: .respectSafeArea]
+    }
+
+    public static var ignoreAllSafeAreas: [Panel.Configuration.Edge: Panel.Configuration.PositionLogic] {
+        return [.top: .ignoreSafeArea, .leading: .ignoreSafeArea, .bottom: .ignoreSafeArea, .trailing: .ignoreSafeArea]
+    }
+}
+
+@objc(PanelGestureResizingMode)
+public enum _PanelGestureResizingMode: Int {
+    case disabled
+    case excludingContent
+    case includingContent
+}
+
+extension _PanelPositionLogic {
 
     func applyingInsets(of view: UIView, to insets: NSDirectionalEdgeInsets, edge: Panel.Configuration.Edge) -> NSDirectionalEdgeInsets {
         var insets = insets
