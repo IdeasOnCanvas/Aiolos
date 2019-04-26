@@ -302,6 +302,7 @@ private extension Panel {
 
     func makeResizeHandle() -> ResizeHandle {
         let handle = ResizeHandle(configuration: self.configuration)
+        handle.accessibilityIdentifier = "Aiolos.ResizeHandle"
         handle.accessibilityActivateAction = { [weak self] in
             guard let self = self else { return false }
 
