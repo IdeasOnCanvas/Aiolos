@@ -95,7 +95,7 @@ public extension Panel {
 
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-        
+
         switch configuration.appearance.resizeHandle {
         case .hidden:
             self.resizeHandle.frame = .null
@@ -116,7 +116,7 @@ public extension Panel {
             }
             self.separatorView.frame = dividerFrame
         }
-        
+
         self.fixNavigationBarLayoutMargins()
     }
 
@@ -291,11 +291,19 @@ private extension Panel {
 
     func makeShadowView(for view: UIView) -> UIView {
         let shadowView = ShadowView(configuration: self.configuration)
-        let container = ContainerView(frame: shadowView.bounds, configuration: self.configuration)
+        let container = ContainerView(configuration: self.configuration)
 
+        container.translatesAutoresizingMaskIntoConstraints = false
         shadowView.translatesAutoresizingMaskIntoConstraints = false
         shadowView.addSubview(container)
         container.addSubview(view)
+
+        NSLayoutConstraint.activate([
+            shadowView.topAnchor.constraint(equalTo: container.topAnchor),
+            shadowView.leadingAnchor.constraint(equalTo: container.leadingAnchor),
+            shadowView.bottomAnchor.constraint(equalTo: container.bottomAnchor),
+            shadowView.trailingAnchor.constraint(equalTo: container.trailingAnchor)
+            ])
 
         return shadowView
     }

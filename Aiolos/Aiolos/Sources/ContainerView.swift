@@ -14,10 +14,8 @@ final class ContainerView: UIView {
 
     // MARK: - Lifecycle
 
-    init(frame: CGRect, configuration: Panel.Configuration) {
-        super.init(frame: frame)
-
-        self.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+    init(configuration: Panel.Configuration) {
+        super.init(frame: .zero)
         self.configure(with: configuration)
     }
 
