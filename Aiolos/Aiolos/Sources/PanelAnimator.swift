@@ -99,10 +99,10 @@ final class PanelAnimator {
     func askDelegateAboutMove(to frame: CGRect) -> Bool {
         guard let repositionDelegate = self.panel.repositionDelegate else { return false }
         guard self.panel.isVisible else { return false }
-        
+
         return repositionDelegate.panel(self.panel, willMoveTo: frame)
     }
-    
+
     func notifyDelegateOfMove(to endFrame: CGRect, context: PanelRepositionContext) -> PanelRepositionContext.Instruction {
         guard let repositionDelegate = self.panel.repositionDelegate else { return .none }
         guard self.panel.isVisible else { return .none }
@@ -161,6 +161,8 @@ extension PanelAnimator {
         func finish() {
             completion()
             self.resetPanel()
+            self.panel.constraints.updateForPanEndAnimation(to: self.panel.view.bounds.height)
+            self.panel.constraints.updateForPanEnd()
             self.isTransitioningFromParent = false
         }
 
@@ -171,11 +173,15 @@ extension PanelAnimator {
 
         case .fade:
             animator.addAnimations {
+                // this constraints the height during removal transition
+                // fixes a visual glitch when the panel is .fullHeight and status bar is hidden as well
+                self.panel.constraints.updateForPanStart(with: self.panel.view.frame.size)
                 self.panel.view.alpha = 0.0
             }
 
         case .slide(let edge):
             animator.addAnimations {
+                self.panel.constraints.updateForPanStart(with: self.panel.view.frame.size)
                 self.panel.view.transform = self.transform(for: edge, size: self.panel.view.frame.size)
             }
         }
@@ -194,7 +200,7 @@ extension PanelAnimator {
         let position = self.panel.configuration.position
         let margins = self.panel.configuration.margins
         let animateToLeft = self.panel.view.isRTL != (position == .leadingBottom)
-        
+
         switch direction {
         case .horizontal:
             let translationX = animateToLeft ? -(size.width + margins.leading) : size.width + margins.trailing
