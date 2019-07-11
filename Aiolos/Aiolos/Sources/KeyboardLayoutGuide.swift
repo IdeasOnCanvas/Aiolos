@@ -65,7 +65,7 @@ private extension KeyboardLayoutGuide {
             // convert own frame to window coordinates
             let owningViewFrame = window.convert(owningView.frame, from: owningView.superview)
             // calculate the area of own frame that is covered by keyboard
-            let coveredFrame = owningViewFrame.intersection(keyboardInfo.endFrame)
+            let coveredFrame = owningViewFrame.intersection(keyboardInfo.endFrame(in: window))
             // now this might be rotated, so convert it back
             coveredHeight = window.convert(coveredFrame, to: owningView.superview).height
         }
@@ -85,7 +85,7 @@ private extension KeyboardLayoutGuide {
 
 private struct KeyboardInfo {
 
-    let endFrame: CGRect
+    private let endFrame: CGRect
     let animationOptions: UIView.AnimationOptions
     let animationDuration: TimeInterval
     let isLocal: Bool
@@ -119,6 +119,10 @@ private struct KeyboardInfo {
         } else {
             self.animationDuration = 0.25
         }
+    }
+
+    func endFrame(in window: UIWindow) -> CGRect {
+        return window.convert(self.endFrame, from: UIScreen.main.coordinateSpace)
     }
 
     func animateAlongsideKeyboard(_ animations: @escaping () -> Void) {
