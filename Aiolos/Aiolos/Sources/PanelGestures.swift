@@ -189,7 +189,11 @@ private extension PanelGestures {
         private func handlePanEnded(_ pan: UIPanGestureRecognizer) {
             guard let context = self.repositionContext(pan: pan) else { return }
 
-            let instruction = self.panel.animator.notifyDelegateOfMove(to: self.panel.view.frame, context: context)
+            var instruction = self.panel.animator.notifyDelegateOfMove(to: self.panel.view.frame, context: context)
+            if case .hide = instruction, let repositionDelegate = self.panel.repositionDelegate, repositionDelegate.panelCanBeDismissed(self.panel) == false {
+                instruction = .none
+            }
+
             switch instruction {
             case .none:
                 let originalPosition = self.panel.configuration.position

@@ -166,6 +166,10 @@ public extension Panel {
     func removeFromParent(transition: Transition = .none, completion: (() -> Void)? = nil) {
         guard self.parent != nil || self.animator.isTransitioningToParent else { return }
 
+        if let repositionDelegate = self.repositionDelegate {
+            guard repositionDelegate.panelCanBeDismissed(self) else { return }
+        }
+
         if self.animator.isTransitioningToParent {
             self.animator.stopCurrentAnimation()
         }

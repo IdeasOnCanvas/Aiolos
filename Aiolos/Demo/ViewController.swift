@@ -126,6 +126,10 @@ extension ViewController: PanelResizeDelegate {
 
 extension ViewController: PanelRepositionDelegate {
 
+    func panelCanBeDismissed(_ panel: Panel) -> Bool {
+        return true
+    }
+
     func panelDidStartMoving(_ panel: Panel) {
         print("Panel did start moving")
     }

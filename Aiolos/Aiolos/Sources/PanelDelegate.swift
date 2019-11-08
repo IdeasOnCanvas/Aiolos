@@ -31,6 +31,9 @@ public protocol PanelResizeDelegate: AnyObject {
 
 public protocol PanelRepositionDelegate: AnyObject {
 
+    /// Asks the delegate whether the `panel` can be removed from its parent
+    func panelCanBeDismissed(_ panel: Panel) -> Bool
+
     /// Tells the delegate that the `panel` has started moving
     func panelDidStartMoving(_ panel: Panel)
 
