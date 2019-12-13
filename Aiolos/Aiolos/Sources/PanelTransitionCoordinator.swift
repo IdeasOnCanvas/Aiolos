@@ -12,14 +12,14 @@ import UIKit
 
 /// This coordinator can be used to animate things alongside the movement of the Panel
 public final class PanelTransitionCoordinator {
-    
+
     private unowned let animator: PanelAnimator
 
     // MARK: - Properties
 
     public let direction: Panel.Direction
     public var isAnimated: Bool { return self.animator.animateChanges }
-    
+
     // MARK: - Lifecycle
 
     init(animator: PanelAnimator, direction: Panel.Direction) {

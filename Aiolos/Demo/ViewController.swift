@@ -116,7 +116,7 @@ extension ViewController: PanelResizeDelegate {
         // we can animate things along the way
         coordinator.animateAlongsideTransition({
             print("Animating alongside of panel transition")
-        }, completion: { animationPosition in
+        }, completion: { _ in
             print("Completed panel transition to \(newMode)")
         })
     }
@@ -157,7 +157,7 @@ extension ViewController: PanelRepositionDelegate {
         // we can animate things along the way
         coordinator.animateAlongsideTransition({
             print("Animating alongside of panel transition")
-        }, completion: { animationPosition in
+        }, completion: { _ in
             print("Completed panel transition to \(newPosition)")
         })
     }
@@ -168,7 +168,7 @@ extension ViewController: PanelRepositionDelegate {
         // we can animate things along the way
         coordinator.animateAlongsideTransition({
             print("Animating alongside of panel transition")
-        }, completion: { animationPosition in
+        }, completion: { _ in
             print("Completed panel transition to hidden state")
         })
     }
@@ -220,12 +220,12 @@ private extension ViewController {
         }
 
         var panelMargins: NSDirectionalEdgeInsets {
-            if traitCollection.userInterfaceIdiom == .pad  || traitCollection.hasNotch { return NSDirectionalEdgeInsets(top: 20.0, leading: 20.0, bottom: 20.0, trailing: 20.0) }
+            if traitCollection.userInterfaceIdiom == .pad || traitCollection.hasNotch { return NSDirectionalEdgeInsets(top: 20.0, leading: 20.0, bottom: 20.0, trailing: 20.0) }
 
             let horizontalMargin: CGFloat = traitCollection.verticalSizeClass == .compact ? 20.0 : 0.0
             return NSDirectionalEdgeInsets(top: 20.0, leading: horizontalMargin, bottom: 0.0, trailing: horizontalMargin)
         }
-        
+
         configuration.appearance.separatorColor = .white
         configuration.position = panelPosition
         configuration.margins = panelMargins
