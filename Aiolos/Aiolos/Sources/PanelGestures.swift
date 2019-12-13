@@ -434,7 +434,6 @@ private extension PanelGestures {
             }
         }
 
-        // swiftlint:disable cyclomatic_complexity
         private func targetMode(for pan: PanGestureRecognizer) -> Panel.Configuration.Mode {
             let supportedModes = self.panel.configuration.supportedModes
             guard let originalConfiguration = self.originalConfiguration else { return supportedModes.first! }
@@ -493,7 +492,6 @@ private extension PanelGestures {
                 return originalConfiguration.mode
             }
         }
-        // swiftlint:enable cyclomatic_complexity
 
         private func cleanUp(pan: PanGestureRecognizer) {
             pan.cancelsTouchesInView = false
@@ -543,7 +541,6 @@ private extension PanelGestures {
             self.panel.animator.animateWithTiming(timing, animations: {
                 self.panel.constraints.updateForPanEndAnimation(to: height)
                 self.panel.animator.notifyDelegateOfTransition(to: size)
-                self.panel.fixNavigationBarLayoutMargins()
             }, completion: {
                 self.panel.constraints.updateSizeConstraints(for: size)
             })

@@ -53,6 +53,7 @@ public final class Panel: UIViewController {
             self.updateContentViewControllerFrame(of: self.contentViewController)
             self.exchangeContentViewController(oldValue, with: self.contentViewController)
             self.view.setNeedsLayout()
+            self.fixNavigationBarLayoutMargins()
         }
     }
 
@@ -156,6 +157,7 @@ public extension Panel {
         self.didMove(toParent: parent)
 
         let size = self.size(for: self.configuration.mode)
+
         self.animator.transitionToParent(with: size, transition: transition) {
             contentViewController?.endAppearanceTransition()
             self.updateAccessibility(for: self.configuration.mode)

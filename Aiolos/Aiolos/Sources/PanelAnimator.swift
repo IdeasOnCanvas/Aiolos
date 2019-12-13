@@ -69,21 +69,21 @@ final class PanelAnimator {
     }
 
     func notifyDelegateOfTransition(to size: CGSize) {
-        guard let animationDelegate = self.panel.resizeDelegate else { return }
+        guard let resizeDelegate = self.panel.resizeDelegate else { return }
         guard self.panel.isVisible else { return }
 
-        animationDelegate.panel(self.panel, willResizeTo: size)
+        resizeDelegate.panel(self.panel, willResizeTo: size)
         if let contentViewController = self.panel.contentViewController as? PanelResizeDelegate {
             contentViewController.panel(self.panel, willResizeTo: size)
         }
     }
 
     func notifyDelegateOfTransition(from oldMode: Panel.Configuration.Mode?, to newMode: Panel.Configuration.Mode) {
-        guard let animationDelegate = self.panel.resizeDelegate else { return }
+        guard let resizeDelegate = self.panel.resizeDelegate else { return }
         guard self.panel.isVisible else { return }
 
         let transitionCoordinator = PanelTransitionCoordinator(animator: self, direction: .vertical)
-        animationDelegate.panel(self.panel, willTransitionFrom: oldMode, to: newMode, with: transitionCoordinator)
+        resizeDelegate.panel(self.panel, willTransitionFrom: oldMode, to: newMode, with: transitionCoordinator)
         if let contentViewController = self.panel.contentViewController as? PanelResizeDelegate {
             contentViewController.panel(self.panel, willTransitionFrom: oldMode, to: newMode, with: transitionCoordinator)
         }
@@ -233,6 +233,7 @@ private extension PanelAnimator {
         animator.addAnimations {
             changes()
             parentView.layoutIfNeeded()
+            self.panel.fixNavigationBarLayoutMargins()
         }
         if let completion = completion {
             animator.addCompletion { _ in completion() }
@@ -278,6 +279,7 @@ private extension PanelAnimator {
     func resetPanel() {
         self.panel.view.alpha = 1.0
         self.panel.view.transform = .identity
+        self.panel.fixNavigationBarLayoutMargins()
     }
 
     func finalizeTransition(_ transition: Panel.Transition, completion: @escaping () -> Void) {
