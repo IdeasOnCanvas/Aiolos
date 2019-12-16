@@ -53,7 +53,7 @@ public final class Panel: UIViewController {
             self.updateContentViewControllerFrame(of: self.contentViewController)
             self.exchangeContentViewController(oldValue, with: self.contentViewController)
             self.view.setNeedsLayout()
-            self.fixNavigationBarLayoutMargins()
+            self.fixLayoutMargins()
         }
     }
 
@@ -118,7 +118,7 @@ public extension Panel {
             self.separatorView.frame = dividerFrame
         }
 
-        self.fixNavigationBarLayoutMargins()
+        self.fixLayoutMargins()
     }
 
     override func willTransition(to newCollection: UITraitCollection, with coordinator: UIViewControllerTransitionCoordinator) {
@@ -161,7 +161,7 @@ public extension Panel {
         self.animator.transitionToParent(with: size, transition: transition) {
             contentViewController?.endAppearanceTransition()
             self.updateAccessibility(for: self.configuration.mode)
-            self.fixNavigationBarLayoutMargins()
+            self.fixLayoutMargins()
         }
     }
 
@@ -262,25 +262,30 @@ internal extension Panel {
         }
     }
 
-    func fixNavigationBarLayoutMargins() {
-        guard let navigationController = self.contentViewController as? UINavigationController else { return }
-
-        // this is a workaround for a layout bug, when the panel is placed within non-safe areas.
-        // the navigationBar automatically inherits the safeAreaInsets of the device, but we don't want that.
-        // the panel itself takes care that the contentViewController is fully visible so all its children
-        // should have no safeAreaInsets set
-        for view in navigationController.navigationBar.subviews {
+    // this is a workaround for a layout bug, when the panel is placed within non-safe areas.
+    // the navigationBar automatically inherits the safeAreaInsets of the device, but we don't want that.
+    // the panel itself takes care that the contentViewController is fully visible so all its children
+    // should have no safeAreaInsets set
+    func fixLayoutMargins() {
+        func visit(_ view: UIView) {
             view.insetsLayoutMarginsFromSafeArea = false
+            view.subviews.forEach(visit(_:))
 
-            let safeAreaConstraints = view.constraints.filter { constraint in
-                guard let identifier = constraint.identifier else { return false }
+            if view.superview is UINavigationBar {
+                let safeAreaConstraints = view.constraints.filter { constraint in
+                    guard let identifier = constraint.identifier else { return false }
 
-                return identifier.hasPrefix("UIView" + "SafeAre" + "aLayout" + "Guide") || identifier.hasSuffix("-guide" + "-constraint")
+                    return identifier.hasPrefix("UIView" + "SafeAre" + "aLayout" + "Guide") || identifier.hasSuffix("-guide" + "-constraint")
+                }
+
+                for constraint in safeAreaConstraints {
+                    constraint.constant = 0.0
+                }
             }
+        }
 
-            for constraint in safeAreaConstraints {
-                constraint.constant = 0.0
-            }
+        if let view = self.contentViewController?.view {
+            visit(view)
         }
     }
 }

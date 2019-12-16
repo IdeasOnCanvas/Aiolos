@@ -233,7 +233,7 @@ private extension PanelAnimator {
         animator.addAnimations {
             changes()
             parentView.layoutIfNeeded()
-            self.panel.fixNavigationBarLayoutMargins()
+            self.panel.fixLayoutMargins()
         }
         if let completion = completion {
             animator.addCompletion { _ in completion() }
@@ -279,7 +279,7 @@ private extension PanelAnimator {
     func resetPanel() {
         self.panel.view.alpha = 1.0
         self.panel.view.transform = .identity
-        self.panel.fixNavigationBarLayoutMargins()
+        self.panel.fixLayoutMargins()
     }
 
     func finalizeTransition(_ transition: Panel.Transition, completion: @escaping () -> Void) {
