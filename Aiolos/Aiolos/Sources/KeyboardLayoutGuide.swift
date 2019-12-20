@@ -57,6 +57,10 @@ private extension KeyboardLayoutGuide {
             guard firstResponder.isDescendant(of: owningView) else { return }
         }
 
+        if window.traitCollection.userInterfaceIdiom == .phone {
+            guard keyboardInfo.isLocal else { return }
+        }
+
         let coveredHeight: CGFloat
 
         if keyboardInfo.isFloatingKeyboard {
