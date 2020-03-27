@@ -26,7 +26,6 @@ If applicable, add screenshots to help explain your problem.
 **Device (please complete the following information):**
  - Device Type: [e.g. iPhone6]
  - OS: [e.g. iOS11.2]
- - Browser [e.g. stock browser, safari]
  - Version [e.g. 22]
 
 **Additional context**
