@@ -56,6 +56,11 @@ public final class ResizeHandle: UIView {
         self.backgroundColor = .clear
         self.addSubview(self.resizeHandle)
         self.configure(with: configuration)
+
+        if #available(iOS 13.4, *) {
+            let pointerInteraction = UIPointerInteraction(delegate: self)
+            self.addInteraction(pointerInteraction)
+        }
     }
 
     public required init?(coder aDecoder: NSCoder) {
@@ -89,17 +94,35 @@ extension ResizeHandle {
     }
 }
 
+// MARK: - UIPointerInteractionDelegate
+
+@available(iOS 13.4, *)
+extension ResizeHandle: UIPointerInteractionDelegate {
+
+    public func pointerInteraction(_ interaction: UIPointerInteraction, regionFor request: UIPointerRegionRequest, defaultRegion: UIPointerRegion) -> UIPointerRegion? {
+        return UIPointerRegion(rect: self.resizeHandle.frame.insetBy(dx: -24.0, dy: -12.0))
+      }
+
+    public func pointerInteraction(_ interaction: UIPointerInteraction, styleFor region: UIPointerRegion) -> UIPointerStyle? {
+        return UIPointerStyle(effect: .automatic(UITargetedPreview(view: self.resizeHandle)))
+    }
+
+    public func pointerInteraction(_ interaction: UIPointerInteraction, willEnter region: UIPointerRegion, animator: UIPointerInteractionAnimating) {
+        self.isResizing = true
+    }
+
+    public func pointerInteraction(_ interaction: UIPointerInteraction, willExit region: UIPointerRegion, animator: UIPointerInteractionAnimating) {
+        self.isResizing = false
+    }
+}
+
 // MARK: - Private
 
 private extension ResizeHandle {
 
     func makeResizeHandle() -> UIView {
-        let handle = UIButton(type: .custom)
-        handle.frame.size = CGSize(width: Constants.inactiveHandleWidth, height: Constants.handleHeight)
+        let handle = UIView(frame: .init(origin: .zero, size: .init(width: Constants.inactiveHandleWidth, height: Constants.handleHeight)))
         handle.backgroundColor = self.handleColor
-        if #available(iOS 13.4, *) {
-            handle.isPointerInteractionEnabled = true
-        }
         return handle
     }
 
