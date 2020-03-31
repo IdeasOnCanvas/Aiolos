@@ -138,12 +138,12 @@ private extension ResizeHandle {
     func updateResizeHandlePath(animated: Bool = false) {
         func makeHandlePath(width: CGFloat) -> UIBezierPath {
             let r = self.bounds.divided(atDistance: 13.0, from: .maxYEdge).slice
-            let centerX = r.width / 2.0
             let y = r.minY + Constants.handleHeight / 2.0
 
+            let boundingRect = CGRect(center: .init(x: r.width / 2.0, y: y), size: .init(width: width, height: 0.0))
             let path = UIBezierPath()
-            path.move(to: CGPoint(x: centerX - width / 2.0, y: y))
-            path.addLine(to: CGPoint(x: centerX + width / 2.0, y: y))
+            path.move(to: boundingRect.minXmidY)
+            path.addLine(to: boundingRect.maxXmidY)
             return path
         }
 
@@ -183,6 +183,9 @@ private extension UIColor {
 
 
 private extension CGRect {
+
+    var minXmidY: CGPoint { .init(x: self.minX, y: self.midY) }
+    var maxXmidY: CGPoint { .init(x: self.maxX, y: self.midY) }
 
     init(center: CGPoint, size: CGSize) {
         self.init(x: center.x - size.width / 2.0, y: center.y - size.height / 2.0, width: size.width, height: size.height)
