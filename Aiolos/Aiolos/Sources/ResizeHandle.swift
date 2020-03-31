@@ -14,6 +14,11 @@ public final class ResizeHandle: UIView {
 
     public struct Constants {
         public static let height: CGFloat = 20.0
+
+        fileprivate static let defaultWidth: CGFloat = 32.0
+        fileprivate static let resizeWidth: CGFloat = 38.0
+        fileprivate static let pointerWidth: CGFloat = 62.0
+        fileprivate static let handleHeight: CGFloat = 5.0
     }
 
     private lazy var resizeHandle: CAShapeLayer = self.makeResizeHandle()
@@ -26,7 +31,7 @@ public final class ResizeHandle: UIView {
         }
     }
 
-    var isResizing = false {
+    var isResizing: Bool = false {
         didSet {
             guard oldValue != self.isResizing else { return }
 
@@ -51,6 +56,11 @@ public final class ResizeHandle: UIView {
         self.backgroundColor = .clear
         self.layer.addSublayer(self.resizeHandle)
         self.configure(with: configuration)
+
+        if #available(iOS 13.4, *) {
+            let pointerInteraction = UIPointerInteraction(delegate: self)
+            self.addInteraction(pointerInteraction)
+        }
     }
 
     public required init?(coder aDecoder: NSCoder) {
@@ -89,6 +99,23 @@ extension ResizeHandle {
     }
 }
 
+// MARK: - UIPointerInteractionDelegate
+
+@available(iOS 13.4, *)
+extension ResizeHandle: UIPointerInteractionDelegate {
+
+    public func pointerInteraction(_ interaction: UIPointerInteraction, regionFor request: UIPointerRegionRequest, defaultRegion: UIPointerRegion) -> UIPointerRegion? {
+        let pointerRect = CGRect(center: CGPoint(x: self.bounds.width / 2.0, y: self.bounds.height / 2.0),
+                                 size: CGSize(width: Constants.pointerWidth, height: Constants.handleHeight + 12.0))
+
+        return UIPointerRegion(rect: pointerRect)
+    }
+
+    public func pointerInteraction(_ interaction: UIPointerInteraction, styleFor region: UIPointerRegion) -> UIPointerStyle? {
+        return UIPointerStyle(effect: .automatic(.init(view: self)))
+    }
+}
+
 // MARK: - Private
 
 private extension ResizeHandle {
@@ -98,8 +125,8 @@ private extension ResizeHandle {
         layer.contentsScale = UIScreen.main.scale
         layer.backgroundColor = UIColor.clear.cgColor
         layer.fillColor = UIColor.clear.cgColor
-        layer.lineWidth = 5.0
-        layer.lineCap = CAShapeLayerLineCap.round
+        layer.lineWidth = Constants.handleHeight
+        layer.lineCap = .round
         return layer
     }
 
@@ -109,15 +136,18 @@ private extension ResizeHandle {
     }
 
     func updateResizeHandlePath(animated: Bool = false) {
-        let path = UIBezierPath()
-        let width: CGFloat = self.isResizing ? 38.0 : 32.0
+        func makeHandlePath(width: CGFloat) -> UIBezierPath {
+            let r = self.bounds.divided(atDistance: 13.0, from: .maxYEdge).slice
+            let centerX = r.width / 2.0
+            let y = r.minY + Constants.handleHeight / 2.0
 
-        let r = self.bounds.divided(atDistance: 13.0, from: .maxYEdge).slice
-        let centerX = r.width / 2.0
-        let y = r.minY + self.resizeHandle.lineWidth / 2.0
+            let path = UIBezierPath()
+            path.move(to: CGPoint(x: centerX - width / 2.0, y: y))
+            path.addLine(to: CGPoint(x: centerX + width / 2.0, y: y))
+            return path
+        }
 
-        path.move(to: CGPoint(x: centerX - width / 2.0, y: y))
-        path.addLine(to: CGPoint(x: centerX + width / 2.0, y: y))
+        let path = makeHandlePath(width: self.isResizing ? Constants.resizeWidth : Constants.defaultWidth)
 
         if animated {
             self.addAnimation(to: self.resizeHandle)
@@ -136,6 +166,7 @@ private extension ResizeHandle {
     }
 }
 
+
 private extension UIColor {
 
     func darkened() -> UIColor {
@@ -147,5 +178,13 @@ private extension UIColor {
         self.getHue(&hue, saturation: &saturation, brightness: &brightness, alpha: &alpha)
 
         return UIColor(hue: hue, saturation: saturation, brightness: brightness - 0.2, alpha: alpha + 0.2)
+    }
+}
+
+
+private extension CGRect {
+
+    init(center: CGPoint, size: CGSize) {
+        self.init(x: center.x - size.width / 2.0, y: center.y - size.height / 2.0, width: size.width, height: size.height)
     }
 }
