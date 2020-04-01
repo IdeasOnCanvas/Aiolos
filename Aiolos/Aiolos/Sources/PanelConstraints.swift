@@ -159,6 +159,13 @@ internal extension PanelConstraints {
 
 private extension PanelConstraints {
 
+    struct Guides {
+        let top: NSLayoutYAxisAnchor
+        let leading: NSLayoutXAxisAnchor
+        let bottom: NSLayoutYAxisAnchor
+        let trailing: NSLayoutXAxisAnchor
+    }
+
     func makeKeyboardLayoutGuide() -> KeyboardLayoutGuide {
         guard let parentView = self.panel.parent?.view else { fatalError("Must have a parent by now") }
 
@@ -182,13 +189,13 @@ private extension PanelConstraints {
         NSLayoutConstraint.activate([widthConstraint, heightConstraint, minHeightConstraint])
     }
 
-    func guides(of view: UIView, for positionLogic: [Panel.Configuration.Edge: Panel.Configuration.PositionLogic]) -> (top: NSLayoutYAxisAnchor, leading: NSLayoutXAxisAnchor, bottom: NSLayoutYAxisAnchor, trailing: NSLayoutXAxisAnchor) {
+    func guides(of view: UIView, for positionLogic: [Panel.Configuration.Edge: Panel.Configuration.PositionLogic]) -> Guides {
         let top = positionLogic[.top] == .respectSafeArea ? view.safeAreaLayoutGuide.topAnchor : view.topAnchor
         let leading = positionLogic[.leading] == .respectSafeArea ? view.safeAreaLayoutGuide.leadingAnchor : view.leadingAnchor
         let bottom = positionLogic[.bottom] == .respectSafeArea ? view.safeAreaLayoutGuide.bottomAnchor : view.bottomAnchor
         let trailing = positionLogic[.trailing] == .respectSafeArea ? view.safeAreaLayoutGuide.trailingAnchor : view.trailingAnchor
 
-        return (top, leading, bottom, trailing)
+        return .init(top: top, leading: leading, bottom: bottom, trailing: trailing)
     }
 
     func setTopConstraintIsRelaxed(_ relaxed: Bool) {
