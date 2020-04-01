@@ -14,9 +14,13 @@ public final class ResizeHandle: UIView {
 
     public struct Constants {
         public static let height: CGFloat = 20.0
+
+        fileprivate static let handleHeight: CGFloat = 5.0
+        fileprivate static let inactiveHandleWidth: CGFloat = 38.0
+        fileprivate static let activeHandleWidth: CGFloat = 44.0
     }
 
-    private lazy var resizeHandle: CAShapeLayer = self.makeResizeHandle()
+    private lazy var resizeHandle: UIView = self.makeResizeHandle()
 
     // MARK: - Properties
 
@@ -26,12 +30,13 @@ public final class ResizeHandle: UIView {
         }
     }
 
-    var isResizing = false {
+    var isResizing: Bool = false {
         didSet {
             guard oldValue != self.isResizing else { return }
 
-            self.updateResizeHandlePath(animated: true)
+            self.updateResizeHandleFrame(animated: true)
             self.updateResizeHandleColor()
+            self.setNeedsLayout()
         }
     }
 
@@ -49,12 +54,24 @@ public final class ResizeHandle: UIView {
         self.clipsToBounds = false
         self.isOpaque = false
         self.backgroundColor = .clear
-        self.layer.addSublayer(self.resizeHandle)
+        self.addSubview(self.resizeHandle)
         self.configure(with: configuration)
+
+        if #available(iOS 13.4, *) {
+            let pointerInteraction = UIPointerInteraction(delegate: self)
+            self.addInteraction(pointerInteraction)
+        }
     }
 
     public required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+
+    // MARK: - UIView
+
+    override public func layoutSubviews() {
+        super.layoutSubviews()
+        self.updateResizeHandleFrame(animated: false)
     }
 
     // MARK: - ResizeHandle
@@ -64,7 +81,7 @@ public final class ResizeHandle: UIView {
 
         self.handleColor = foregroundColor
         self.backgroundColor = backgroundColor
-        self.resizeHandle.opacity = configuration.gestureResizingMode != .disabled && configuration.supportedModes.count > 1 ? 1.0 : 0.2
+        self.resizeHandle.alpha = configuration.gestureResizingMode != .disabled && configuration.supportedModes.count > 1 ? 1.0 : 0.2
     }
 }
 
@@ -77,15 +94,25 @@ extension ResizeHandle {
     }
 }
 
-// MARK: - UIView
+// MARK: - UIPointerInteractionDelegate
 
-extension ResizeHandle {
+@available(iOS 13.4, *)
+extension ResizeHandle: UIPointerInteractionDelegate {
 
-    override public func layoutSubviews() {
-        super.layoutSubviews()
+    public func pointerInteraction(_ interaction: UIPointerInteraction, regionFor request: UIPointerRegionRequest, defaultRegion: UIPointerRegion) -> UIPointerRegion? {
+        return UIPointerRegion(rect: self.resizeHandle.frame.insetBy(dx: -24.0, dy: -12.0))
+      }
 
-        self.resizeHandle.frame = self.bounds
-        self.updateResizeHandlePath()
+    public func pointerInteraction(_ interaction: UIPointerInteraction, styleFor region: UIPointerRegion) -> UIPointerStyle? {
+        return UIPointerStyle(effect: .automatic(UITargetedPreview(view: self.resizeHandle)))
+    }
+
+    public func pointerInteraction(_ interaction: UIPointerInteraction, willEnter region: UIPointerRegion, animator: UIPointerInteractionAnimating) {
+        self.isResizing = true
+    }
+
+    public func pointerInteraction(_ interaction: UIPointerInteraction, willExit region: UIPointerRegion, animator: UIPointerInteractionAnimating) {
+        self.isResizing = false
     }
 }
 
@@ -93,48 +120,39 @@ extension ResizeHandle {
 
 private extension ResizeHandle {
 
-    func makeResizeHandle() -> CAShapeLayer {
-        let layer = CAShapeLayer()
-        layer.contentsScale = UIScreen.main.scale
-        layer.backgroundColor = UIColor.clear.cgColor
-        layer.fillColor = UIColor.clear.cgColor
-        layer.lineWidth = 5.0
-        layer.lineCap = CAShapeLayerLineCap.round
-        return layer
+    func makeResizeHandle() -> UIView {
+        let handle = UIView(frame: .init(origin: .zero, size: .init(width: Constants.inactiveHandleWidth, height: Constants.handleHeight)))
+        handle.backgroundColor = self.handleColor
+        return handle
     }
 
     func updateResizeHandleColor() {
         let baseColor = self.handleColor
-        self.resizeHandle.strokeColor = self.isResizing ? baseColor.darkened().cgColor : baseColor.cgColor
+        self.resizeHandle.backgroundColor = self.isResizing ? baseColor.darkened() : baseColor
     }
 
-    func updateResizeHandlePath(animated: Bool = false) {
-        let path = UIBezierPath()
-        let width: CGFloat = self.isResizing ? 38.0 : 32.0
+    func updateResizeHandleFrame(animated: Bool) {
+        let width = self.isResizing ? Constants.activeHandleWidth : Constants.inactiveHandleWidth
 
-        let r = self.bounds.divided(atDistance: 13.0, from: .maxYEdge).slice
-        let centerX = r.width / 2.0
-        let y = r.minY + self.resizeHandle.lineWidth / 2.0
-
-        path.move(to: CGPoint(x: centerX - width / 2.0, y: y))
-        path.addLine(to: CGPoint(x: centerX + width / 2.0, y: y))
+        func updateFrame() {
+            let center = CGPoint(x: self.bounds.width / 2.0, y: self.bounds.height / 2.0 - 0.5)
+            self.resizeHandle.frame = CGRect(center: center, size: .init(width: width, height: Constants.handleHeight))
+            self.resizeHandle.layer.cornerRadius = self.resizeHandle.bounds.height / 2.0
+        }
 
         if animated {
-            self.addAnimation(to: self.resizeHandle)
+            UIView.animate(withDuration: 0.3,
+                           delay: 0.0,
+                           usingSpringWithDamping: 1.0,
+                           initialSpringVelocity: 0.0,
+                           options: .curveLinear,
+                           animations: updateFrame)
+        } else {
+            updateFrame()
         }
-        self.resizeHandle.path = path.cgPath
-    }
-
-    func addAnimation(to layer: CAShapeLayer) {
-        let animationKey = "pathAnimation"
-        let animation = CABasicAnimation(keyPath: #keyPath(CAShapeLayer.path))
-        animation.duration = 0.3
-        animation.timingFunction = CAMediaTimingFunction(name: CAMediaTimingFunctionName.easeInEaseOut)
-
-        layer.removeAnimation(forKey: animationKey)
-        layer.add(animation, forKey: animationKey)
     }
 }
+
 
 private extension UIColor {
 
@@ -147,5 +165,13 @@ private extension UIColor {
         self.getHue(&hue, saturation: &saturation, brightness: &brightness, alpha: &alpha)
 
         return UIColor(hue: hue, saturation: saturation, brightness: brightness - 0.2, alpha: alpha + 0.2)
+    }
+}
+
+
+private extension CGRect {
+
+    init(center: CGPoint, size: CGSize) {
+        self.init(x: center.x - size.width / 2.0, y: center.y - size.height / 2.0, width: size.width, height: size.height)
     }
 }
