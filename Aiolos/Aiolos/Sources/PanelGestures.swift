@@ -375,8 +375,6 @@ private extension PanelGestures {
         }
 
         private func handlePanChanged(_ pan: PanGestureRecognizer) {
-            guard let parentView = self.panel.parent?.view else { return }
-
             func dragOffset(for translation: CGPoint) -> CGFloat {
                 let fudgeFactor: CGFloat = 60.0
                 let minHeight = self.height(for: .compact) + fudgeFactor
