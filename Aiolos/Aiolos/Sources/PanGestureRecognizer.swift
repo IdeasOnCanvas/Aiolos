@@ -8,7 +8,6 @@
 
 import Foundation
 import UIKit
-import UIKit.UIGestureRecognizerSubclass
 
 
 /// GestureRecognizer that recognizes a pan gesture without any delay

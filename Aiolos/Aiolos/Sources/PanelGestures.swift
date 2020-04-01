@@ -8,6 +8,7 @@
 
 import Foundation
 
+// swiftlint:disable file_length
 
 /// Manages Gestures added to the Panel
 final class PanelGestures: NSObject {
@@ -434,6 +435,7 @@ private extension PanelGestures {
             }
         }
 
+        // swiftlint:disable:next cyclomatic_complexity
         private func targetMode(for pan: PanGestureRecognizer) -> Panel.Configuration.Mode {
             let supportedModes = self.panel.configuration.supportedModes
             guard let originalConfiguration = self.originalConfiguration else { return supportedModes.first! }

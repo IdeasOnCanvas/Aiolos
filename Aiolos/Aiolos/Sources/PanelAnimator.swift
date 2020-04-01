@@ -272,7 +272,6 @@ private extension PanelAnimator {
             self.panel.view.alpha = 0.0
         case .slide(let direction):
             self.panel.view.transform = self.transform(for: direction, size: size)
-            break
         }
     }
 

@@ -110,14 +110,14 @@ private extension ResizeHandle {
 
     func updateResizeHandlePath(animated: Bool = false) {
         let path = UIBezierPath()
-        let width: CGFloat = self.isResizing ? 38.0 : 32.0
+        let lineWidth: CGFloat = self.isResizing ? 38.0 : 32.0
+        let lineRect = self.bounds.divided(atDistance: 13.0, from: .maxYEdge).slice
+            .divided(atDistance: self.resizeHandle.lineWidth, from: .minYEdge).slice
+        let centerX = lineRect.midX
+        let centerY = lineRect.midY
 
-        let r = self.bounds.divided(atDistance: 13.0, from: .maxYEdge).slice
-        let centerX = r.width / 2.0
-        let y = r.minY + self.resizeHandle.lineWidth / 2.0
-
-        path.move(to: CGPoint(x: centerX - width / 2.0, y: y))
-        path.addLine(to: CGPoint(x: centerX + width / 2.0, y: y))
+        path.move(to: CGPoint(x: centerX - lineWidth / 2.0, y: centerY))
+        path.addLine(to: CGPoint(x: centerX + lineWidth / 2.0, y: centerY))
 
         if animated {
             self.addAnimation(to: self.resizeHandle)

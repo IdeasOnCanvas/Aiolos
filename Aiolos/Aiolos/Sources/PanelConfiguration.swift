@@ -116,6 +116,8 @@ extension Panel.Configuration {
 
 // MARK: - Inner Types
 
+// swiftlint:disable type_name
+
 // we define these types here and use a typealias inside the Panel, to make them visible to ObjC and Swift
 @objc(PanelMode)
 public enum _PanelMode: Int {
