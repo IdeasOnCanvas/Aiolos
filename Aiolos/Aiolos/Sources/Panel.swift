@@ -13,7 +13,6 @@ import Foundation
 @objc
 public final class Panel: UIViewController {
 
-    private(set) lazy var resizeHandle: ResizeHandle = self.makeResizeHandle()
     private var shadowView: ShadowView? { return self.viewIfLoaded as? ShadowView }
     private var containerView: ContainerView? { return self.viewIfLoaded?.subviews.first as? ContainerView }
     private lazy var separatorView: SeparatorView = self.makeSeparatorView()
@@ -30,6 +29,7 @@ public final class Panel: UIViewController {
     // MARK: - Properties
 
     @objc private(set) public lazy var panelView: PanelView = self.makePanelView()
+    @objc private(set) public lazy var resizeHandle: ResizeHandle = self.makeResizeHandle()
     @objc public var isVisible: Bool { return self.parent != nil && self.animator.isTransitioningFromParent == false }
     public weak var sizeDelegate: PanelSizeDelegate?
     public weak var resizeDelegate: PanelResizeDelegate?
