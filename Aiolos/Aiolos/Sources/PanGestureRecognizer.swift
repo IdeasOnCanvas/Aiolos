@@ -10,8 +10,136 @@ import Foundation
 import UIKit
 
 
+protocol PanGestureRecognizerProtocol: AnyObject {
+    var didPan: Bool { get }
+    var startMode: PanGestureRecognizer.StartMode { get set }
+
+    func translation(in view: UIView?) -> CGPoint
+    func setTranslation(_ translation: CGPoint, in view: UIView?)
+    func velocity(in view: UIView?) -> CGPoint
+}
+
+
+/// GestureRecognizer that recognizes only pointer scroll gestures
+public final class PointerScrollGestureRecognizer: UIPanGestureRecognizer, PanGestureRecognizerProtocol {
+
+    private var stateObservation: NSKeyValueObservation?
+
+    // MARK: Properties
+
+    private var initialPoint: CGPoint?
+    private var currentPoint: CGPoint?
+
+    private(set) var didPan: Bool = false
+    var startMode: PanGestureRecognizer.StartMode = .onFixedArea
+
+    // MARK: - Lifecycle
+
+    public override init(target: Any?, action: Selector?) {
+        super.init(target: nil, action: nil)
+
+        // Workaround for method touchesMoved not being called on pointer scrolls (iPadOS 13.5)
+        self.addTarget(self, action: #selector(didScroll))
+        if let target = target, let action = action {
+            self.addTarget(target, action: action)
+        }
+
+        self.minimumNumberOfTouches = 0
+        self.maximumNumberOfTouches = 0
+
+        if #available(iOS 13.4, *) {
+            self.allowedScrollTypesMask = .all
+        }
+
+        // Workaround for method touchesBegan not being called on pointer scrolls (iPadOS 13.5)
+        self.stateObservation = self.observe(\.state) { recognizer, change in
+
+            switch recognizer.state {
+            case .began:
+                let location = self.location(in: self.view?.window)
+                self.initialPoint = location
+                self.currentPoint = location
+                self.didPan = false
+            case .changed:
+                // handled by `didScroll` below
+                break
+            default:
+                break
+            }
+        }
+    }
+}
+
+// MARK: - UIGestureRecognizer+Subclass
+
+public extension PointerScrollGestureRecognizer {
+
+    @available(iOS 13.4, *)
+    override func shouldReceive(_ event: UIEvent) -> Bool {
+        guard event.type == .scroll else { return false }
+
+        return super.shouldReceive(event)
+    }
+
+    override func reset() {
+        super.reset()
+
+        self.didPan = false
+        self.startMode = .onFixedArea
+    }
+}
+
+// MARK: - Private
+
+private extension PointerScrollGestureRecognizer {
+
+    struct Constants {
+        static let minTranslation: CGFloat = 5.0
+    }
+
+    var totalTranslation: CGPoint {
+        guard let view = self.view else { return .zero }
+        guard let initialPoint = self.initialPoint else { return .zero }
+        guard let currentPoint = self.currentPoint else { return .zero }
+
+        return self.translation(from: initialPoint, to: currentPoint, in: view)
+    }
+
+    func translation(from startPoint: CGPoint, to endPoint: CGPoint, in view: UIView) -> CGPoint {
+        guard let window = self.view?.window else { return .zero }
+
+        let startPointInView = window.convert(startPoint, to: view)
+        let endPointInView = window.convert(endPoint, to: view)
+
+        return CGPoint(x: endPointInView.x - startPointInView.x, y: endPointInView.y - startPointInView.y)
+    }
+
+    @objc
+    private func didScroll(_ sender: UIPanGestureRecognizer) {
+        let location = self.location(in: self.view?.window)
+        self.currentPoint = location
+
+        print("changed")
+        print("location", self.location(in: self.view?.window))
+        print("velocity", self.velocity(in: self.view?.window))
+        print("translation", self.translation(in: self.view?.window))
+        print("totalTranslation", self.totalTranslation)
+
+        if self.totalTranslation.hypotenuse() > Constants.minTranslation && self.didPan == false {
+            self.didPan = true
+
+            // if we recognized a pan, make sure it can be considered a vertical pan
+            guard self.totalTranslation.direction() == .vertical else {
+                self.state = .cancelled
+                return
+            }
+        }
+    }
+}
+
+
 /// GestureRecognizer that recognizes a pan gesture without any delay
-public final class PanGestureRecognizer: UIGestureRecognizer {
+public final class PanGestureRecognizer: UIGestureRecognizer, PanGestureRecognizerProtocol {
 
     enum StartMode: Equatable {
         case onFixedArea
@@ -107,20 +235,20 @@ public extension PanGestureRecognizer {
 
 extension PanGestureRecognizer {
 
-    func translation(in view: UIView) -> CGPoint {
+    func translation(in view: UIView?) -> CGPoint {
         guard let lastPoint = self.lastPoint else { return .zero }
         guard let currentPoint = self.currentPoint else { return .zero }
 
         return self.translation(from: lastPoint, to: currentPoint, in: view)
     }
 
-    func setTranslation(_ translation: CGPoint, in view: UIView) {
+    func setTranslation(_ translation: CGPoint, in view: UIView?) {
         guard let currentPoint = self.currentPoint else { return }
 
         self.lastPoint = currentPoint.applying(.init(translationX: -translation.x, y: -translation.y))
     }
 
-    func velocity(in view: UIView) -> CGPoint {
+    func velocity(in view: UIView?) -> CGPoint {
         return self.panForVelocity.velocity(in: view)
     }
 }
@@ -149,7 +277,7 @@ private extension PanGestureRecognizer {
         return self.translation(from: initialPoint, to: currentPoint, in: view)
     }
 
-    func translation(from startPoint: CGPoint, to endPoint: CGPoint, in view: UIView) -> CGPoint {
+    func translation(from startPoint: CGPoint, to endPoint: CGPoint, in view: UIView?) -> CGPoint {
         guard let window = self.view?.window else { return .zero }
 
         let startPointInView = window.convert(startPoint, to: view)
