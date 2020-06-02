@@ -47,7 +47,7 @@ public final class PointerScrollGestureRecognizer: UIPanGestureRecognizer, PanGe
         self.minimumNumberOfTouches = 0
         self.maximumNumberOfTouches = 0
 
-        if #available(iOS 13.4, *) {
+        if #available(iOS 13.4, *), NSClassFromString("UIPointerInteraction") != nil {
             self.allowedScrollTypesMask = .all
         }
 
