@@ -38,8 +38,8 @@ public final class PointerScrollGestureRecognizer: UIPanGestureRecognizer, PanGe
     public override init(target: Any?, action: Selector?) {
         super.init(target: nil, action: nil)
 
-        // Workaround for method touchesMoved not being called on pointer scrolls (iPadOS 13.5)
-        self.addTarget(self, action: #selector(didScroll))
+        // Make sure 'self.didScroll' method is called before 'target.action'
+        self.addTarget(self, action: #selector(handleScroll))
         if let target = target, let action = action {
             self.addTarget(target, action: action)
         }
@@ -53,7 +53,6 @@ public final class PointerScrollGestureRecognizer: UIPanGestureRecognizer, PanGe
 
         // Workaround for method touchesBegan not being called on pointer scrolls (iPadOS 13.5)
         self.stateObservation = self.observe(\.state) { recognizer, change in
-
             switch recognizer.state {
             case .began:
                 let location = self.location(in: self.view?.window)
@@ -115,15 +114,9 @@ private extension PointerScrollGestureRecognizer {
     }
 
     @objc
-    private func didScroll(_ sender: UIPanGestureRecognizer) {
+    private func handleScroll(_ sender: UIPanGestureRecognizer) {
         let location = self.location(in: self.view?.window)
         self.currentPoint = location
-
-        print("changed")
-        print("location", self.location(in: self.view?.window))
-        print("velocity", self.velocity(in: self.view?.window))
-        print("translation", self.translation(in: self.view?.window))
-        print("totalTranslation", self.totalTranslation)
 
         if self.totalTranslation.hypotenuse() > Constants.minTranslation && self.didPan == false {
             self.didPan = true
