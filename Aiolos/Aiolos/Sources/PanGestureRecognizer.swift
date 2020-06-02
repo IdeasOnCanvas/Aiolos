@@ -86,6 +86,14 @@ public extension PointerScrollGestureRecognizer {
         self.didPan = false
         self.startMode = .onFixedArea
     }
+
+    override func location(in view: UIView?) -> CGPoint {
+        let location = super.location(in: view)
+
+        // I found the location reported is a bit off, causing it to
+        // trigger both scroll view scrolling and panel resizing (iPadOS 13.5)
+        return CGPoint(x: location.x, y: location.y + 20.0)
+    }
 }
 
 // MARK: - Private
