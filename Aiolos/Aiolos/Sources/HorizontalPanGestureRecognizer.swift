@@ -12,7 +12,7 @@ public final class HorizontalPanGestureRecognizer: UIPanGestureRecognizer {
 
         if #available(iOS 13.4, *), NSClassFromString("UIPointerInteraction") != nil {
             // Allow HorizontalPanGestureRecognizer to detect horizontal pointer scrolls to move the panel
-            self.allowedScrollTypesMask = .all
+            self.allowedScrollTypesMask = .continuous
         }
     }
 }

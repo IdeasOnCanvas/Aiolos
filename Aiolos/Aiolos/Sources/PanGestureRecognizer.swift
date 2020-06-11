@@ -48,7 +48,7 @@ public final class PointerScrollGestureRecognizer: UIPanGestureRecognizer, PanGe
         self.maximumNumberOfTouches = 0
 
         if #available(iOS 13.4, *), NSClassFromString("UIPointerInteraction") != nil {
-            self.allowedScrollTypesMask = .all
+            self.allowedScrollTypesMask = .continuous
         }
 
         // Workaround for method touchesBegan not being called on pointer scrolls (iPadOS 13.5)
