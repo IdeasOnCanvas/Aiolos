@@ -38,20 +38,17 @@ public final class PointerScrollGestureRecognizer: UIPanGestureRecognizer, PanGe
     public override init(target: Any?, action: Selector?) {
         super.init(target: nil, action: nil)
 
-        // Make sure 'self.didScroll' method is called before 'target.action'
+        // Make sure 'self.handleScroll' method is called before 'target.action'
         self.addTarget(self, action: #selector(handleScroll))
         if let target = target, let action = action {
             self.addTarget(target, action: action)
         }
 
-        self.minimumNumberOfTouches = 0
-        self.maximumNumberOfTouches = 0
-
         if #available(iOS 13.4, *), NSClassFromString("UIPointerInteraction") != nil {
             self.allowedScrollTypesMask = .continuous
         }
 
-        // Workaround for method touchesBegan not being called on pointer scrolls (iPadOS 13.5)
+        // Workaround for methods touches(Began|Moved|Ended) not being called on pointer scrolls (iPadOS 13.5)
         self.stateObservation = self.observe(\.state) { recognizer, change in
             switch recognizer.state {
             case .began:
@@ -60,7 +57,7 @@ public final class PointerScrollGestureRecognizer: UIPanGestureRecognizer, PanGe
                 self.currentPoint = location
                 self.didPan = false
             case .changed:
-                // handled by `didScroll` below
+                // handled by `handleScroll` below
                 break
             default:
                 break
