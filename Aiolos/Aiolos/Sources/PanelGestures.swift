@@ -26,6 +26,11 @@ final class PanelGestures: NSObject {
         set { self.horizontalPan.isEnabled = newValue }
     }
 
+    private var isHorizontalPointerScrolEnabled: Bool {
+        get { return self.horizontalPan.detectsPointerScrolling }
+        set { self.horizontalPan.detectsPointerScrolling = newValue }
+    }
+
     private var isVerticalPointerScrollEnabled: Bool {
         get { return self.verticalPointerScroll.isEnabled }
         set { self.verticalPointerScroll.isEnabled = newValue }
@@ -53,8 +58,9 @@ final class PanelGestures: NSObject {
 
     func configure(with configuration: Panel.Configuration) {
         self.isHorizontalPanEnabled = configuration.isHorizontalPositioningEnabled
-        self.isVerticalPointerScrollEnabled = configuration.gestureResizingMode != .disabled // TODO: add a dedicated config option for pointer scroll
+        self.isHorizontalPointerScrolEnabled = configuration.pointerScrollGestures.contains(.position)
         self.isVerticalPanEnabled = configuration.gestureResizingMode != .disabled
+        self.isVerticalPointerScrollEnabled = self.isVerticalPanEnabled && configuration.pointerScrollGestures.contains(.resize)
     }
 
     func cancel() {

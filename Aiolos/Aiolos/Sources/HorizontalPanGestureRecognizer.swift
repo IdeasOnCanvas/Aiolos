@@ -7,12 +7,13 @@ import UIKit
 /// UIPanGestureRecognizer that's being used for moving the panel horizontally
 public final class HorizontalPanGestureRecognizer: UIPanGestureRecognizer {
 
-    public override init(target: Any?, action: Selector?) {
-        super.init(target: target, action: action)
+    // MARK: - Properties
 
-        if #available(iOS 13.4, *), NSClassFromString("UIPointerInteraction") != nil {
-            // Allow HorizontalPanGestureRecognizer to detect horizontal pointer scrolls to move the panel
-            self.allowedScrollTypesMask = .continuous
+    public var detectsPointerScrolling: Bool = false {
+        didSet {
+            guard #available(iOS 13.4, *), NSClassFromString("UIPointerInteraction") != nil else { return }
+
+            self.allowedScrollTypesMask = self.detectsPointerScrolling ? .continuous : []
         }
     }
 }

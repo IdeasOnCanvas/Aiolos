@@ -18,6 +18,7 @@ public extension Panel {
         public typealias Position = _PanelPosition
         public typealias PositionLogic = _PanelPositionLogic
         public typealias GestureResizingMode = _PanelGestureResizingMode
+        public typealias PointerScrollGestures = _PointerScrollGestures
 
         public enum ResizeHandleMode {
             case hidden
@@ -44,6 +45,7 @@ public extension Panel {
         public var mode: Mode
         public var supportedModes: Set<Mode>
         public var gestureResizingMode: GestureResizingMode
+        public var pointerScrollGestures: PointerScrollGestures
         public var appearance: Appearance
         public var isHorizontalPositioningEnabled: Bool
     }
@@ -70,6 +72,7 @@ public extension Panel.Configuration {
                                    mode: .compact,
                                    supportedModes: [.compact, .expanded, .fullHeight],
                                    gestureResizingMode: .includingContent,
+                                   pointerScrollGestures: [.position, .resize],
                                    appearance: appearance,
                                    isHorizontalPositioningEnabled: false)
     }
@@ -161,6 +164,17 @@ public enum _PanelGestureResizingMode: Int {
     case disabled
     case excludingContent
     case includingContent
+}
+
+public struct _PointerScrollGestures: OptionSet {
+    public let rawValue: Int
+
+    public init(rawValue: Int) {
+        self.rawValue = rawValue
+    }
+
+    public static let resize = _PointerScrollGestures(rawValue: 1 << 0)
+    public static let position = _PointerScrollGestures(rawValue: 1 << 1)
 }
 
 extension _PanelPositionLogic {
