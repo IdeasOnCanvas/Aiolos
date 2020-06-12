@@ -16,7 +16,7 @@ final class PanelGestures: NSObject {
     private unowned let panel: Panel
 
     private lazy var horizontalPan: HorizontalPanGestureRecognizer = self.makeHorizontalPanGestureRecognizer()
-    private lazy var pointerScroll: PointerScrollGestureRecognizer = self.makePointerScrollGestureRecognizer()
+    private lazy var verticalPointerScroll: PointerScrollGestureRecognizer = self.makeVerticalPointerScrollGestureRecognizer()
     private lazy var verticalPan: PanGestureRecognizer = self.makeVerticalPanGestureRecognizer()
     private lazy var horizontalHandler: HorizontalHandler = HorizontalHandler(gestures: self)
     private lazy var verticalHandler: VerticalHandler = VerticalHandler(gestures: self)
@@ -26,9 +26,9 @@ final class PanelGestures: NSObject {
         set { self.horizontalPan.isEnabled = newValue }
     }
 
-    private var isPointerScrollEnabled: Bool {
-        get { return self.pointerScroll.isEnabled }
-        set { self.pointerScroll.isEnabled = newValue }
+    private var isVerticalPointerScrollEnabled: Bool {
+        get { return self.verticalPointerScroll.isEnabled }
+        set { self.verticalPointerScroll.isEnabled = newValue }
     }
 
     private var isVerticalPanEnabled: Bool {
@@ -46,20 +46,20 @@ final class PanelGestures: NSObject {
 
     func install() {
         self.panel.view.addGestureRecognizer(self.horizontalPan)
-        self.panel.view.addGestureRecognizer(self.pointerScroll)
+        self.panel.view.addGestureRecognizer(self.verticalPointerScroll)
         self.panel.view.addGestureRecognizer(self.verticalPan)
         self.configure(with: self.panel.configuration)
     }
 
     func configure(with configuration: Panel.Configuration) {
         self.isHorizontalPanEnabled = configuration.isHorizontalPositioningEnabled
-        self.isPointerScrollEnabled = configuration.gestureResizingMode != .disabled // TODO: add a dedicated config option for pointer scroll
+        self.isVerticalPointerScrollEnabled = configuration.gestureResizingMode != .disabled // TODO: add a dedicated config option for pointer scroll
         self.isVerticalPanEnabled = configuration.gestureResizingMode != .disabled
     }
 
     func cancel() {
         self.horizontalPan.cancel()
-        self.pointerScroll.cancel()
+        self.verticalPointerScroll.cancel()
         self.verticalPan.cancel()
     }
 }
@@ -76,8 +76,8 @@ extension PanelGestures: UIGestureRecognizerDelegate {
         switch gestureRecognizer {
         case self.horizontalPan:
             return self.horizontalHandler.shouldStartPan(self.horizontalPan)
-        case self.pointerScroll:
-            return self.verticalHandler.shouldStartPan(self.pointerScroll)
+        case self.verticalPointerScroll:
+            return self.verticalHandler.shouldStartPan(self.verticalPointerScroll)
         case self.verticalPan:
             return self.verticalHandler.shouldStartPan(self.verticalPan)
         default:
@@ -96,7 +96,7 @@ extension PanelGestures: UIGestureRecognizerDelegate {
     func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRequireFailureOf otherGestureRecognizer: UIGestureRecognizer) -> Bool {
         // horizontal and vertical pan (or pointer scroll) should not happen together
         if gestureRecognizer == self.horizontalPan {
-            return otherGestureRecognizer == self.verticalPan || otherGestureRecognizer == self.pointerScroll
+            return otherGestureRecognizer == self.verticalPan || otherGestureRecognizer == self.verticalPointerScroll
         }
 
         if let shouldRequireFailureOf = self.panel.gestureDelegate?.gestureRecognizer?(gestureRecognizer, shouldRequireFailureOf: otherGestureRecognizer) {
@@ -593,7 +593,7 @@ private extension PanelGestures {
         return pan
     }
 
-    func makePointerScrollGestureRecognizer() -> PointerScrollGestureRecognizer {
+    func makeVerticalPointerScrollGestureRecognizer() -> PointerScrollGestureRecognizer {
         let gesture = PointerScrollGestureRecognizer(target: self.verticalHandler, action: #selector(VerticalHandler.handlePan))
         gesture.delegate = self
         gesture.cancelsTouchesInView = false
@@ -612,7 +612,7 @@ private extension PanelGestures {
             let states: Set<UIGestureRecognizer.State> = [.began, .changed]
             let isPanningHorizontally = states.contains(self.horizontalPan.state)
             let isPanningVertically = states.contains(self.verticalPan.state)
-            let isPointerScrolling = states.contains(self.pointerScroll.state)
+            let isPointerScrolling = states.contains(self.verticalPointerScroll.state)
 
             return isPanningHorizontally || isPanningVertically || isPointerScrolling
         }
