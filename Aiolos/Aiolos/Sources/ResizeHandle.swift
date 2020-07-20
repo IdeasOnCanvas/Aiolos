@@ -57,7 +57,7 @@ public final class ResizeHandle: UIView {
         self.addSubview(self.resizeHandle)
         self.configure(with: configuration)
 
-        if #available(iOS 13.4, *) {
+        if #available(iOS 13.4, *), NSClassFromString("UIPointerInteraction") != nil {
             let pointerInteraction = UIPointerInteraction(delegate: self)
             self.addInteraction(pointerInteraction)
         }
