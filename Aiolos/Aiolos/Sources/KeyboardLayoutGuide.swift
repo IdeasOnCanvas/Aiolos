@@ -6,7 +6,7 @@
 //  Copyright © 2017 Matthias Tretter. All rights reserved.
 //
 
-import Foundation
+import UIKit
 
 /// Used to create a layout guide that pins to the top of the keyboard
 final class KeyboardLayoutGuide {
