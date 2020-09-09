@@ -24,22 +24,22 @@ final class PanelGestures: NSObject {
     private lazy var verticalHandler: VerticalHandler = .init(gestures: self)
 
     private var isHorizontalPanEnabled: Bool {
-        get { return self.horizontalPan.isEnabled }
+        get { self.horizontalPan.isEnabled }
         set { self.horizontalPan.isEnabled = newValue }
     }
 
     private var isHorizontalPointerScrolEnabled: Bool {
-        get { return self.horizontalPan.detectsPointerScrolling }
+        get { self.horizontalPan.detectsPointerScrolling }
         set { self.horizontalPan.detectsPointerScrolling = newValue }
     }
 
     private var isVerticalPointerScrollEnabled: Bool {
-        get { return self.verticalPointerScroll.isEnabled }
+        get { self.verticalPointerScroll.isEnabled }
         set { self.verticalPointerScroll.isEnabled = newValue }
     }
 
     private var isVerticalPanEnabled: Bool {
-        get { return self.verticalPan.isEnabled }
+        get { self.verticalPan.isEnabled }
         set { self.verticalPan.isEnabled = newValue }
     }
 
