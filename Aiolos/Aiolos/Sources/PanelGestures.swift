@@ -20,7 +20,7 @@ final class PanelGestures: NSObject {
     private lazy var verticalPan: NoDelayPanGestureRecognizer = self.makeVerticalPanGestureRecognizer()
     private lazy var verticalPanState: VerticalGestureState = .init(handler: self.verticalHandler)
     private lazy var verticalPointerScroll: PointerScrollGestureRecognizer? = self.makeVerticalPointerScrollGestureRecognizer()
-    private lazy var verticalGestureState: VerticalGestureState = .init(handler: self.verticalHandler)
+    private lazy var verticalPointerScrollState: VerticalGestureState = .init(handler: self.verticalHandler)
     private lazy var verticalHandler: VerticalHandler = .init(gestures: self)
 
     private var isHorizontalPanEnabled: Bool {
@@ -688,7 +688,7 @@ private extension PanelGestures {
     }
 
     func makeVerticalPointerScrollGestureRecognizer() -> PointerScrollGestureRecognizer? {
-        let gesture = PointerScrollGestureRecognizer.make(withTarget: self.verticalGestureState, action: #selector(VerticalGestureState.handlePan))
+        let gesture = PointerScrollGestureRecognizer.make(withTarget: self.verticalPointerScrollState, action: #selector(VerticalGestureState.handlePan))
         gesture?.delegate = self
         gesture?.cancelsTouchesInView = false
         return gesture
