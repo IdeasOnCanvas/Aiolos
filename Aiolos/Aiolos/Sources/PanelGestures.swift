@@ -28,11 +28,6 @@ final class PanelGestures: NSObject {
         set { self.horizontalPan.isEnabled = newValue }
     }
 
-    private var isHorizontalPointerScrolEnabled: Bool {
-        get { self.horizontalPan.detectsPointerScrolling }
-        set { self.horizontalPan.detectsPointerScrolling = newValue }
-    }
-
     private var isVerticalPointerScrollEnabled: Bool {
         get { self.verticalPointerScroll?.isEnabled ?? false }
         set { self.verticalPointerScroll?.isEnabled = newValue }
@@ -62,7 +57,6 @@ final class PanelGestures: NSObject {
 
     func configure(with configuration: Panel.Configuration) {
         self.isHorizontalPanEnabled = configuration.isHorizontalPositioningEnabled
-        self.isHorizontalPointerScrolEnabled = configuration.isHorizontalPositioningEnabled // TODO: Do we want to enable this separatelly? If not, remove 'isHorizontalPointerScrolEnabled'
         self.isVerticalPanEnabled = configuration.gestureResizingMode.isPanningByTouchEnabled
         self.isVerticalPointerScrollEnabled = configuration.gestureResizingMode.isScrollingByPointerEnabled
     }
@@ -689,6 +683,7 @@ private extension PanelGestures {
         let pan = HorizontalPanGestureRecognizer(target: self.horizontalHandler, action: #selector(HorizontalHandler.handlePan))
         pan.delegate = self
         pan.cancelsTouchesInView = true
+        pan.detectsPointerScrolling = true
         return pan
     }
 
@@ -746,7 +741,6 @@ private extension PanelGestures {
         return enclosingScrollView.isScrolledToTop
     }
 
-    // TODO: Do better hitTesting so that the panel won't resize together with scroll view  when pointer is placed between nav bar and table view
     func verticallyScrollableView(of contentViewController: UIViewController, interactingWith gestureRecognizer: UIGestureRecognizer) -> UIScrollView? {
         let location = gestureRecognizer.location(in: contentViewController.view)
         guard let hitView = contentViewController.view.hitTest(location, with: nil) else { return nil }
