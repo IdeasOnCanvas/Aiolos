@@ -33,12 +33,9 @@ public final class PointerScrollGestureRecognizer: UIPanGestureRecognizer {
 
     // MARK: - Lifecycle
 
-    public override init(target: Any?, action: Selector?) {
+    /// As a non-failable initializer cannot be overrididden by failable initializer, we mark this initializer as 'private' and use make() fatory method from outside
+    private override init(target: Any?, action: Selector?) {
         super.init(target: target, action: action)
-
-        if #available(iOS 13.4, *), NSClassFromString("UIPointerInteraction") != nil {
-            self.allowedScrollTypesMask = .continuous
-        }
     }
 }
 
@@ -47,7 +44,9 @@ public extension PointerScrollGestureRecognizer {
     static func make(withTarget target: Any?, action: Selector?) -> PointerScrollGestureRecognizer? {
         guard #available(iOS 13.4, *), NSClassFromString("UIPointerInteraction") != nil else { return nil }
 
-        return .init(target: target, action: action)
+        let gesture = PointerScrollGestureRecognizer(target: target, action: action)
+        gesture.allowedScrollTypesMask = .continuous
+        return gesture
     }
 }
 
