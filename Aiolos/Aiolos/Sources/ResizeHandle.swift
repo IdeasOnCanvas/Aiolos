@@ -81,7 +81,7 @@ public final class ResizeHandle: UIView {
 
         self.handleColor = foregroundColor
         self.backgroundColor = backgroundColor
-        self.resizeHandle.alpha = configuration.gestureResizingMode != .disabled && configuration.supportedModes.count > 1 ? 1.0 : 0.2
+        self.resizeHandle.alpha = configuration.gestureResizingMode.contains(.handle) && configuration.supportedModes.count > 1 ? 1.0 : 0.2
     }
 }
 

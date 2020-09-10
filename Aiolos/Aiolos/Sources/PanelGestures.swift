@@ -62,9 +62,9 @@ final class PanelGestures: NSObject {
 
     func configure(with configuration: Panel.Configuration) {
         self.isHorizontalPanEnabled = configuration.isHorizontalPositioningEnabled
-        self.isHorizontalPointerScrolEnabled = configuration.pointerScrollGestures.contains(.position)
-        self.isVerticalPanEnabled = configuration.gestureResizingMode != .disabled
-        self.isVerticalPointerScrollEnabled = self.isVerticalPanEnabled && configuration.pointerScrollGestures.contains(.resize)
+        self.isHorizontalPointerScrolEnabled = configuration.isHorizontalPositioningEnabled // TODO: Do we want to enable this separatelly? If not, remove 'isHorizontalPointerScrolEnabled'
+        self.isVerticalPanEnabled = configuration.gestureResizingMode.isPanningByTouchEnabled
+        self.isVerticalPointerScrollEnabled = configuration.gestureResizingMode.isScrollingByPointerEnabled
     }
 
     func cancel() {
@@ -419,9 +419,15 @@ private extension PanelGestures {
         }
 
         func shouldStartPan(_ pan: UIGestureRecognizer) -> Bool {
-            guard let contentViewController = self.panel.contentViewController else { return true }
+            let gestureResizingMode = self.panel.configuration.gestureResizingMode
+            if pan == self.gestures.verticalPan && gestureResizingMode.contains(.byTouch) == false { return false }
+            if pan == self.gestures.verticalPointerScroll && gestureResizingMode.contains(.byPointerScroll) == false { return false }
+            guard let contentViewController = self.panel.contentViewController else { return gestureResizingMode.contains(.handle) }
 
-            return self.gestures.gestureRecognizer(pan, isWithinContentAreaOf: contentViewController) == false || self.gestures.gestureRecognizer(pan, isAllowedToStartByContentOf: contentViewController)
+            let isWithinContentArea = self.gestures.gestureRecognizer(pan, isWithinContentAreaOf: contentViewController)
+            guard isWithinContentArea else { return gestureResizingMode.contains(.handle) }
+
+            return self.gestures.gestureRecognizer(pan, isAllowedToStartByContentOf: contentViewController)
         }
 
         func handlePan(_ pan: PanOrScrollGestureRecognizer, state: VerticalGestureState) {
@@ -729,7 +735,7 @@ private extension PanelGestures {
 
     // allow pan gesture to be triggered when a) there's no scrollView or b) the scrollView can't be scrolled downwards
     func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, isAllowedToStartByContentOf contentViewController: UIViewController) -> Bool {
-        guard self.panel.configuration.gestureResizingMode == .includingContent else { return false }
+        guard self.panel.configuration.gestureResizingMode.contains(.content) else { return false }
 
         guard let enclosingScrollView = self.verticallyScrollableView(of: contentViewController, interactingWith: gestureRecognizer) else { return true }
         // don't allow resizing gesture if textView is currently text editing

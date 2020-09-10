@@ -18,7 +18,6 @@ public extension Panel {
         public typealias Position = _PanelPosition
         public typealias PositionLogic = _PanelPositionLogic
         public typealias GestureResizingMode = _PanelGestureResizingMode
-        public typealias PointerScrollGestures = _PointerScrollGestures
 
         public enum ResizeHandleMode {
             case hidden
@@ -45,7 +44,6 @@ public extension Panel {
         public var mode: Mode
         public var supportedModes: Set<Mode>
         public var gestureResizingMode: GestureResizingMode
-        public var pointerScrollGestures: PointerScrollGestures
         public var appearance: Appearance
         public var isHorizontalPositioningEnabled: Bool
     }
@@ -71,8 +69,7 @@ public extension Panel.Configuration {
                                    margins: NSDirectionalEdgeInsets(top: 10.0, leading: 10.0, bottom: 0.0, trailing: 10.0),
                                    mode: .compact,
                                    supportedModes: [.compact, .expanded, .fullHeight],
-                                   gestureResizingMode: .includingContent,
-                                   pointerScrollGestures: [.position, .resize],
+                                   gestureResizingMode: [.handle, .content, .byTouch, .byPointerScroll],
                                    appearance: appearance,
                                    isHorizontalPositioningEnabled: false)
     }
@@ -159,22 +156,23 @@ public enum _PanelPositionLogic: Int {
     }
 }
 
-@objc(PanelGestureResizingMode)
-public enum _PanelGestureResizingMode: Int {
-    case disabled
-    case excludingContent
-    case includingContent
-}
-
-public struct _PointerScrollGestures: OptionSet {
+public struct _PanelGestureResizingMode: OptionSet {
     public let rawValue: Int
 
     public init(rawValue: Int) {
         self.rawValue = rawValue
     }
 
-    public static let resize = _PointerScrollGestures(rawValue: 1 << 0)
-    public static let position = _PointerScrollGestures(rawValue: 1 << 1)
+    public static let handle = _PanelGestureResizingMode(rawValue: 1 << 0)
+    public static let content = _PanelGestureResizingMode(rawValue: 1 << 1)
+    public static let byTouch = _PanelGestureResizingMode(rawValue: 1 << 2)
+    public static let byPointerScroll = _PanelGestureResizingMode(rawValue: 1 << 3)
+}
+
+extension _PanelGestureResizingMode {
+
+    var isPanningByTouchEnabled: Bool { self.contains(.byTouch) && (self.contains(.content) || self.contains(.handle)) }
+    var isScrollingByPointerEnabled: Bool { self.contains(.byPointerScroll) && (self.contains(.content) || self.contains(.handle)) }
 }
 
 extension _PanelPositionLogic {
