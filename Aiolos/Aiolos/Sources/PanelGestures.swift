@@ -740,6 +740,7 @@ private extension PanelGestures {
         return enclosingScrollView.isScrolledToTop
     }
 
+    // TODO: Do better hitTesting so that the panel won't resize together with scroll view  when pointer is placed between nav bar and table view
     func verticallyScrollableView(of contentViewController: UIViewController, interactingWith gestureRecognizer: UIGestureRecognizer) -> UIScrollView? {
         let location = gestureRecognizer.location(in: contentViewController.view)
         guard let hitView = contentViewController.view.hitTest(location, with: nil) else { return nil }
