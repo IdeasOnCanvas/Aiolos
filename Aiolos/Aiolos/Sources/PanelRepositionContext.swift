@@ -6,7 +6,7 @@
 //  Copyright © 2019 Matthias Tretter. All rights reserved.
 //
 
-import Foundation
+import UIKit
 
 
 public final class PanelRepositionContext {
