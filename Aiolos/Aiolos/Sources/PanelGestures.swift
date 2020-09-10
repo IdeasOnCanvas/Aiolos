@@ -507,9 +507,7 @@ private extension PanelGestures {
             pan.setTranslation(.zero, in: self.panel.view)
 
             // However, didPan still works with totalTranslation under the covers
-            guard state.didPan else { return }
-
-            if pan.cancelsTouchesInView == false {
+            if state.didPan && pan.cancelsTouchesInView == false {
                 guard self.handlePanDragStart(pan, state: state) else { return }
             }
 
