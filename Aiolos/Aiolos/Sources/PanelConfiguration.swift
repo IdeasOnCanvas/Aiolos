@@ -17,7 +17,19 @@ public extension Panel {
         public typealias Edge = _PanelEdge
         public typealias Position = _PanelPosition
         public typealias PositionLogic = _PanelPositionLogic
-        public typealias GestureResizingMode = _PanelGestureResizingMode
+
+        public struct GestureResizingMode: OptionSet {
+            public let rawValue: Int
+
+            public init(rawValue: Int) {
+                self.rawValue = rawValue
+            }
+
+            public static let handle = GestureResizingMode(rawValue: 1 << 0)
+            public static let content = GestureResizingMode(rawValue: 1 << 1)
+            public static let byTouch = GestureResizingMode(rawValue: 1 << 2)
+            public static let byPointerScroll = GestureResizingMode(rawValue: 1 << 3)
+        }
 
         public enum ResizeHandleMode {
             case hidden
@@ -156,13 +168,6 @@ public enum _PanelPositionLogic: Int {
     }
 }
 
-@objc(PanelGestureResizingMode)
-public enum _PanelGestureResizingMode: Int {
-    case disabled
-    case excludingContent
-    case includingContent
-}
-
 extension _PanelPositionLogic {
 
     func applyingInsets(of view: UIView, to insets: NSDirectionalEdgeInsets, edge: Panel.Configuration.Edge) -> NSDirectionalEdgeInsets {
@@ -184,4 +189,12 @@ extension _PanelPositionLogic {
 
         return insets
     }
+}
+
+extension Panel.Configuration.GestureResizingMode {
+
+    public static let includingContent: Self = [.handle, .content, .byTouch, .byPointerScroll]
+    public static let excludingContent: Self = [.handle, .byTouch, .byPointerScroll]
+    var isPanningByTouchEnabled: Bool { self.contains(.byTouch) && (self.contains(.content) || self.contains(.handle)) }
+    var isScrollingByPointerEnabled: Bool { self.contains(.byPointerScroll) && (self.contains(.content) || self.contains(.handle)) }
 }
