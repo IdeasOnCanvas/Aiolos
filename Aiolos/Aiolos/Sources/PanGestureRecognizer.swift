@@ -13,6 +13,8 @@ import UIKit
 @objc
 protocol PanGestureRecognizer: AnyObject {
 
+    // We need the @objc annotations because of `typealias PanOrScrollGestureRecognizer = UIGestureRecognizer & PanGestureRecognizer` in PanelGestures
+    // which makes the methods in our `NoDelayPanGestureRecognizer` to be called via objc bridging. If we don't have these annotations, we get crashes in runtime.
     @objc(translationInView:)
     func translation(in view: UIView?) -> CGPoint
     @objc(setTranslation:inView:)
