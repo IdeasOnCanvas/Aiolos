@@ -32,7 +32,7 @@ public final class PointerScrollGestureRecognizer: UIPanGestureRecognizer {
 
     // MARK: - Lifecycle
 
-    /// As a non-failable initializer cannot be overrididden by failable initializer, we mark this initializer as 'private' and use make() fatory method from outside
+    /// As a non-failable initializer cannot be overwritten by a failable initializer, we mark this initializer as 'private' and use make() factory method from outside
     private override init(target: Any?, action: Selector?) {
         super.init(target: target, action: action)
     }
