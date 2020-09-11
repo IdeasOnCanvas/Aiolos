@@ -337,9 +337,13 @@ private extension PanelGestures {
         private(set) var didPan: Bool = false
         var startMode: PanelGestures.StartMode = .onFixedArea
 
+        // MARK: - Lifecycle
+
         init(handler: VerticalHandler) {
             self.handler = handler
         }
+
+        // MARK: - VerticalGestureState
 
         @objc
         func handlePan(_ pan: PanOrScrollGestureRecognizer) {
