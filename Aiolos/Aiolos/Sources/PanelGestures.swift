@@ -324,7 +324,7 @@ private extension PanelGestures {
 
     // MARK: - VerticalGestureState
 
-    /// Handles QuickPanGestureRecognizer and PointerScrollGesttureRecognizer and provides them with state
+    /// Handles NoDelayPanGestureRecognizer and PointerScrollGestureRecognizer and provides them with state
     final class VerticalGestureState {
 
         private unowned let handler: VerticalHandler
