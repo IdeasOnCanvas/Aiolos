@@ -2,6 +2,7 @@
 #### Yet another iOS Floating Panel
 
 [![Carthage Compatible](https://img.shields.io/badge/Carthage-compatible-4BC51D.svg?style=flat)](https://github.com/Carthage/Carthage)
+[![SPM compatible](https://img.shields.io/badge/SPM-compatible-4BC51D.svg?style=flat)](https://swift.org/package-manager)
 ![Platform iOS](https://img.shields.io/badge/Platform-iOS%2011+-blue.svg "Platform iOS")
 ![Language Swift](https://img.shields.io/badge/Language-Swift%204.2-orange.svg "Swift 4.2")
 [![Twitter: @myell0w](https://img.shields.io/badge/Twitter-@myell0w-red.svg?style=flat)](https://twitter.com/myell0w)
@@ -18,6 +19,10 @@ Add this line to your Cartfile.
 ```
 github "IdeasOnCanvas/Aiolos"
 ```
+
+## Integration with Swift Package Manager
+
+Aiolos can be integrated with [Swift Package Manager](https://swift.org/package-manager) directly [within Xcode](https://developer.apple.com/documentation/xcode/adding_package_dependencies_to_your_app).
 
 ## Usage in Code
 
