@@ -6,6 +6,8 @@
 //  Copyright © 2017 Matthias Tretter. All rights reserved.
 //
 
+#if canImport(UIKit)
+
 import UIKit
 
 /// Used to create a layout guide that pins to the top of the keyboard
@@ -99,8 +101,7 @@ private struct KeyboardInfo {
         guard self.isLocal else { return false }
         guard self.endFrame.size != .zero else { return true }
 
-        let parentBounds = UIApplication.shared.windows.last?.bounds ?? UIScreen.main.bounds
-        return self.endFrame.maxY < parentBounds.height
+        return self.endFrame.maxY < UIScreen.main.bounds.height
     }
 
     init?(userInfo: [AnyHashable: Any]?) {
@@ -151,3 +152,5 @@ private extension UIResponder {
         UIResponder._firstResponder = self
     }
 }
+
+#endif
