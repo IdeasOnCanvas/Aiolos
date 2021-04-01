@@ -225,9 +225,7 @@ private extension PanelAnimator {
         guard let parentView = self.panel.parent?.view else { return }
 
         self.stopCurrentAnimation()
-        if animated == false {
-            parentView.layoutIfNeeded()
-        }
+        parentView.layoutIfNeeded()
 
         let animator = UIViewPropertyAnimator(duration: Constants.Animation.duration, timingParameters: timing)
         animator.addAnimations {

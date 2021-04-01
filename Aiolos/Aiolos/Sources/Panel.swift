@@ -50,7 +50,6 @@ public final class Panel: UIViewController {
 
     @objc public var contentViewController: UIViewController? {
         didSet {
-            self.updateContentViewControllerFrame(of: self.contentViewController)
             self.exchangeContentViewController(oldValue, with: self.contentViewController)
             self.view.setNeedsLayout()
             self.fixLayoutMargins()
@@ -118,6 +117,7 @@ public extension Panel {
             self.separatorView.frame = dividerFrame
         }
 
+        self.contentViewController?.view.frame = self.panelView.contentView.bounds
         self.fixLayoutMargins()
     }
 
@@ -352,13 +352,6 @@ private extension Panel {
 
 private extension Panel {
 
-    func updateContentViewControllerFrame(of contentViewController: UIViewController?) {
-        guard let contentViewController = contentViewController else { return }
-
-        contentViewController.view.frame = self.panelView.contentView.bounds
-        contentViewController.view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-    }
-
     func exchangeContentViewController(_ oldContentViewController: UIViewController?, with newContentViewController: UIViewController?) {
         let callAppearanceMethods = self.isVisible
 
@@ -375,6 +368,8 @@ private extension Panel {
         if let newContentViewController = newContentViewController {
             if callAppearanceMethods { newContentViewController.beginAppearanceTransition(true, animated: false) }
             self.addChild(newContentViewController)
+            newContentViewController.view.translatesAutoresizingMaskIntoConstraints = true
+            newContentViewController.view.frame = self.panelView.contentView.bounds
             self.panelView.contentView.addSubview(newContentViewController.view)
             newContentViewController.didMove(toParent: self)
             if callAppearanceMethods { newContentViewController.endAppearanceTransition() }
