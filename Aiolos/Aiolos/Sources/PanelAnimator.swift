@@ -40,16 +40,7 @@ final class PanelAnimator {
     }
 
     func performWithoutAnimation(_ changes: @escaping () -> Void) {
-        let animateBefore = self.animateChanges
-        self.animateChanges = false
-        defer { self.animateChanges = animateBefore }
-
-        self.animateIfNeeded {
-            UIView.performWithoutAnimation {
-                changes()
-                self.panel.parent?.view?.layoutIfNeeded()
-            }
-        }
+        self.performChanges({ UIView.performWithoutAnimation(changes) }, animated: false, timing: UISpringTimingParameters())
     }
 
     func stopCurrentAnimation() {
@@ -224,31 +215,41 @@ private extension PanelAnimator {
     func performChanges(_ changes: @escaping () -> Void, animated: Bool, timing: UITimingCurveProvider, completion: (() -> Void)? = nil) {
         guard let parentView = self.panel.parent?.view else { return }
 
-        self.stopCurrentAnimation()
-        parentView.layoutIfNeeded()
-
-        let animator = UIViewPropertyAnimator(duration: Constants.Animation.duration, timingParameters: timing)
-        animator.addAnimations {
+        let changesAndLayout = {
             changes()
             parentView.layoutIfNeeded()
             self.panel.fixLayoutMargins()
         }
-        if let completion = completion {
-            animator.addCompletion { _ in completion() }
-        }
 
-        // we might have enqueued animations from a transition coordinator, perform them along the main changes
-        self.addQueuedAnimations(to: animator)
+        self.stopCurrentAnimation()
+        parentView.layoutIfNeeded()
 
-        // if we don't want to animate, perform changes directly by setting the completion state to 100 %
-        if animated == false {
-            animator.fractionComplete = 1.0
-            animator.stopAnimation(false)
-            animator.finishAnimation(at: .end)
-        } else {
+        if animated {
+            let animator = UIViewPropertyAnimator(duration: Constants.Animation.duration, timingParameters: timing)
+            animator.addAnimations(changesAndLayout)
+            if let completion = completion {
+                animator.addCompletion { _ in completion() }
+            }
+
+            // we might have enqueued animations from a transition coordinator, perform them along the main changes
+            self.addQueuedAnimations(to: animator)
+
             animator.startAnimation()
             self.animator = animator
+        } else {
+            // if we don't want to animate, perform changes directly and manually call alongside-"animations" and completion
+            changesAndLayout()
+            self.manuallyCallQueuedAnimations()
+            completion?()
         }
+    }
+
+    func manuallyCallQueuedAnimations() {
+        // first call animation blocks
+        self.transitionCoordinatorQueuedAnimations.forEach { $0.animations() }
+        // then completion blocks
+        self.transitionCoordinatorQueuedAnimations.forEach { $0.completion?(.end) }
+        self.transitionCoordinatorQueuedAnimations = []
     }
 
     func addQueuedAnimations(to animator: UIViewPropertyAnimator) {
