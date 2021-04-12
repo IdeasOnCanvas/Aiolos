@@ -495,8 +495,7 @@ private extension PanelGestures {
 
                 // slow down resizing if the current height exceeds certain limits
                 let isNearingEdge = (currentHeight < minHeight && translation.y > 0.0) || (currentHeight > maxHeight && translation.y < 0.0)
-                let isShrinkingOnScrollView = state.startMode != .onFixedArea && translation.y > 0.0
-                if isNearingEdge || isShrinkingOnScrollView {
+                if isNearingEdge {
                     return translation.y / 3.0
                 } else {
                     return translation.y
@@ -528,7 +527,7 @@ private extension PanelGestures {
                 return
             }
 
-            let targetMode = self.targetMode(for: pan)
+            let targetMode = self.targetMode(for: pan, state: state)
             let initialVelocity = self.initialVelocity(for: pan, targetMode: targetMode)
 
             self.animate(to: targetMode, initialVelocity: initialVelocity)
@@ -549,7 +548,7 @@ private extension PanelGestures {
         }
 
         // swiftlint:disable:next cyclomatic_complexity
-        private func targetMode(for pan: PanOrScrollGestureRecognizer) -> Panel.Configuration.Mode {
+        private func targetMode(for pan: PanOrScrollGestureRecognizer, state: VerticalGestureState) -> Panel.Configuration.Mode {
             let supportedModes = self.panel.configuration.supportedModes
             guard let originalConfiguration = self.originalConfiguration else { return supportedModes.first! }
 
@@ -576,25 +575,30 @@ private extension PanelGestures {
                 return .compact
             }
             // moving upwards + current size > .expanded -> grow to .fullHeight
-            if currentHeight >= heightExpanded && isMovingUpwards && supportedModes.contains(.fullHeight) {
+            if isMovingUpwards && currentHeight >= heightExpanded && supportedModes.contains(.fullHeight) {
                 return .fullHeight
             }
-            // moving downwards + current size < .expanded -> shrink to .collapsed
-            if currentHeight <= heightExpanded && isMovingDownwards && supportedModes.contains(.compact) {
+            // moving downwards + current size < .expanded -> shrink to .compact
+            if isMovingDownwards && currentHeight <= heightExpanded && supportedModes.contains(.compact) {
                 return .compact
             }
-            // moving upwards + current size < .expanded -> grow to .expanded
-            if currentHeight <= heightExpanded && isMovingUpwards {
+            // moving upwards + current size < .expanded -> grow to .expanded/.fullHeight
+            if isMovingUpwards && currentHeight <= heightExpanded {
                 if supportedModes.contains(.expanded) { return .expanded }
                 if supportedModes.contains(.fullHeight) { return .fullHeight }
             }
-            // moving downwards + current size > .expanded -> shrink to .expanded
-            if currentHeight >= heightExpanded && isMovingDownwards {
-                if supportedModes.contains(.expanded) { return .expanded }
-                if supportedModes.contains(.compact) { return .compact }
+            // moving downwards + current size > .expanded -> shrink to .compact/.expanded
+            if isMovingDownwards && currentHeight >= heightExpanded {
+                switch state.startMode {
+                case .onFixedArea:
+                    if supportedModes.contains(.expanded) { return .expanded }
+                    if supportedModes.contains(.compact) { return .compact }
+                case .onVerticallyScrollableArea:
+                    if supportedModes.contains(.compact) { return .compact }
+                }
             }
 
-            // check distance from .expanded mode
+            // no "movement velocity", check distance from .expanded mode
             let diffToExpanded = currentHeight - heightExpanded
 
             if diffToExpanded > offset && supportedModes.contains(.fullHeight) {
