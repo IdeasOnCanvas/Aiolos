@@ -126,12 +126,12 @@ extension ViewController: PanelResizeDelegate {
 
 extension ViewController: PanelRepositionDelegate {
 
-    func panelCanBeDismissed(_ panel: Panel) -> Bool {
-        return true
+    func panelCanStartMoving(_ panel: Panel) -> Bool {
+        return self.traitCollection.userInterfaceIdiom == .pad
     }
 
-    func panelDidStartMoving(_ panel: Panel) {
-        print("Panel did start moving")
+    func panelCanBeDismissed(_ panel: Panel) -> Bool {
+        return true
     }
 
     func panel(_ panel: Panel, willMoveTo frame: CGRect) -> Bool {
@@ -232,12 +232,10 @@ private extension ViewController {
 
         if self.traitCollection.userInterfaceIdiom == .pad {
             configuration.supportedPositions = [.leadingBottom, .trailingBottom]
-            configuration.isHorizontalPositioningEnabled = true
             configuration.appearance.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner, .layerMinXMaxYCorner, .layerMaxXMaxYCorner]
         } else {
             configuration.supportedModes = [.minimal, .compact, .expanded, .fullHeight]
             configuration.supportedPositions = [configuration.position]
-            configuration.isHorizontalPositioningEnabled = false
 
             if traitCollection.hasNotch {
                 configuration.appearance.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner, .layerMinXMaxYCorner, .layerMaxXMaxYCorner]

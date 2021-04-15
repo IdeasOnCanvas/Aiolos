@@ -80,11 +80,11 @@ final class PanelAnimator {
         }
     }
 
-    func notifyDelegateOfRepositioning() {
-        guard let repositionDelegate = self.panel.repositionDelegate else { return }
-        guard self.panel.isVisible else { return }
+    func askDelegateAboutStartOfMove() -> Bool {
+        guard let repositionDelegate = self.panel.repositionDelegate else { return false }
+        guard self.panel.isVisible else { return false }
 
-        repositionDelegate.panelDidStartMoving(self.panel)
+        return repositionDelegate.panelCanStartMoving(self.panel)
     }
 
     func askDelegateAboutMove(to frame: CGRect) -> Bool {

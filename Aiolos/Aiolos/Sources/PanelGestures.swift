@@ -23,11 +23,6 @@ final class PanelGestures: NSObject {
     private lazy var verticalPointerScrollState: VerticalGestureState = .init(handler: self.verticalHandler)
     private lazy var verticalHandler: VerticalHandler = .init(gestures: self)
 
-    private var isHorizontalPanEnabled: Bool {
-        get { self.horizontalPan.isEnabled }
-        set { self.horizontalPan.isEnabled = newValue }
-    }
-
     private var isVerticalPointerScrollEnabled: Bool {
         get { self.verticalPointerScroll?.isEnabled ?? false }
         set { self.verticalPointerScroll?.isEnabled = newValue }
@@ -56,7 +51,6 @@ final class PanelGestures: NSObject {
     }
 
     func configure(with configuration: Panel.Configuration) {
-        self.isHorizontalPanEnabled = configuration.isHorizontalPositioningEnabled
         self.isVerticalPanEnabled = configuration.gestureResizingMode.isPanningByTouchEnabled
         self.isVerticalPointerScrollEnabled = configuration.gestureResizingMode.isScrollingByPointerEnabled
     }
@@ -156,7 +150,8 @@ private extension PanelGestures {
             let velocity = pan.velocity(in: self.panel.view)
             let isPanningHorizontally = abs(velocity.x) > 1.5 * abs(velocity.y)
             guard isPanningHorizontally else { return false }
-            guard let contentViewController = self.panel.contentViewController else { return true }
+            guard let contentViewController = self.panel.contentViewController else { return false }
+            guard self.panel.animator.askDelegateAboutStartOfMove() else { return false }
 
             return self.gestures.gestureRecognizer(pan, isWithinContentAreaOf: contentViewController) == false
         }
@@ -178,7 +173,6 @@ private extension PanelGestures {
         }
 
         private func handlePanStarted(_ pan: UIPanGestureRecognizer) {
-            self.panel.animator.notifyDelegateOfRepositioning()
             self.gestures.updateResizeHandle()
         }
 
@@ -489,7 +483,8 @@ private extension PanelGestures {
         private func handlePanChanged(_ pan: PanOrScrollGestureRecognizer, state: VerticalGestureState) {
             func dragOffset(for translation: CGPoint) -> CGFloat {
                 let fudgeFactor: CGFloat = 60.0
-                let minHeight = self.height(for: .compact) + fudgeFactor
+                let minSupportedMode: Panel.Configuration.Mode = self.panel.configuration.supportedModes.contains(.compact) ? .compact : .expanded
+                let minHeight = self.height(for: minSupportedMode) + fudgeFactor
                 let maxHeight = self.panel.constraints.maxHeight - fudgeFactor
                 let currentHeight = self.panel.currentHeight
 

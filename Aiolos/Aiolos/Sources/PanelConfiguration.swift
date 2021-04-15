@@ -57,7 +57,6 @@ public extension Panel {
         public var supportedModes: Set<Mode>
         public var gestureResizingMode: GestureResizingMode
         public var appearance: Appearance
-        public var isHorizontalPositioningEnabled: Bool
     }
 }
 
@@ -82,8 +81,7 @@ public extension Panel.Configuration {
                                    mode: .compact,
                                    supportedModes: [.compact, .expanded, .fullHeight],
                                    gestureResizingMode: .includingContent,
-                                   appearance: appearance,
-                                   isHorizontalPositioningEnabled: false)
+                                   appearance: appearance)
     }
 }
 

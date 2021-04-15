@@ -31,14 +31,14 @@ public protocol PanelResizeDelegate: AnyObject {
 
 public protocol PanelRepositionDelegate: AnyObject {
 
+    /// Asks the delegate whether the `panel` can be moved horizontally
+    func panelCanStartMoving(_ panel: Panel) -> Bool
+
     /// Asks the delegate whether the `panel` can be removed from its parent
     func panelCanBeDismissed(_ panel: Panel) -> Bool
 
-    /// Tells the delegate that the `panel` has started moving
-    func panelDidStartMoving(_ panel: Panel)
-
     /// Tells the delegate that the `panel` will move to a specific frame
-    /// Returning false will result in a rubber-band effect
+    /// Returning `false`, will result in a rubber-band effect
     func panel(_ panel: Panel, willMoveTo frame: CGRect) -> Bool
 
     /// Tells the delegate that the `panel` did stop moving
