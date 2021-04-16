@@ -48,6 +48,8 @@ final class PanelAnimator {
         guard let animator = self.animator else { return }
         guard animator.state == .active else { return }
 
+        animator.pauseAnimation()
+        animator.fractionComplete = 1.0
         animator.stopAnimation(false)
         animator.finishAnimation(at: .end)
     }

@@ -173,13 +173,15 @@ public extension Panel {
         }
 
         if self.animator.isTransitioningToParent {
+            print("******** is transitioning to parent, stopping animation")
             self.animator.stopCurrentAnimation()
         }
 
-        self.contentViewController?.beginAppearanceTransition(false, animated: transition.isAnimated)
+        let contentViewController = self.contentViewController
+        contentViewController?.beginAppearanceTransition(false, animated: transition.isAnimated)
         self.willMove(toParent: nil)
         self.animator.removeFromParent(transition: transition) {
-            self.contentViewController?.endAppearanceTransition()
+            contentViewController?.endAppearanceTransition()
             self.view.removeFromSuperview()
             self.removeFromParent()
             completion?()
