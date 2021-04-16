@@ -264,9 +264,11 @@ private extension PanelAnimator {
     }
 
     func prepare(for transition: Panel.Transition, size: CGSize) {
+        self.animateChanges = transition.isAnimated
+
         switch transition {
         case .none:
-            break
+            self.resetPanel()
         case .fade:
             self.panel.view.alpha = 0.0
         case .slide(let direction):
@@ -281,16 +283,22 @@ private extension PanelAnimator {
     }
 
     func finalizeTransition(_ transition: Panel.Transition, completion: @escaping () -> Void) {
-        let animator = UIViewPropertyAnimator(duration: Constants.Animation.duration, timingParameters: UISpringTimingParameters())
-        animator.addAnimations(self.resetPanel)
-        animator.addCompletion { _ in completion() }
-        self.addQueuedAnimations(to: animator)
+        switch transition {
+        case .none:
+            self.animator = nil
+            self.resetPanel()
+            self.manuallyCallQueuedAnimations()
+            completion()
+        case .fade, .slide:
+            let animator = UIViewPropertyAnimator(duration: Constants.Animation.duration, timingParameters: UISpringTimingParameters())
+            animator.addAnimations(self.resetPanel)
+            animator.addCompletion { _ in completion() }
+            self.addQueuedAnimations(to: animator)
 
-        if case .none = transition {
-            animator.fractionComplete = 1.0
+            animator.startAnimation()
+            self.animator = animator
         }
 
-        animator.startAnimation()
-        self.animator = animator
+        self.animateChanges = true
     }
 }

@@ -157,7 +157,6 @@ public extension Panel {
         self.didMove(toParent: parent)
 
         let size = self.size(for: self.configuration.mode)
-
         self.animator.transitionToParent(with: size, transition: transition) {
             contentViewController?.endAppearanceTransition()
             self.updateAccessibility(for: self.configuration.mode)
