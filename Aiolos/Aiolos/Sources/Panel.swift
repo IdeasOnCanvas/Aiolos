@@ -173,7 +173,6 @@ public extension Panel {
         }
 
         if self.animator.isTransitioningToParent {
-            print("******** is transitioning to parent, stopping animation")
             self.animator.stopCurrentAnimation()
         }
 

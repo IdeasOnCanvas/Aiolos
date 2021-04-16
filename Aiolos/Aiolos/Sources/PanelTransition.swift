@@ -22,7 +22,7 @@ public extension Panel {
         case fade
         case slide(direction: Direction)
 
-        var isAnimated: Bool {
+        public var isAnimated: Bool {
             switch self {
             case .none:
                 return false
