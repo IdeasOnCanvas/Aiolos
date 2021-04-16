@@ -81,6 +81,14 @@ public extension Panel {
         return false
     }
 
+    override var isMovingToParent: Bool {
+        return self.animator.isTransitioningToParent
+    }
+
+    override var isMovingFromParent: Bool {
+        return self.animator.isTransitioningFromParent
+    }
+
     override func loadView() {
         self.view = self.makeShadowView(for: self.panelView)
     }
