@@ -53,18 +53,19 @@ private extension KeyboardLayoutGuide {
         guard let owningView = self.topGuide.owningView else { return }
         guard let window = owningView.window else { return }
         guard let keyboardInfo = KeyboardInfo(userInfo: notification.userInfo) else { return }
+        guard keyboardInfo.didChangeFrame else { return }
 
         // we only adjust the Panel frame, if the current first responder is a subview of the owning view
         if let firstResponder = UIResponder.currentFirstResponder() as? UIView {
             guard firstResponder.isDescendant(of: owningView) else { return }
         }
 
+        // ignore any transient changes when switching from a different app with keyboard visible on iPhone
         if window.traitCollection.userInterfaceIdiom == .phone {
             guard keyboardInfo.isLocal else { return }
         }
 
         let coveredHeight: CGFloat
-
         if keyboardInfo.isFloatingKeyboard {
             coveredHeight = 0.0
         } else {
@@ -93,6 +94,7 @@ private extension KeyboardLayoutGuide {
 
 private struct KeyboardInfo {
 
+    private let beginFrame: CGRect?
     private let endFrame: CGRect
     let animationOptions: UIView.AnimationOptions
     let animationDuration: TimeInterval
@@ -106,10 +108,15 @@ private struct KeyboardInfo {
         return self.endFrame.maxY < UIScreen.main.bounds.height
     }
 
+    var didChangeFrame: Bool {
+        return self.beginFrame != nil && self.beginFrame != self.endFrame
+    }
+
     init?(userInfo: [AnyHashable: Any]?) {
         guard let userInfo = userInfo else { return nil }
         guard let endFrame = userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect else { return nil }
 
+        self.beginFrame = userInfo[UIResponder.keyboardFrameBeginUserInfoKey] as? CGRect
         self.endFrame = endFrame
         self.isLocal = (userInfo[UIResponder.keyboardIsLocalUserInfoKey] as? NSNumber)?.boolValue ?? true
 
