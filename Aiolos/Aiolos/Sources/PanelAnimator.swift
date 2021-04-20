@@ -247,11 +247,15 @@ private extension PanelAnimator {
     }
 
     func manuallyCallQueuedAnimations() {
-        // first call animation blocks
-        self.transitionCoordinatorQueuedAnimations.forEach { $0.animations() }
-        // then completion blocks
-        self.transitionCoordinatorQueuedAnimations.forEach { $0.completion?(.end) }
+        let queuedAnimations = self.transitionCoordinatorQueuedAnimations
+        // reset the queued animations immediately, in case any queued block has side-effects
+        // that trigger animations again
         self.transitionCoordinatorQueuedAnimations = []
+
+        // first call animation blocks
+        queuedAnimations.forEach { $0.animations() }
+        // then completion blocks
+        queuedAnimations.forEach { $0.completion?(.end) }
     }
 
     func addQueuedAnimations(to animator: UIViewPropertyAnimator) {
