@@ -124,7 +124,6 @@ final class PanelAnimator {
 
 extension PanelAnimator {
 
-    /// - Note: Completion block is always called async
     func addToParent(with size: CGSize, transition: Panel.Transition, completion: @escaping () -> Void) {
         guard self.isMovingToParent == false else { return }
 
@@ -140,17 +139,10 @@ extension PanelAnimator {
         self.notifyDelegateOfTransition(from: nil, to: self.panel.configuration.mode)
         self.finalizeTransition(transition) {
             self.isMovingToParent = false
-
-            if transition.isAnimated {
-                completion()
-            } else {
-                // enforce consistency: completion block is always called async
-                DispatchQueue.main.async(execute: completion)
-            }
+            completion()
         }
     }
 
-    /// - Note: Completion block is always called async
     func removeFromParent(transition: Panel.Transition, completion: @escaping () -> Void) {
         guard self.isMovingFromParent == false else { return }
 
@@ -164,13 +156,7 @@ extension PanelAnimator {
             self.panel.constraints.updateForPanEndAnimation(to: self.panel.view.bounds.height)
             self.panel.constraints.updateForPanEnd()
             self.isMovingFromParent = false
-
-            if transition.isAnimated {
-                completion()
-            } else {
-                // enforce consistency: completion block is always called async
-                DispatchQueue.main.async(execute: completion)
-            }
+            completion()
         }
 
         switch transition {
