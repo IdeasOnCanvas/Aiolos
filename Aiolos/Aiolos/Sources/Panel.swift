@@ -30,7 +30,7 @@ public final class Panel: UIViewController {
 
     @objc private(set) public lazy var panelView: PanelView = self.makePanelView()
     @objc private(set) public lazy var resizeHandle: ResizeHandle = self.makeResizeHandle()
-    @objc public var isVisible: Bool { return self.parent != nil && self.animator.isTransitioningFromParent == false }
+    @objc public var isVisible: Bool { return self.parent != nil && self.animator.isMovingFromParent == false }
     public weak var sizeDelegate: PanelSizeDelegate?
     public weak var resizeDelegate: PanelResizeDelegate?
     public weak var repositionDelegate: PanelRepositionDelegate?
@@ -82,11 +82,11 @@ public extension Panel {
     }
 
     override var isMovingToParent: Bool {
-        return self.animator.isTransitioningToParent
+        return self.animator.isMovingToParent
     }
 
     override var isMovingFromParent: Bool {
-        return self.animator.isTransitioningFromParent
+        return self.animator.isMovingFromParent
     }
 
     override func loadView() {
@@ -152,9 +152,9 @@ public extension Panel {
 public extension Panel {
 
     func add(to parent: UIViewController, transition: Transition = .none, completion: (() -> Void)? = nil) {
-        guard self.parent !== parent || self.animator.isTransitioningFromParent else { return }
+        guard self.parent !== parent || self.animator.isMovingFromParent else { return }
 
-        if self.animator.isTransitioningFromParent {
+        if self.animator.isMovingFromParent {
             self.animator.stopCurrentAnimation()
         }
 
@@ -165,7 +165,7 @@ public extension Panel {
         self.didMove(toParent: parent)
 
         let size = self.size(for: self.configuration.mode)
-        self.animator.transitionToParent(with: size, transition: transition) {
+        self.animator.addToParent(with: size, transition: transition) {
             contentViewController?.endAppearanceTransition()
             self.updateAccessibility(for: self.configuration.mode)
             self.fixLayoutMargins()
@@ -174,13 +174,13 @@ public extension Panel {
     }
 
     func removeFromParent(transition: Transition = .none, completion: (() -> Void)? = nil) {
-        guard self.parent != nil || self.animator.isTransitioningToParent else { return }
+        guard self.parent != nil || self.animator.isMovingToParent else { return }
 
         if let repositionDelegate = self.repositionDelegate {
             guard repositionDelegate.panelCanBeDismissed(self) else { return }
         }
 
-        if self.animator.isTransitioningToParent {
+        if self.animator.isMovingToParent {
             self.animator.stopCurrentAnimation()
         }
 

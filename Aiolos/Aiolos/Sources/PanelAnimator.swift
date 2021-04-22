@@ -17,8 +17,8 @@ final class PanelAnimator {
 
     var animateChanges: Bool = true
     var transitionCoordinatorQueuedAnimations: [PanelTransitionCoordinator.Animation] = []
-    var isTransitioningToParent: Bool = false
-    var isTransitioningFromParent: Bool = false
+    var isMovingToParent: Bool = false
+    var isMovingFromParent: Bool = false
 
     // MARK: - Lifecycle
 
@@ -124,10 +124,11 @@ final class PanelAnimator {
 
 extension PanelAnimator {
 
-    func transitionToParent(with size: CGSize, transition: Panel.Transition, completion: @escaping () -> Void) {
-        guard self.isTransitioningToParent == false else { return }
+    /// - Note: Completion block is always called async
+    func addToParent(with size: CGSize, transition: Panel.Transition, completion: @escaping () -> Void) {
+        guard self.isMovingToParent == false else { return }
 
-        self.isTransitioningToParent = true
+        self.isMovingToParent = true
         self.stopCurrentAnimation()
         self.prepare(for: transition, size: size)
         self.performWithoutAnimation {
@@ -138,25 +139,38 @@ extension PanelAnimator {
         self.notifyDelegateOfTransition(to: size)
         self.notifyDelegateOfTransition(from: nil, to: self.panel.configuration.mode)
         self.finalizeTransition(transition) {
-            self.isTransitioningToParent = false
-            completion()
+            self.isMovingToParent = false
+
+            if transition.isAnimated {
+                completion()
+            } else {
+                // enforce consistency: completion block is always called async
+                DispatchQueue.main.async(execute: completion)
+            }
         }
     }
 
+    /// - Note: Completion block is always called async
     func removeFromParent(transition: Panel.Transition, completion: @escaping () -> Void) {
-        guard self.isTransitioningFromParent == false else { return }
+        guard self.isMovingFromParent == false else { return }
 
-        self.isTransitioningFromParent = true
+        self.isMovingFromParent = true
         self.stopCurrentAnimation()
 
         let animator = UIViewPropertyAnimator(duration: Constants.Animation.duration, timingParameters: UISpringTimingParameters())
 
         func finish() {
-            completion()
             self.resetPanel()
             self.panel.constraints.updateForPanEndAnimation(to: self.panel.view.bounds.height)
             self.panel.constraints.updateForPanEnd()
-            self.isTransitioningFromParent = false
+            self.isMovingFromParent = false
+
+            if transition.isAnimated {
+                completion()
+            } else {
+                // enforce consistency: completion block is always called async
+                DispatchQueue.main.async(execute: completion)
+            }
         }
 
         switch transition {
