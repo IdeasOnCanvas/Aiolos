@@ -13,7 +13,7 @@ import UIKit
 public extension Panel {
 
     enum Constants {
-        enum Animation {
+        public enum Animation {
             public static let duration: TimeInterval = 0.42
         }
     }
