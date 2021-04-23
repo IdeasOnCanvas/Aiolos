@@ -12,6 +12,12 @@ import UIKit
 /// Allows to configure the appearance of the floating panel
 public extension Panel {
 
+    enum Constants {
+        enum Animation {
+            public static let duration: TimeInterval = 0.42
+        }
+    }
+
     struct Configuration {
         public typealias Mode = _PanelMode
         public typealias Edge = _PanelEdge

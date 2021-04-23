@@ -149,7 +149,7 @@ extension PanelAnimator {
         self.isMovingFromParent = true
         self.stopCurrentAnimation()
 
-        let animator = UIViewPropertyAnimator(duration: Constants.Animation.duration, timingParameters: UISpringTimingParameters())
+        let animator = UIViewPropertyAnimator(duration: Panel.Constants.Animation.duration, timingParameters: UISpringTimingParameters())
 
         func finish() {
             self.resetPanel()
@@ -208,12 +208,6 @@ extension PanelAnimator {
 
 private extension PanelAnimator {
 
-    struct Constants {
-        struct Animation {
-            static let duration: TimeInterval = 0.42
-        }
-    }
-
     func performChanges(_ changes: @escaping () -> Void, animated: Bool, timing: UITimingCurveProvider, completion: (() -> Void)? = nil) {
         guard let parentView = self.panel.parent?.view else { return }
 
@@ -227,7 +221,7 @@ private extension PanelAnimator {
         parentView.layoutIfNeeded()
 
         if animated {
-            let animator = UIViewPropertyAnimator(duration: Constants.Animation.duration, timingParameters: timing)
+            let animator = UIViewPropertyAnimator(duration: Panel.Constants.Animation.duration, timingParameters: timing)
             animator.addAnimations(changesAndLayout)
             if let completion = completion {
                 animator.addCompletion { _ in completion() }
@@ -296,7 +290,7 @@ private extension PanelAnimator {
             self.manuallyCallQueuedAnimations()
             completion()
         case .fade, .slide:
-            let animator = UIViewPropertyAnimator(duration: Constants.Animation.duration, timingParameters: UISpringTimingParameters())
+            let animator = UIViewPropertyAnimator(duration: Panel.Constants.Animation.duration, timingParameters: UISpringTimingParameters())
             animator.addAnimations(self.resetPanel)
             animator.addCompletion { _ in completion() }
             self.addQueuedAnimations(to: animator)
