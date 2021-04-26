@@ -77,6 +77,8 @@ private extension KeyboardLayoutGuide {
             coveredHeight = window.convert(coveredFrame, to: owningView.superview).height
         }
 
+        guard coveredHeight != self.bottomConstraint.constant else { return }
+
         owningView.layoutIfNeeded()
         keyboardInfo.animateAlongsideKeyboard {
             self.bottomConstraint.constant = coveredHeight
@@ -86,7 +88,8 @@ private extension KeyboardLayoutGuide {
 
     @objc
     func keyboardWillHide(_ notification: Notification) {
-        self.topGuide.owningView?.layoutIfNeeded()
+        guard self.bottomConstraint.constant != 0.0 else { return }
+
         self.bottomConstraint.constant = 0.0
         self.topGuide.owningView?.layoutIfNeeded()
     }
