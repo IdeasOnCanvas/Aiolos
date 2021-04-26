@@ -393,6 +393,8 @@ private extension Panel {
         self.separatorView.configure(with: newConfiguration)
         self.gestures.configure(with: newConfiguration)
 
+        guard self.isVisible else { return }
+
         let modeChanged = oldConfiguration.mode != newConfiguration.mode
         let positionChanged = oldConfiguration.position != newConfiguration.position
         let marginsChanged = oldConfiguration.margins != newConfiguration.margins
