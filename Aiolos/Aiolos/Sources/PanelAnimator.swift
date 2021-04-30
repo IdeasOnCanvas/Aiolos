@@ -280,6 +280,11 @@ private extension PanelAnimator {
         self.panel.view.alpha = 1.0
         self.panel.view.transform = .identity
         self.panel.fixLayoutMargins()
+        // Hack on top of a hack: delaying to the next run-loop fixes a glitch,
+        // when adding the panel to a parent animated within an unsafe area
+        DispatchQueue.main.async { [weak self] in
+            self?.panel.fixLayoutMargins()
+        }
     }
 
     func finalizeTransition(_ transition: Panel.Transition, completion: @escaping () -> Void) {
