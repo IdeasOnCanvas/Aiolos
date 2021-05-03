@@ -362,7 +362,7 @@ private extension Panel {
 private extension Panel {
 
     func exchangeContentViewController(_ oldContentViewController: UIViewController?, with newContentViewController: UIViewController?) {
-        let callAppearanceMethods = self.isVisible
+        let callAppearanceMethods = self.isVisible || self.isMovingToParent
 
         // remove old contentViewController
         if let oldContentViewController = oldContentViewController {

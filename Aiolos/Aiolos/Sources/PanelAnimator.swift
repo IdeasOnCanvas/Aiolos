@@ -218,9 +218,10 @@ private extension PanelAnimator {
         }
 
         self.stopCurrentAnimation()
-        parentView.layoutIfNeeded()
 
         if animated {
+            parentView.layoutIfNeeded()
+
             let animator = UIViewPropertyAnimator(duration: Panel.Constants.Animation.duration, timingParameters: timing)
             animator.addAnimations(changesAndLayout)
             if let completion = completion {
