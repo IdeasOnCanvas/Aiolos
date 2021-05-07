@@ -151,9 +151,9 @@ private extension PanelGestures {
             let isPanningHorizontally = abs(velocity.x) > 1.5 * abs(velocity.y)
             guard isPanningHorizontally else { return false }
             guard let contentViewController = self.panel.contentViewController else { return false }
-            guard self.panel.animator.askDelegateAboutStartOfMove() else { return false }
+            guard self.gestures.gestureRecognizer(pan, isWithinContentAreaOf: contentViewController) == false else { return false }
 
-            return self.gestures.gestureRecognizer(pan, isWithinContentAreaOf: contentViewController) == false
+            return self.panel.animator.askDelegateAboutStartOfMove()
         }
 
         @objc
