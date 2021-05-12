@@ -25,7 +25,6 @@ final class PanelConstraints {
 
     init(panel: Panel) {
         self.panel = panel
-        KeyboardLayoutGuide.setup(parentView: panel.parent!.view)
     }
 
     // MARK: - PanelConstraints
@@ -47,6 +46,8 @@ final class PanelConstraints {
         guard self.isTransitioning == false else { return }
         guard let view = self.panel.view else { return }
         guard let parentView = self.panel.parent?.view else { return }
+        
+        KeyboardLayoutGuide.setup(parentView: parentView)
 
         let anchors = self.guides(of: parentView, for: self.panel.configuration.positionLogic)
         let topConstraint = view.topAnchor.constraint(greaterThanOrEqualTo: anchors.top, constant: margins.top).withIdentifier("Panel Top")
