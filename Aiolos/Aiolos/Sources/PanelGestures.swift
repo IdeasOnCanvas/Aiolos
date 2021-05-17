@@ -33,6 +33,15 @@ final class PanelGestures: NSObject {
         set { self.verticalPan.isEnabled = newValue }
     }
 
+    // MARK: - Properties
+
+    var isVerticalPanActive: Bool {
+        guard self.isVerticalPanEnabled else { return false }
+
+        let activeStates: Set<UIGestureRecognizer.State> = [.began, .changed]
+        return activeStates.contains(self.verticalPan.state)
+    }
+
     // MARK: - Lifecycle
 
     init(panel: Panel) {

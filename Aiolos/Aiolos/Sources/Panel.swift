@@ -31,6 +31,7 @@ public final class Panel: UIViewController {
     @objc private(set) public lazy var panelView: PanelView = self.makePanelView()
     @objc private(set) public lazy var resizeHandle: ResizeHandle = self.makeResizeHandle()
     @objc public var isVisible: Bool { return self.parent != nil && self.animator.isMovingFromParent == false }
+    @objc public var isResizing: Bool { return self.gestures.isVerticalPanActive }
     public weak var sizeDelegate: PanelSizeDelegate?
     public weak var resizeDelegate: PanelResizeDelegate?
     public weak var repositionDelegate: PanelRepositionDelegate?
