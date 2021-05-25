@@ -130,12 +130,6 @@ public extension Panel {
         self.fixLayoutMargins()
     }
 
-    override func willTransition(to newCollection: UITraitCollection, with coordinator: UIViewControllerTransitionCoordinator) {
-        // not calling through to contentVC because we set a fixed traitCollection
-        self.gestures.cancel()
-        super.willTransition(to: newCollection, with: coordinator)
-    }
-
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         self.contentViewController?.viewWillTransition(to: size, with: coordinator)
     }
@@ -400,11 +394,6 @@ private extension Panel {
         let positionChanged = oldConfiguration.position != newConfiguration.position
         let marginsChanged = oldConfiguration.margins != newConfiguration.margins
         let positionLogicChanged = oldConfiguration.positionLogic != newConfiguration.positionLogic
-        let gestureResizingModeChanged = oldConfiguration.gestureResizingMode != newConfiguration.gestureResizingMode
-
-        if modeChanged || positionChanged || marginsChanged || positionLogicChanged || gestureResizingModeChanged {
-            self.gestures.cancel()
-        }
 
         if modeChanged || positionChanged {
             let size = self.size(for: newConfiguration.mode)

@@ -63,12 +63,6 @@ final class PanelGestures: NSObject {
         self.isVerticalPanEnabled = configuration.gestureResizingMode.isPanningByTouchEnabled
         self.isVerticalPointerScrollEnabled = configuration.gestureResizingMode.isScrollingByPointerEnabled
     }
-
-    func cancel() {
-        self.horizontalPan.cancel()
-        self.verticalPan.cancel()
-        self.verticalPointerScroll?.cancel()
-    }
 }
 
 // MARK: - UIGestureRecognizerDelegate
