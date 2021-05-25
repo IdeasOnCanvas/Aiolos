@@ -14,7 +14,7 @@ final class PanelConstraints {
 
     private unowned let panel: Panel
     private var isTransitioning: Bool = false
-    private var keyboardLayoutGuide: KeyboardLayoutGuide { .shared }
+    private lazy var keyboardLayoutGuide: KeyboardLayoutGuide = self.makeKeyboardLayoutGuide()
     private var topConstraint: NSLayoutConstraint?
     private var topConstraintMargin: CGFloat = 0.0
     private var widthConstraint: NSLayoutConstraint?
@@ -46,8 +46,6 @@ final class PanelConstraints {
         guard self.isTransitioning == false else { return }
         guard let view = self.panel.view else { return }
         guard let parentView = self.panel.parent?.view else { return }
-        
-        KeyboardLayoutGuide.setup(parentView: parentView)
 
         let anchors = self.guides(of: parentView, for: self.panel.configuration.positionLogic)
         let topConstraint = view.topAnchor.constraint(greaterThanOrEqualTo: anchors.top, constant: margins.top).withIdentifier("Panel Top")
@@ -166,6 +164,12 @@ private extension PanelConstraints {
         let leading: NSLayoutXAxisAnchor
         let bottom: NSLayoutYAxisAnchor
         let trailing: NSLayoutXAxisAnchor
+    }
+
+    func makeKeyboardLayoutGuide() -> KeyboardLayoutGuide {
+        guard let parentView = self.panel.parent?.view else { fatalError("Must have a parent by now") }
+
+        return KeyboardLayoutGuide(parentView: parentView)
     }
 
     func activateSizeConstraints(for size: CGSize) {

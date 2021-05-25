@@ -13,7 +13,8 @@ import UIKit
 /// Used to create a layout guide that pins to the top of the keyboard
 final class KeyboardLayoutGuide {
 
-    private var bottomConstraint: NSLayoutConstraint!
+    private static var lastKnownCoveredHeight: CGFloat = 0.0
+    private let bottomConstraint: NSLayoutConstraint
 
     // MARK: - Properties
 
@@ -21,27 +22,21 @@ final class KeyboardLayoutGuide {
 
     // MARK: - Lifecycle
 
-    static let shared: KeyboardLayoutGuide = .init()
-
-    private init() {
+    init(parentView: UIView) {
         self.topGuide = UILayoutGuide()
         self.topGuide.identifier = "Keyboard Layout Guide"
-    }
+        parentView.addLayoutGuide(self.topGuide)
 
-    static func setup(parentView: UIView) {
-        let guide = Self.shared
-        // only setup once
-        guard guide.topGuide.owningView == nil else { return }
-
-        parentView.addLayoutGuide(guide.topGuide)
-        guide.bottomConstraint = parentView.bottomAnchor.constraint(equalTo: guide.topGuide.bottomAnchor)
-        NSLayoutConstraint.activate([guide.topGuide.heightAnchor.constraint(equalToConstant: 1.0),
-                                     parentView.leadingAnchor.constraint(equalTo: guide.topGuide.leadingAnchor),
-                                     parentView.trailingAnchor.constraint(equalTo: guide.topGuide.trailingAnchor),
-                                     guide.bottomConstraint])
+        self.bottomConstraint = parentView.bottomAnchor.constraint(equalTo: self.topGuide.bottomAnchor, constant: Self.lastKnownCoveredHeight)
+        NSLayoutConstraint.activate([
+            self.topGuide.heightAnchor.constraint(equalToConstant: 1.0),
+            parentView.leadingAnchor.constraint(equalTo: self.topGuide.leadingAnchor),
+            parentView.trailingAnchor.constraint(equalTo: self.topGuide.trailingAnchor),
+            self.bottomConstraint])
 
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillChangeFrame), name: UIResponder.keyboardWillChangeFrameNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(applicationWillResignActive), name: UIApplication.willResignActiveNotification, object: nil)
     }
 }
 
@@ -50,15 +45,13 @@ final class KeyboardLayoutGuide {
 private extension KeyboardLayoutGuide {
 
     @objc
-    static func keyboardWillChangeFrame(_ notification: Notification) {
-        guard let owningView = self.shared.topGuide.owningView else { return }
+    func keyboardWillChangeFrame(_ notification: Notification) {
+        guard let owningView = self.topGuide.owningView else { return }
         guard let window = owningView.window else { return }
         guard let keyboardInfo = KeyboardInfo(userInfo: notification.userInfo) else { return }
         guard keyboardInfo.didChangeFrame else { return }
 
         // we only adjust the Panel frame, if the current first responder is a subview of the owning view
-        // since all Panels share a single KeyboardLayoutGuide, this assumes that they also have a common
-        // parent view. This might not be the case always, but is the case for us right now.
         if let firstResponder = UIResponder.currentFirstResponder() as? UIView {
             guard firstResponder.isDescendant(of: owningView) else { return }
         }
@@ -80,21 +73,34 @@ private extension KeyboardLayoutGuide {
             coveredHeight = window.convert(coveredFrame, to: owningView.superview).height
         }
 
-        guard coveredHeight != self.shared.bottomConstraint.constant else { return }
+        guard coveredHeight != self.bottomConstraint.constant else { return }
 
         owningView.layoutIfNeeded()
         keyboardInfo.animateAlongsideKeyboard {
-            self.shared.bottomConstraint.constant = coveredHeight
+            self.updateBottomCoveredHeight(to: coveredHeight)
             owningView.layoutIfNeeded()
         }
     }
 
     @objc
-    static func keyboardWillHide(_ notification: Notification) {
-        guard self.shared.bottomConstraint.constant != 0.0 else { return }
+    func keyboardWillHide(_ notification: Notification) {
+        guard self.bottomConstraint.constant != 0.0 else { return }
 
-        self.shared.bottomConstraint.constant = 0.0
-        self.shared.topGuide.owningView?.layoutIfNeeded()
+        self.updateBottomCoveredHeight(to: 0.0)
+        self.topGuide.owningView?.layoutIfNeeded()
+    }
+
+    @objc
+    func applicationWillResignActive(_ notification: Notification) {
+        // as there is no guaranteed way to get notified about keyboard appearance/disappearance in the background,
+        // we take the safe route here and reset the last known state s.t. we don't end up with keyboard-avoiding
+        // panels without any keyboard
+        Self.lastKnownCoveredHeight = 0.0
+    }
+
+    func updateBottomCoveredHeight(to height: CGFloat) {
+        self.bottomConstraint.constant = height
+        Self.lastKnownCoveredHeight = height
     }
 }
 
