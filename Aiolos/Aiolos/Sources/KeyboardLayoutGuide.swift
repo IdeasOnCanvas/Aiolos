@@ -85,6 +85,9 @@ private extension KeyboardLayoutGuide {
     @objc
     func keyboardWillHide(_ notification: Notification) {
         guard self.bottomConstraint.constant != 0.0 else { return }
+        if let keyboardInfo = KeyboardInfo(userInfo: notification.userInfo) {
+            guard keyboardInfo.didChangeFrame else { return }
+        }
 
         self.updateBottomCoveredHeight(to: 0.0)
         self.topGuide.owningView?.layoutIfNeeded()
