@@ -75,7 +75,10 @@ private extension KeyboardLayoutGuide {
 
         guard coveredHeight != self.bottomConstraint.constant else { return }
 
-        owningView.layoutIfNeeded()
+        UIView.performWithoutAnimation {
+            owningView.layoutIfNeeded()
+        }
+
         keyboardInfo.animateAlongsideKeyboard {
             self.updateBottomCoveredHeight(to: coveredHeight)
             owningView.layoutIfNeeded()
