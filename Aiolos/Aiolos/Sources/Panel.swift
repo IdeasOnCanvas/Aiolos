@@ -146,12 +146,7 @@ public extension Panel {
 
 public extension Panel {
 
-    func add(to parent: UIViewController, transition: Transition = .none, completion: (() -> Void)? = nil) {
-        let topIndex = view.subviews.count
-        insert(to: parent, at: topIndex, transition: transition, completion: completion)
-    }
-    
-    func insert(to parent: UIViewController, at position: Int, transition: Transition = .none, completion: (() -> Void)? = nil) {
+    func add(to parent: UIViewController, at position: Int? = nil, transition: Transition = .none, completion: (() -> Void)? = nil) {
         guard self.parent !== parent || self.animator.isMovingFromParent else { return }
 
         if self.animator.isMovingFromParent {
@@ -160,8 +155,13 @@ public extension Panel {
 
         let contentViewController = self.contentViewController
         contentViewController?.beginAppearanceTransition(true, animated: transition.isAnimated)
+        
         parent.addChild(self)
-        parent.view.insertSubview(self.view, at: position)
+        if let position = position {
+            parent.view.insertSubview(self.view, at: position)
+        } else {
+            parent.view.addSubview(self.view)
+        }
         self.didMove(toParent: parent)
 
         let size = self.size(for: self.configuration.mode)
