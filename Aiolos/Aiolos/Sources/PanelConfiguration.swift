@@ -23,6 +23,7 @@ public extension Panel {
         public typealias Edge = _PanelEdge
         public typealias Position = _PanelPosition
         public typealias PositionLogic = _PanelPositionLogic
+        public typealias KeyboardBehaviour = _PanelKeyboardBehaviour
 
         public struct GestureResizingMode: OptionSet {
             public let rawValue: Int
@@ -62,6 +63,7 @@ public extension Panel {
         public var mode: Mode
         public var supportedModes: Set<Mode>
         public var gestureResizingMode: GestureResizingMode
+        public var keyboardBehaviour: KeyboardBehaviour
         public var appearance: Appearance
     }
 }
@@ -87,6 +89,7 @@ public extension Panel.Configuration {
                                    mode: .compact,
                                    supportedModes: [.compact, .expanded, .fullHeight],
                                    gestureResizingMode: .includingContent,
+                                   keyboardBehaviour: .avoiding,
                                    appearance: appearance)
     }
 }
@@ -170,6 +173,14 @@ public enum _PanelPositionLogic: Int {
     public static var ignoreAllSafeAreas: [Panel.Configuration.Edge: Panel.Configuration.PositionLogic] {
         return [.top: .ignoreSafeArea, .leading: .ignoreSafeArea, .bottom: .ignoreSafeArea, .trailing: .ignoreSafeArea]
     }
+}
+
+@objc(PanelKeyboardBehaviour)
+public enum _PanelKeyboardBehaviour: Int {
+    /// the panel automatically adjusts its frame s.t. it doesn't overlap the software keyboard
+    case avoiding
+    /// the panel ignores any keyboard appearanc and keeps its frame independent of a keyboard appearance
+    case ignoring
 }
 
 extension _PanelPositionLogic {

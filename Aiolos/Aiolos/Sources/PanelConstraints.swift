@@ -14,12 +14,13 @@ final class PanelConstraints {
 
     private unowned let panel: Panel
     private var isTransitioning: Bool = false
-    private lazy var keyboardLayoutGuide: KeyboardLayoutGuide = self.makeKeyboardLayoutGuide()
     private var topConstraint: NSLayoutConstraint?
     private var topConstraintMargin: CGFloat = 0.0
     private var widthConstraint: NSLayoutConstraint?
     private var positionConstraints: [NSLayoutConstraint] = []
     private(set) var heightConstraint: NSLayoutConstraint?
+    private lazy var keyboardLayoutGuide: KeyboardLayoutGuide = self.makeKeyboardLayoutGuide()
+    private var keyboardConstraint: NSLayoutConstraint?
 
     // MARK: - Lifecycle
 
@@ -49,10 +50,11 @@ final class PanelConstraints {
 
         let anchors = self.guides(of: parentView, for: self.panel.configuration.positionLogic)
         let topConstraint = view.topAnchor.constraint(greaterThanOrEqualTo: anchors.top, constant: margins.top).withIdentifier("Panel Top")
+        let keyboardConstraint = view.bottomAnchor.constraint(lessThanOrEqualTo: self.keyboardLayoutGuide.topGuide.bottomAnchor, constant: -margins.bottom).withIdentifier("Keyboard Bottom")
         var positionConstraints = [
             view.bottomAnchor.constraint(equalTo: anchors.bottom, constant: -margins.bottom).configure { $0.priority = .defaultHigh; $0.identifier = "Panel Bottom" },
             view.bottomAnchor.constraint(lessThanOrEqualTo: anchors.bottom, constant: -margins.bottom).withIdentifier("Panel Bottom <="),
-            view.bottomAnchor.constraint(lessThanOrEqualTo: self.keyboardLayoutGuide.topGuide.bottomAnchor, constant: -margins.bottom).withIdentifier("Keyboard Bottom"),
+            keyboardConstraint,
             topConstraint
         ]
 
@@ -80,9 +82,23 @@ final class PanelConstraints {
         self.panel.animator.animateIfNeeded {
             NSLayoutConstraint.deactivate(self.positionConstraints)
             self.topConstraint = topConstraint
+            self.keyboardConstraint = keyboardConstraint
             self.positionConstraints = positionConstraints
             NSLayoutConstraint.activate(self.positionConstraints)
         }
+    }
+
+    func updateKeyboardBehaviour(to keyboardBehaviour: Panel.Configuration.KeyboardBehaviour) {
+        var isAvoidingKeyboard: Bool {
+            switch keyboardBehaviour {
+            case .avoiding:
+                return true
+            case .ignoring:
+                return false
+            }
+        }
+
+        self.keyboardConstraint?.isActive = isAvoidingKeyboard
     }
 }
 

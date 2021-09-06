@@ -412,6 +412,8 @@ private extension Panel {
         if positionChanged || positionLogicChanged || marginsChanged {
             self.constraints.updatePositionConstraints(for: newConfiguration.position, margins: newConfiguration.margins)
         }
+
+        self.constraints.updateKeyboardBehaviour(to: newConfiguration.keyboardBehaviour)
     }
 
     func updateAccessibility(for mode: Configuration.Mode) {
