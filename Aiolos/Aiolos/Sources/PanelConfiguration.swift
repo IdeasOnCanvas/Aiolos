@@ -179,7 +179,7 @@ public enum _PanelPositionLogic: Int {
 public enum _PanelKeyboardBehaviour: Int {
     /// the panel automatically adjusts its frame s.t. it doesn't overlap the software keyboard
     case avoiding
-    /// the panel ignores any keyboard appearanc and keeps its frame independent of a keyboard appearance
+    /// the panel ignores any keyboard appearance and keeps its frame independent
     case ignoring
 }
 
