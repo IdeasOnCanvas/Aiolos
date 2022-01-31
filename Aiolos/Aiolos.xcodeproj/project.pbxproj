@@ -215,9 +215,9 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 9B22526E1F1508FD006DE55D /* Build configuration list for PBXNativeTarget "Aiolos" */;
 			buildPhases = (
+				9B2252541F1508FD006DE55D /* Headers */,
 				9B2252521F1508FD006DE55D /* Sources */,
 				9B2252531F1508FD006DE55D /* Frameworks */,
-				9B2252541F1508FD006DE55D /* Headers */,
 				9B2252551F1508FD006DE55D /* Resources */,
 			);
 			buildRules = (
