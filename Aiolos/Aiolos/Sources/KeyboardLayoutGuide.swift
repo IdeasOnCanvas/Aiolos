@@ -11,18 +11,18 @@
 import UIKit
 
 /// Used to create a layout guide that pins to the top of the keyboard
-final class KeyboardLayoutGuide {
+public final class KeyboardLayoutGuide {
 
     private static var lastKnownCoveredHeight: CGFloat = 0.0
     private let bottomConstraint: NSLayoutConstraint
 
     // MARK: - Properties
 
-    let topGuide: UILayoutGuide
+    public let topGuide: UILayoutGuide
 
     // MARK: - Lifecycle
 
-    init(parentView: UIView) {
+    public init(parentView: UIView) {
         self.topGuide = UILayoutGuide()
         self.topGuide.identifier = "Keyboard Layout Guide"
         parentView.addLayoutGuide(self.topGuide)
