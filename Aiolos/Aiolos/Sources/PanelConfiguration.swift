@@ -40,7 +40,7 @@ public extension Panel {
 
         public enum ResizeHandleMode {
             case hidden
-            case visible(foregroundColor: UIColor, backgroundColor: UIColor)
+            case visible(foregroundColor: UIColor, backgroundColor: UIColor, adjustAppearanceWhileResizing: Bool = true)
         }
 
         public struct Appearance {

@@ -21,6 +21,7 @@ public final class ResizeHandle: UIView {
     }
 
     private lazy var resizeHandle: UIView = self.makeResizeHandle()
+    private var adjustAppearanceWhileResizing: Bool = true
 
     // MARK: - Properties
 
@@ -77,10 +78,11 @@ public final class ResizeHandle: UIView {
     // MARK: - ResizeHandle
 
     func configure(with configuration: Panel.Configuration) {
-        guard case .visible(let foregroundColor, let backgroundColor) = configuration.appearance.resizeHandle else { return }
+        guard case .visible(let foregroundColor, let backgroundColor, let adjustAppearanceWhileResizing) = configuration.appearance.resizeHandle else { return }
 
         self.handleColor = foregroundColor
         self.backgroundColor = backgroundColor
+        self.adjustAppearanceWhileResizing = adjustAppearanceWhileResizing
         self.resizeHandle.alpha = configuration.gestureResizingMode.contains(.handle) && configuration.supportedModes.count > 1 ? 1.0 : 0.2
     }
 }
@@ -101,7 +103,7 @@ extension ResizeHandle: UIPointerInteractionDelegate {
 
     public func pointerInteraction(_ interaction: UIPointerInteraction, regionFor request: UIPointerRegionRequest, defaultRegion: UIPointerRegion) -> UIPointerRegion? {
         return UIPointerRegion(rect: self.resizeHandle.frame.insetBy(dx: -24.0, dy: -12.0))
-      }
+    }
 
     public func pointerInteraction(_ interaction: UIPointerInteraction, styleFor region: UIPointerRegion) -> UIPointerStyle? {
         return UIPointerStyle(effect: .automatic(UITargetedPreview(view: self.resizeHandle)))
@@ -120,6 +122,8 @@ extension ResizeHandle: UIPointerInteractionDelegate {
 
 private extension ResizeHandle {
 
+    var shouldAdjustAppearance: Bool { self.isResizing && self.adjustAppearanceWhileResizing }
+
     func makeResizeHandle() -> UIView {
         let handle = UIView(frame: .init(origin: .zero, size: .init(width: Constants.inactiveHandleWidth, height: Constants.handleHeight)))
         handle.backgroundColor = self.handleColor
@@ -128,11 +132,11 @@ private extension ResizeHandle {
 
     func updateResizeHandleColor() {
         let baseColor = self.handleColor
-        self.resizeHandle.backgroundColor = self.isResizing ? baseColor.darkened() : baseColor
+        self.resizeHandle.backgroundColor = self.shouldAdjustAppearance ? baseColor.darkened() : baseColor
     }
 
     func updateResizeHandleFrame(animated: Bool) {
-        let width = self.isResizing ? Constants.activeHandleWidth : Constants.inactiveHandleWidth
+        let width = self.shouldAdjustAppearance ? Constants.activeHandleWidth : Constants.inactiveHandleWidth
 
         func updateFrame() {
             let center = CGPoint(x: self.bounds.width / 2.0, y: self.bounds.height / 2.0 - 0.5)
