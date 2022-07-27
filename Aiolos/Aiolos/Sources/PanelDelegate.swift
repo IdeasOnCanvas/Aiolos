@@ -9,13 +9,27 @@
 import UIKit
 
 
-/// The various delegates of a Panel are informed about relevant events
+// The various delegates of a Panel are informed about relevant events
+
+// MARK: - PanelSizeDelegate
 
 public protocol PanelSizeDelegate: AnyObject {
 
     /// Asks the delegate for the size of the panel in a specific mode. either width or height might be ignored, based on the mode
     func panel(_ panel: Panel, sizeForMode mode: Panel.Configuration.Mode) -> CGSize
+
+    /// Asks the delegate for the size class it should set for its contentViewController
+    func panelSizeClassesForContentViewController(_ panel: Panel) -> (horizontal: UIUserInterfaceSizeClass, vertical: UIUserInterfaceSizeClass)
 }
+
+public extension PanelSizeDelegate {
+
+    func panelSizeClassesForContentViewController(_ panel: Panel) -> (horizontal: UIUserInterfaceSizeClass, vertical: UIUserInterfaceSizeClass) {
+        return (.compact, .compact)
+    }
+}
+
+// MARK: - PanelResizeDelegate
 
 public protocol PanelResizeDelegate: AnyObject {
 
@@ -28,6 +42,8 @@ public protocol PanelResizeDelegate: AnyObject {
     /// Tells the delegate that the `panel` is transitioning to a specific mode
     func panel(_ panel: Panel, willTransitionFrom oldMode: Panel.Configuration.Mode?, to newMode: Panel.Configuration.Mode, with coordinator: PanelTransitionCoordinator)
 }
+
+// MARK: - PanelRepositionDelegate
 
 public protocol PanelRepositionDelegate: AnyObject {
 
@@ -51,6 +67,8 @@ public protocol PanelRepositionDelegate: AnyObject {
     func panelWillTransitionToHiddenState(_ panel: Panel, with coordinator: PanelTransitionCoordinator)
 }
 
+// MARK: - PanelAccessibilityDelegate
+
 public protocol PanelAccessibilityDelegate: AnyObject {
 
     /// Asks the delegate for the accessibility label of the resize handle
@@ -59,3 +77,4 @@ public protocol PanelAccessibilityDelegate: AnyObject {
     /// Tells the delegate that the resize handle was activated with Voice Over
     func panel(_ panel: Panel, didActivateResizeHandle resizeHandle: ResizeHandle) -> Bool
 }
+

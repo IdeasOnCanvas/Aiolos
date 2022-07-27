@@ -135,8 +135,9 @@ public extension Panel {
     }
 
     override func overrideTraitCollection(forChild childViewController: UIViewController) -> UITraitCollection? {
-        let horizontalTraits = UITraitCollection(horizontalSizeClass: .compact)
-        let verticalTraits = UITraitCollection(verticalSizeClass: .compact)
+        let sizeClasses = self.sizeDelegate?.panelSizeClassesForContentViewController(self) ?? (.compact, .compact)
+        let horizontalTraits = UITraitCollection(horizontalSizeClass: sizeClasses.horizontal)
+        let verticalTraits = UITraitCollection(verticalSizeClass: sizeClasses.vertical)
 
         return UITraitCollection(traitsFrom: [horizontalTraits, verticalTraits])
     }
@@ -155,7 +156,7 @@ public extension Panel {
 
         let contentViewController = self.contentViewController
         contentViewController?.beginAppearanceTransition(true, animated: transition.isAnimated)
-        
+
         parent.addChild(self)
         if let position = position {
             parent.view.insertSubview(self.view, at: position)
