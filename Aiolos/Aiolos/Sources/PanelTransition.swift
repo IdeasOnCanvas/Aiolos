@@ -9,7 +9,6 @@
 import UIKit
 
 
-/// Enum that can be used to modify the panel's initial appearance/disappearance transition
 public extension Panel {
 
     enum Direction {
@@ -17,10 +16,15 @@ public extension Panel {
         case vertical
     }
 
+    /// Declares the panel's initial appearance/disappearance transition
     enum Transition {
+        /// without animation
         case none
+        /// fades in the panel from alpha 0
         case fade
+        /// fades and scales in the panel from the provided initial values
         case fadeAndScale(initialAlpha: CGFloat, initialScale: CGFloat)
+        /// slides in the panel from the provided direction
         case slide(direction: Direction)
 
         public var isAnimated: Bool {
@@ -44,8 +48,8 @@ extension Panel.Transition: Equatable {
             return true
         case (.fade, .fade):
             return true
-        case (.fadeAndScale, .fadeAndScale):
-            return true // we ignore the scale factor intentially
+        case (.fadeAndScale, .fadeAndScale): // we ignore the scale factor intentially
+            return true
         case (.slide, .slide): // we ignore the direction intentionally
             return true
         default:

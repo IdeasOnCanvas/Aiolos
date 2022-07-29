@@ -168,15 +168,12 @@ extension PanelAnimator {
 
         case .fade:
             animator.addAnimations {
-
                 self.panel.constraints.updateForPanStart(with: self.panel.view.frame.size)
                 self.panel.view.alpha = 0.0
             }
 
         case .fadeAndScale(initialAlpha: _, let initialScale):
             animator.addAnimations {
-                // this constraints the height during removal transition
-                // fixes a visual glitch when the panel is .fullHeight and status bar is hidden as well
                 self.panel.constraints.updateForPanStart(with: self.panel.view.frame.size)
                 self.panel.view.alpha = 0.0
                 self.panel.view.transform = .init(scaleX: initialScale, y: initialScale)
@@ -184,8 +181,6 @@ extension PanelAnimator {
 
         case .slide(let edge):
             animator.addAnimations {
-                // this constraints the height during removal transition
-                // fixes a visual glitch when the panel is .fullHeight and status bar is hidden as well
                 self.panel.constraints.updateForPanStart(with: self.panel.view.frame.size)
                 self.panel.view.transform = self.transform(for: edge, size: self.panel.view.frame.size)
             }
