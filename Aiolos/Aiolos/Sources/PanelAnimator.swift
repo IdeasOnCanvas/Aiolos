@@ -159,6 +159,8 @@ extension PanelAnimator {
             completion()
         }
 
+        // the following calls to `self.panel.constraints.updateForPanStart(with:)` fixes a visual glitch,
+        // when the panel is .fullHeight and status bar is hidden as well by constraining the height during removal transition
         switch transition {
         case .none:
             finish()
@@ -166,14 +168,24 @@ extension PanelAnimator {
 
         case .fade:
             animator.addAnimations {
-                // this constraints the height during removal transition
-                // fixes a visual glitch when the panel is .fullHeight and status bar is hidden as well
+
                 self.panel.constraints.updateForPanStart(with: self.panel.view.frame.size)
                 self.panel.view.alpha = 0.0
             }
 
+        case .fadeAndScale(initialAlpha: _, let initialScale):
+            animator.addAnimations {
+                // this constraints the height during removal transition
+                // fixes a visual glitch when the panel is .fullHeight and status bar is hidden as well
+                self.panel.constraints.updateForPanStart(with: self.panel.view.frame.size)
+                self.panel.view.alpha = 0.0
+                self.panel.view.transform = .init(scaleX: initialScale, y: initialScale)
+            }
+
         case .slide(let edge):
             animator.addAnimations {
+                // this constraints the height during removal transition
+                // fixes a visual glitch when the panel is .fullHeight and status bar is hidden as well
                 self.panel.constraints.updateForPanStart(with: self.panel.view.frame.size)
                 self.panel.view.transform = self.transform(for: edge, size: self.panel.view.frame.size)
             }
@@ -272,6 +284,9 @@ private extension PanelAnimator {
             self.resetPanel()
         case .fade:
             self.panel.view.alpha = 0.0
+        case .fadeAndScale(let initialAlpha, let initialScale):
+            self.panel.view.alpha = initialAlpha
+            self.panel.view.transform = .init(scaleX: initialScale, y: initialScale)
         case .slide(let direction):
             self.panel.view.transform = self.transform(for: direction, size: size)
         }
@@ -295,7 +310,7 @@ private extension PanelAnimator {
             self.resetPanel()
             self.manuallyCallQueuedAnimations()
             completion()
-        case .fade, .slide:
+        case .fade, .fadeAndScale, .slide:
             let animator = UIViewPropertyAnimator(duration: Panel.Constants.Animation.duration, timingParameters: UISpringTimingParameters())
             animator.addAnimations(self.resetPanel)
             animator.addCompletion { _ in completion() }

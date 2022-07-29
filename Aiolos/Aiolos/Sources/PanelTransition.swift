@@ -20,6 +20,7 @@ public extension Panel {
     enum Transition {
         case none
         case fade
+        case fadeAndScale(initialAlpha: CGFloat, initialScale: CGFloat)
         case slide(direction: Direction)
 
         public var isAnimated: Bool {
@@ -43,6 +44,8 @@ extension Panel.Transition: Equatable {
             return true
         case (.fade, .fade):
             return true
+        case (.fadeAndScale, .fadeAndScale):
+            return true // we ignore the scale factor intentially
         case (.slide, .slide): // we ignore the direction intentionally
             return true
         default:
