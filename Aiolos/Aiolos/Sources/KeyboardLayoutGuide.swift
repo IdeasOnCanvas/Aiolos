@@ -114,7 +114,7 @@ private struct KeyboardInfo {
 
     private let beginFrame: CGRect?
     private let endFrame: CGRect
-    let animationOptions: UIView.AnimationOptions
+    let animationCurve: UIView.AnimationCurve
     let animationDuration: TimeInterval
     let isLocal: Bool
 
@@ -138,12 +138,10 @@ private struct KeyboardInfo {
         self.endFrame = endFrame
         self.isLocal = (userInfo[UIResponder.keyboardIsLocalUserInfoKey] as? NSNumber)?.boolValue ?? true
 
-        // UIViewAnimationOption is shifted by 16 bit from UIViewAnimationCurve, which we get here:
-        // http://stackoverflow.com/questions/18870447/how-to-use-the-default-ios7-uianimation-curve
-        if let animationCurve = userInfo[UIResponder.keyboardAnimationCurveUserInfoKey] as? UInt {
-            self.animationOptions = UIView.AnimationOptions(rawValue: animationCurve << 16)
+        if let animationCurve = userInfo[UIResponder.keyboardAnimationCurveUserInfoKey] as? Int {
+            self.animationCurve = UIView.AnimationCurve(rawValue: animationCurve) ?? .easeInOut
         } else {
-            self.animationOptions = .curveEaseInOut
+            self.animationCurve = .easeInOut
         }
 
         if let animationDuration = userInfo[UIResponder.keyboardAnimationDurationUserInfoKey] as? Double {
@@ -158,7 +156,7 @@ private struct KeyboardInfo {
     }
 
     func animateAlongsideKeyboard(_ animations: @escaping () -> Void) {
-        UIView.animate(withDuration: self.animationDuration, delay: 0.0, options: self.animationOptions, animations: animations)
+        UIViewPropertyAnimator(duration: self.animationDuration, curve: self.animationCurve, animations: animations).startAnimation()
     }
 }
 
