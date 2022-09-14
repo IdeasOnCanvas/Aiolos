@@ -35,7 +35,8 @@ public final class KeyboardLayoutGuide {
             self.bottomConstraint])
 
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillChangeFrame), name: UIResponder.keyboardWillChangeFrameNotification, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillOrDidHide), name: UIResponder.keyboardWillHideNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillOrDidHide), name: UIResponder.keyboardDidHideNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(applicationWillResignActive), name: UIApplication.willResignActiveNotification, object: nil)
     }
 }
@@ -86,7 +87,7 @@ private extension KeyboardLayoutGuide {
     }
 
     @objc
-    func keyboardWillHide(_ notification: Notification) {
+    func keyboardWillOrDidHide(_ notification: Notification) {
         guard self.bottomConstraint.constant != 0.0 else { return }
         if let keyboardInfo = KeyboardInfo(userInfo: notification.userInfo) {
             guard keyboardInfo.didChangeFrame else { return }
@@ -121,9 +122,8 @@ private struct KeyboardInfo {
     var isFloatingKeyboard: Bool {
         guard UIDevice.current.userInterfaceIdiom == .pad else { return false }
         guard self.isLocal else { return false }
-        guard self.endFrame.size != .zero else { return true }
 
-        return self.endFrame.maxY < UIScreen.main.bounds.height
+        return self.beginFrame?.size == .zero || self.endFrame.size == .zero
     }
 
     var didChangeFrame: Bool {
@@ -152,7 +152,11 @@ private struct KeyboardInfo {
     }
 
     func endFrame(in window: UIWindow) -> CGRect {
-        return window.convert(self.endFrame, from: UIScreen.main.coordinateSpace)
+        var frame = window.convert(self.endFrame, from: UIScreen.main.coordinateSpace)
+        if self.isFloatingKeyboard == false {
+            frame.origin.x = 0.0 // fix for stage manager computation
+        }
+        return frame
     }
 
     func animateAlongsideKeyboard(_ animations: @escaping () -> Void) {
