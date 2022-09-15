@@ -123,7 +123,7 @@ private struct KeyboardInfo {
         guard UIDevice.current.userInterfaceIdiom == .pad else { return false }
         guard self.isLocal else { return false }
 
-        return self.beginFrame?.size == .zero || self.endFrame.size == .zero
+        return self.endFrame.size.width < 320.0
     }
 
     var didChangeFrame: Bool {
@@ -152,11 +152,7 @@ private struct KeyboardInfo {
     }
 
     func endFrame(in window: UIWindow) -> CGRect {
-        var frame = window.convert(self.endFrame, from: UIScreen.main.coordinateSpace)
-        if self.isFloatingKeyboard == false {
-            frame.origin.x = 0.0 // fix for stage manager computation
-        }
-        return frame
+        window.screen.coordinateSpace.convert(self.endFrame, from: UIScreen.main.coordinateSpace)
     }
 
     func animateAlongsideKeyboard(_ animations: @escaping () -> Void) {
