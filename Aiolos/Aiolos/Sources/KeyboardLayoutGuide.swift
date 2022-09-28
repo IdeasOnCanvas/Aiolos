@@ -123,7 +123,7 @@ private struct KeyboardInfo {
         guard UIDevice.current.userInterfaceIdiom == .pad else { return false }
         guard self.isLocal else { return false }
 
-        return self.endFrame.size.width < 320.0
+        return self.endFrame.size.width < 320.0 || self.endFrame.maxY < UIScreen.main.bounds.height
     }
 
     var didChangeFrame: Bool {
