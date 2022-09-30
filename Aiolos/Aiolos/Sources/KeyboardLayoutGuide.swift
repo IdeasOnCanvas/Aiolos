@@ -63,7 +63,7 @@ private extension KeyboardLayoutGuide {
         }
 
         let coveredHeight: CGFloat
-        if keyboardInfo.isFloatingKeyboard {
+        if keyboardInfo.isFloatingKeyboard(in: window) {
             coveredHeight = 0.0
         } else {
             // convert own frame to window coordinates
@@ -119,13 +119,6 @@ private struct KeyboardInfo {
     let animationDuration: TimeInterval
     let isLocal: Bool
 
-    var isFloatingKeyboard: Bool {
-        guard UIDevice.current.userInterfaceIdiom == .pad else { return false }
-        guard self.isLocal else { return false }
-
-        return self.endFrame.size.width < 320.0 || self.endFrame.maxY < UIScreen.main.bounds.height
-    }
-
     var didChangeFrame: Bool {
         return self.beginFrame != nil && self.beginFrame != self.endFrame
     }
@@ -152,7 +145,15 @@ private struct KeyboardInfo {
     }
 
     func endFrame(in window: UIWindow) -> CGRect {
-        window.screen.coordinateSpace.convert(self.endFrame, from: UIScreen.main.coordinateSpace)
+        window.convert(self.endFrame, from: window.screen.coordinateSpace)
+    }
+
+    func isFloatingKeyboard(in window: UIWindow) -> Bool {
+        guard UIDevice.current.userInterfaceIdiom == .pad else { return false }
+        guard self.isLocal else { return false }
+
+        let endFrame = self.endFrame(in: window)
+        return endFrame.maxY < window.frame.height
     }
 
     func animateAlongsideKeyboard(_ animations: @escaping () -> Void) {
