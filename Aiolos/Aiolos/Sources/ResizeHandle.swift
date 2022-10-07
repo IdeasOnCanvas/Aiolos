@@ -22,6 +22,7 @@ public final class ResizeHandle: UIView {
 
     private lazy var resizeHandle: UIView = self.makeResizeHandle()
     private var adjustAppearanceWhileResizing: Bool = true
+    private weak var pointerInteraction: UIInteraction?
 
     // MARK: - Properties
 
@@ -47,9 +48,24 @@ public final class ResizeHandle: UIView {
         }
     }
 
+    public var isPointerInteractionEnabled: Bool {
+        get { self.pointerInteraction != nil }
+        set {
+            guard newValue != self.isPointerInteractionEnabled else { return }
+
+            if let exitingInteraction = self.pointerInteraction {
+                self.removeInteraction(exitingInteraction)
+            }
+
+            if newValue {
+                self.installPointerInteraction()
+            }
+        }
+    }
+
     // MARK: - Lifecycle
 
-    init(configuration: Panel.Configuration) {
+    public init(configuration: Panel.Configuration) {
         super.init(frame: .zero)
 
         self.clipsToBounds = false
@@ -57,11 +73,7 @@ public final class ResizeHandle: UIView {
         self.backgroundColor = .clear
         self.addSubview(self.resizeHandle)
         self.configure(with: configuration)
-
-        if #available(iOS 13.4, *), NSClassFromString("UIPointerInteraction") != nil {
-            let pointerInteraction = UIPointerInteraction(delegate: self)
-            self.addInteraction(pointerInteraction)
-        }
+        self.isPointerInteractionEnabled = true
     }
 
     public required init?(coder aDecoder: NSCoder) {
@@ -154,6 +166,14 @@ private extension ResizeHandle {
         } else {
             updateFrame()
         }
+    }
+
+    private func installPointerInteraction() {
+        guard #available(iOS 13.4, *), NSClassFromString("UIPointerInteraction") != nil else { return }
+
+        let pointerInteraction = UIPointerInteraction(delegate: self)
+        self.addInteraction(pointerInteraction)
+        self.pointerInteraction = pointerInteraction
     }
 }
 
