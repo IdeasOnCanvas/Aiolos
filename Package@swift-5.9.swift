@@ -17,7 +17,7 @@ let package = Package(
         .target(
             name: "Aiolos",
             path: "Aiolos/Aiolos",
-            resources: [.copy("Aiolos/Resources/PrivacyInfo.xcprivacy")]
+            resources: [.copy("../Resources/PrivacyInfo.xcprivacy")]
         )
     ]
 )
