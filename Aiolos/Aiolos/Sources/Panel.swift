@@ -105,14 +105,25 @@ public extension Panel {
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
 
-        switch configuration.appearance.resizeHandle {
+        switch self.configuration.appearance.resizeHandle {
         case .hidden:
             self.resizeHandle.frame = .null
             self.separatorView.frame = .null
             self.panelView.frame = self.view.bounds
 
         case .visible:
-            let (resizeFrame, panelFrame) = self.view.bounds.divided(atDistance: ResizeHandle.Constants.height, from: .minYEdge)
+            if self.configuration.appearance.resizeHandle.isOverlayingContent {
+                self.containerView?.addSubview(self.resizeHandle)
+            } else {
+                self.containerView?.insertSubview(self.resizeHandle, at: 0)
+            }
+
+
+            let (resizeFrame, panelFrame) = if self.configuration.appearance.resizeHandle.isOverlayingContent {
+                (self.view.bounds.divided(atDistance: ResizeHandle.Constants.height, from: .minYEdge).slice, self.view.bounds)
+            } else {
+                self.view.bounds.divided(atDistance: ResizeHandle.Constants.height, from: .minYEdge)
+            }
             self.resizeHandle.frame = resizeFrame
             self.panelView.frame = panelFrame
 

@@ -90,7 +90,7 @@ public final class ResizeHandle: UIView {
     // MARK: - ResizeHandle
 
     func configure(with configuration: Panel.Configuration) {
-        guard case .visible(let foregroundColor, let backgroundColor, let adjustAppearanceWhileResizing) = configuration.appearance.resizeHandle else { return }
+        guard case .visible(overlayContent: _, let foregroundColor, let backgroundColor, let adjustAppearanceWhileResizing) = configuration.appearance.resizeHandle else { return }
 
         self.handleColor = foregroundColor
         self.backgroundColor = backgroundColor

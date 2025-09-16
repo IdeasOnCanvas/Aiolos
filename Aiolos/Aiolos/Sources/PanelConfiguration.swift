@@ -40,7 +40,19 @@ public extension Panel {
 
         public enum ResizeHandleMode {
             case hidden
-            case visible(foregroundColor: UIColor, backgroundColor: UIColor, adjustAppearanceWhileResizing: Bool = true)
+            case visible(
+                overlayContent: Bool,
+                foregroundColor: UIColor,
+                backgroundColor: UIColor,
+                adjustAppearanceWhileResizing: Bool = true
+            )
+
+            var isOverlayingContent: Bool {
+                switch self {
+                case .hidden: false
+                case .visible(let overlayContent, foregroundColor: _, backgroundColor: _, adjustAppearanceWhileResizing: _): overlayContent
+                }
+            }
         }
 
         public struct Appearance {
@@ -71,26 +83,34 @@ public extension Panel {
 public extension Panel.Configuration {
 
     static var `default`: Panel.Configuration {
-        let appearance = Appearance(visualEffect: UIBlurEffect(style: .extraLight),
-                                    borderColor: UIColor.gray.withAlphaComponent(0.5),
-                                    separatorColor: UIColor.gray.withAlphaComponent(0.5),
-                                    cornerRadius: 10.0,
-                                    maskedCorners: [.layerMinXMinYCorner, .layerMinXMaxYCorner, .layerMaxXMinYCorner, .layerMaxXMaxYCorner],
-                                    shadowColor: .black,
-                                    shadowOpacity: 0.15,
-                                    shadowOffset: UIOffset(horizontal: 0.0, vertical: 1.0),
-                                    shadowRadius: 3.0,
-                                    resizeHandle: .visible(foregroundColor: UIColor.gray.withAlphaComponent(0.3), backgroundColor: .white))
+        let appearance = Appearance(
+            visualEffect: UIBlurEffect(style: .extraLight),
+            borderColor: UIColor.gray.withAlphaComponent(0.5),
+            separatorColor: UIColor.gray.withAlphaComponent(0.5),
+            cornerRadius: 10.0,
+            maskedCorners: [.layerMinXMinYCorner, .layerMinXMaxYCorner, .layerMaxXMinYCorner, .layerMaxXMaxYCorner],
+            shadowColor: .black,
+            shadowOpacity: 0.15,
+            shadowOffset: UIOffset(horizontal: 0.0, vertical: 1.0),
+            shadowRadius: 3.0,
+            resizeHandle: .visible(
+                overlayContent: false,
+                foregroundColor: UIColor.gray.withAlphaComponent(0.3),
+                backgroundColor: .white
+            )
+        )
 
-        return Panel.Configuration(position: .bottom,
-                                   positionLogic: PositionLogic.respectAllSafeAreas,
-                                   supportedPositions: [.bottom],
-                                   margins: NSDirectionalEdgeInsets(top: 10.0, leading: 10.0, bottom: 0.0, trailing: 10.0),
-                                   mode: .compact,
-                                   supportedModes: [.compact, .expanded, .fullHeight],
-                                   gestureResizingMode: .includingContent,
-                                   keyboardBehaviour: .avoiding,
-                                   appearance: appearance)
+        return Panel.Configuration(
+            position: .bottom,
+            positionLogic: PositionLogic.respectAllSafeAreas,
+            supportedPositions: [.bottom],
+            margins: NSDirectionalEdgeInsets(top: 10.0, leading: 10.0, bottom: 0.0, trailing: 10.0),
+            mode: .compact,
+            supportedModes: [.compact, .expanded, .fullHeight],
+            gestureResizingMode: .includingContent,
+            keyboardBehaviour: .avoiding,
+            appearance: appearance
+        )
     }
 }
 
