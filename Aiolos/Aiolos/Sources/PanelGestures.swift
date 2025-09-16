@@ -593,13 +593,8 @@ private extension PanelGestures {
             }
             // moving downwards + current size > .expanded -> shrink to .compact/.expanded
             if isMovingDownwards && currentHeight >= heightExpanded {
-                switch state.startMode {
-                case .onFixedArea:
-                    if supportedModes.contains(.expanded) { return .expanded }
-                    if supportedModes.contains(.compact) { return .compact }
-                case .onVerticallyScrollableArea:
-                    if supportedModes.contains(.compact) { return .compact }
-                }
+                if supportedModes.contains(.expanded) { return .expanded }
+                if supportedModes.contains(.compact) { return .compact }
             }
 
             // no "movement velocity", check distance from .expanded mode
