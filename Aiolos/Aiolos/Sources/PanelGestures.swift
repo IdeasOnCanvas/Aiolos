@@ -775,7 +775,7 @@ private extension UIView {
 private extension UIScrollView {
 
     var isScrolledToTop: Bool {
-        return self.contentOffset.y <= -max(self.contentInset.top, self.safeAreaInsets.top)
+        return self.contentOffset.y <= -self.adjustedContentInset.top
     }
 
     var scrollsVertically: Bool {
